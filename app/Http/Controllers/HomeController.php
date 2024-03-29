@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Alkhachatryan\LaravelWebConsole\LaravelWebConsole;
+use App\Charts\DashboardBersihHarian;
+use App\Charts\DashboardKotorHarian;
 
 class HomeController extends Controller
 {
@@ -23,13 +25,16 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index()
+    public function index(DashboardKotorHarian $kotor, DashboardBersihHarian $bersih)
     {
         if (auth()->check() && auth()->user()->active == false) {
             return redirect()->route('login');
         }
 
-        return view('pages.home.home');
+        return view('pages.home.home', [
+            'kotor' => $kotor->build(),
+            'bersih' => $bersih->build()
+        ]);
     }
 
     public function console()

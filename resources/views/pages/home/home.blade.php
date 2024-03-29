@@ -99,4 +99,37 @@
         </div><!-- end col -->
     </div><!-- end row-->
 
+    <div class="row">
+        <div class="col-xl-5">
+            <!-- card -->
+            <div class="card card-h-100">
+                <!-- card body -->
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-sm">
+                            {!! $kotor->container() !!}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end card -->
+        </div>
+        <!-- end col -->
+        <div class="col-xl-7">
+            <div class="card card-h-100">
+                <!-- card body -->
+                <div class="card-body">
+                    {!! $bersih->container() !!}
+                </div>
+            </div>
+        </div>
+        <!-- end col -->
+    </div>
+
+    @push('footer')
+    <script src="{{ @asset('vendor/larapex-charts/apexcharts.js') }}"></script>
+    {{ $kotor->script() }}
+    {{ $bersih->script() }}
+    @endpush
+
 </x-layout>
