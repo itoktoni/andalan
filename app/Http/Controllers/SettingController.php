@@ -3,13 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Dao\Enums\BooleanType;
-use App\Dao\Models\WorkType;
 use App\Http\Requests\SettingRequest;
 use App\Http\Services\CreateSettingService;
-use Coderello\SharedData\Facades\SharedData;
 use Plugins\Response;
-use Plugins\Template;
-use App\Http\Controllers\Controller;
 
 class SettingController extends Controller
 {
@@ -17,19 +13,21 @@ class SettingController extends Controller
     {
         $view = [
             'model' => false,
-            'active' => BooleanType::getOptions()
+            'active' => BooleanType::getOptions(),
         ];
+
         return array_merge($view, $data);
     }
 
     public function getCreate()
     {
-        return moduleView(modulePathForm(), $this->share());
+        return moduleView('pages.setting.form', $this->share());
     }
 
     public function postCreate(SettingRequest $request, CreateSettingService $service)
     {
         $data = $service->save($request);
+
         return Response::redirectBack($data);
     }
 }

@@ -3,9 +3,8 @@
 namespace App\Dao\Traits;
 
 use Illuminate\Support\Facades\Storage;
-use Plugins\Filter;
-use Spatie\SimpleExcel\SimpleExcelWriter;
 use Rap2hpoutre\FastExcel\Facades\FastExcel;
+use Spatie\SimpleExcel\SimpleExcelWriter;
 
 trait ExcelTrait
 {
@@ -20,6 +19,7 @@ trait ExcelTrait
         });
 
         fclose($handle);
+
         return Storage::disk()->download($name.'.csv');
 
         // return FastExcel::data($data)->download($name);

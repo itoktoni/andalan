@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Dao\Models\Jenis;
+use App\Dao\Models\JenisLinen;
 use App\Dao\Models\Mutasi;
 use App\Dao\Models\Rs;
 use App\Dao\Models\ViewDetailLinen;
@@ -18,10 +18,11 @@ class ReportMutasiController extends MinimalController
         self::$repository = self::$repository ?? $repository;
     }
 
-    protected function beforeForm(){
+    protected function beforeForm()
+    {
 
         $rs = Rs::getOptions();
-        $jenis = Jenis::getOptions();
+        $jenis = JenisLinen::getOptions();
 
         self::$share = [
             'jenis' => $jenis,
@@ -29,14 +30,15 @@ class ReportMutasiController extends MinimalController
         ];
     }
 
-    private function getQuery($request){
+    private function getQuery($request)
+    {
         $query = self::$repository->dataRepository();
 
-        if($awal = request()->get('start_date')){
+        if ($awal = request()->get('start_date')) {
             $query = $query->where(Mutasi::field_tanggal(), '>=', $awal);
         }
 
-        if($akhir = request()->get('end_date')){
+        if ($akhir = request()->get('end_date')) {
             $query = $query->where(Mutasi::field_tanggal(), '<=', $akhir);
         }
 
@@ -51,7 +53,8 @@ class ReportMutasiController extends MinimalController
         return $query->get();
     }
 
-    public function getPrint(MutasiReportRequest $request){
+    public function getPrint(MutasiReportRequest $request)
+    {
         set_time_limit(0);
         $rs_id = intval($request->view_rs_id);
         $rs = Rs::find($rs_id);
@@ -60,7 +63,7 @@ class ReportMutasiController extends MinimalController
 
         return moduleView(modulePathPrint(), $this->share([
             'data' => $this->data,
-            'rs' => $rs
+            'rs' => $rs,
         ]));
     }
 }

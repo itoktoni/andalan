@@ -16,20 +16,20 @@ class ServiceProvider extends BaseServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__ . '/../../config/config.php' => config_path('form-components.php'),
+                __DIR__.'/../../config/config.php' => config_path('form-components.php'),
             ], 'config');
 
             $this->publishes([
-                __DIR__ . '/../../resources/views' => base_path('resources/views/vendor/form-components'),
+                __DIR__.'/../../resources/views' => base_path('resources/views/vendor/form-components'),
             ], 'views');
         }
 
-        $this->loadViewsFrom(__DIR__ . '/../../resources/views', 'form-components');
+        $this->loadViewsFrom(__DIR__.'/../../resources/views', 'form-components');
 
         //
 
         Blade::directive('bind', function ($bind) {
-            return '<?php app(\ProtoneMedia\LaravelFormComponents\FormDataBinder::class)->bind(' . $bind . '); ?>';
+            return '<?php app(\ProtoneMedia\LaravelFormComponents\FormDataBinder::class)->bind('.$bind.'); ?>';
         });
 
         Blade::directive('endbind', function () {
@@ -37,7 +37,7 @@ class ServiceProvider extends BaseServiceProvider
         });
 
         Blade::directive('wire', function ($modifier) {
-            return '<?php app(\ProtoneMedia\LaravelFormComponents\FormDataBinder::class)->wire(' . $modifier . '); ?>';
+            return '<?php app(\ProtoneMedia\LaravelFormComponents\FormDataBinder::class)->wire('.$modifier.'); ?>';
         });
 
         Blade::directive('endwire', function () {
@@ -58,7 +58,7 @@ class ServiceProvider extends BaseServiceProvider
      */
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__ . '/../../config/config.php', 'form-components');
+        $this->mergeConfigFrom(__DIR__.'/../../config/config.php', 'form-components');
 
         $this->app->singleton(FormDataBinder::class, fn () => new FormDataBinder);
     }

@@ -2,8 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Exports\ExportExcel;
-use App\Exports\LinenDetail;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -22,6 +20,7 @@ class JobExportExcel implements ShouldQueue
      * @return void
      */
     private $code;
+
     private $class;
 
     public function __construct($code, $class)

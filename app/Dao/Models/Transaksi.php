@@ -4,6 +4,7 @@ namespace App\Dao\Models;
 
 use App\Dao\Builder\DataBuilder;
 use App\Dao\Entities\TransaksiEntity;
+use App\Dao\Models\History as HistoryModel;
 use App\Dao\Traits\ActiveTrait;
 use App\Dao\Traits\ApiTrait;
 use App\Dao\Traits\DataTableTrait;
@@ -13,15 +14,15 @@ use Illuminate\Database\Eloquent\Model;
 use Kirschbaum\PowerJoins\PowerJoins;
 use Kyslik\ColumnSortable\Sortable;
 use Mehradsadeghi\FilterQueryString\FilterQueryString as FilterQueryString;
-use App\Dao\Models\History as HistoryModel;
 use Touhidurabir\ModelSanitize\Sanitizable as Sanitizable;
 use Wildside\Userstamps\Userstamps;
 
 class Transaksi extends Model
 {
-    use Sortable, FilterQueryString, Sanitizable, DataTableTrait, TransaksiEntity, ActiveTrait, OptionTrait, PowerJoins, ApiTrait, Userstamps;
+    use ActiveTrait, ApiTrait, DataTableTrait, FilterQueryString, OptionTrait, PowerJoins, Sanitizable, Sortable, TransaksiEntity, Userstamps;
 
     protected $table = 'transaksi';
+
     protected $primaryKey = 'transaksi_id';
 
     protected $fillable = [
@@ -77,21 +78,27 @@ class Transaksi extends Model
         'view_ruangan_id',
         'view_linen_id',
         'view_status_process',
-        'transaksi_rs_ori'
+        'transaksi_rs_ori',
     ];
 
     const CREATED_AT = 'transaksi_created_at';
+
     const UPDATED_AT = 'transaksi_updated_at';
+
     const DELETED_AT = 'transaksi_deleted_at';
 
     const CREATED_BY = 'transaksi_created_by';
+
     const UPDATED_BY = 'transaksi_updated_by';
+
     const DELETED_BY = 'transaksi_deleted_by';
 
     public $timestamps = true;
+
     public $incrementing = false;
 
-    public function fieldSearching(){
+    public function fieldSearching()
+    {
         return $this->field_name();
     }
 

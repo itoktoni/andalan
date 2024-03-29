@@ -2,11 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Dao\Enums\NotificationStatus;
-use App\Dao\Models\Notification;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use Plugins\WhatsApp;
 
 class Install extends Command
 {

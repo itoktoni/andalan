@@ -2,19 +2,13 @@
 
 namespace App\Console\Commands;
 
-use App\Dao\Enums\ProcessType;
 use App\Dao\Models\Detail;
-use App\Dao\Models\Transaksi;
-use App\Dao\Models\ViewDetailLinen;
 use Illuminate\Console\Command;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Plugins\History;
 
 class DetailTotal extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -46,16 +40,16 @@ class DetailTotal extends Command
      */
     public function handle()
     {
-       $data = DB::table('view_transaksi_total')
-        ->where('detail_tanggal_cek', '!=', date('Y-m-d'))
-        ->orWhereNull('detail_tanggal_cek')
-        ->limit(ENV('TRANSACTION_DETAIL_CEK', 50))
-        ->get();
+        $data = DB::table('view_transaksi_total')
+            ->where('detail_tanggal_cek', '!=', date('Y-m-d'))
+            ->orWhereNull('detail_tanggal_cek')
+            ->limit(ENV('TRANSACTION_DETAIL_CEK', 50))
+            ->get();
 
         Log::info($data);
 
         if ($data) {
-            foreach($data as $item){
+            foreach ($data as $item) {
                 Detail::where(Detail::field_primary(), $item->detail_rfid)->update([
                     Detail::field_total_bersih_kotor() => $item->qty_bersih_kotor,
                     Detail::field_total_bersih_retur() => $item->qty_bersih_retur,

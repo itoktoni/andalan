@@ -3,15 +3,19 @@
 namespace App\Dao\Traits;
 
 use App\Dao\Enums\BooleanType;
-use Plugins\Filter;
 
 trait OptionTrait
 {
     public static $option_data;
+
     public static $option_model;
+
     public static $option_query;
+
     public static $option_label;
+
     public static $option_name;
+
     public static $option_id;
 
     public static function setId($value = false)
@@ -20,7 +24,7 @@ trait OptionTrait
         if ($value) {
             self::$option_id = $value;
         }
-        return;
+
     }
 
     public static function setName($value = false)
@@ -29,7 +33,7 @@ trait OptionTrait
         if ($value) {
             self::$option_name = $value;
         }
-        return;
+
     }
 
     public static function setLabel($value = false)
@@ -38,7 +42,7 @@ trait OptionTrait
         if ($value) {
             self::$option_label = $value;
         }
-        return;
+
     }
 
     public static function getOptions($raw = false)
@@ -48,33 +52,30 @@ trait OptionTrait
 
         if (is_bool($raw) && $raw) {
             return $query->get();
-        }
-        else if(is_array($raw)){
+        } elseif (is_array($raw)) {
 
             $field_id = array_keys($raw)[0];
             $field_name = array_values($raw)[0];
 
             $query = $query
-            ->select($field_id, $field_name);
-            if(method_exists(self::$option_model, 'field_active')){
+                ->select($field_id, $field_name);
+            if (method_exists(self::$option_model, 'field_active')) {
                 $query = self::$option_model->where(self::$option_model->field_active(), BooleanType::Yes);
             }
 
-            self::$option_model = $query->get()->pluck($field_name,  $field_id)
+            self::$option_model = $query->get()->pluck($field_name, $field_id)
             ?? [];
-        }
-        else{
+        } else {
 
             $query = $query
-            ->select(self::$option_model->fieldSearching(), self::$option_model->getKeyName());
-            if(method_exists(self::$option_model, 'field_active')){
+                ->select(self::$option_model->fieldSearching(), self::$option_model->getKeyName());
+            if (method_exists(self::$option_model, 'field_active')) {
                 $query = self::$option_model->where(self::$option_model->field_active(), BooleanType::Yes);
             }
 
-            self::$option_model = $query->get()->pluck( self::$option_model->fieldSearching(),  self::$option_model->getKeyName())
+            self::$option_model = $query->get()->pluck(self::$option_model->fieldSearching(), self::$option_model->getKeyName())
             ?? [];
         }
-
 
         return self::$option_model;
     }

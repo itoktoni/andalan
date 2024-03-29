@@ -10,12 +10,13 @@ class RsRequest extends FormRequest
 {
     use ValidationTrait;
 
-    public function validation() : array
+    public function validation(): array
     {
         return [
             Rs::field_name() => 'required',
             // Rs::field_harga_cuci() => 'required|numeric',
             // Rs::field_harga_sewa() => 'required|numeric',
+            'rs_status' => 'required',
             'ruangan' => 'required',
         ];
     }

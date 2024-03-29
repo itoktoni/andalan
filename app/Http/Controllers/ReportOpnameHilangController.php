@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Dao\Enums\BooleanType;
 use App\Dao\Models\Opname;
 use App\Dao\Models\OpnameDetail;
-use App\Dao\Models\Rs;
-use App\Dao\Models\User;
 use App\Dao\Repositories\OpnameRepository;
 use Illuminate\Http\Request;
 use Plugins\Query;
@@ -20,21 +18,24 @@ class ReportOpnameHilangController extends MinimalController
         self::$repository = self::$repository ?? $repository;
     }
 
-    protected function beforeForm(){
+    protected function beforeForm()
+    {
 
         self::$share = [
             'rs' => Query::getOpnameList(),
         ];
     }
 
-    private function getQuery($opname_id){
+    private function getQuery($opname_id)
+    {
         $query = self::$repository->getOpnameByID($opname_id)
             ->where(OpnameDetail::field_ketemu(), BooleanType::No);
 
         return $query;
     }
 
-    public function getPrint(Request $request){
+    public function getPrint(Request $request)
+    {
         set_time_limit(0);
 
         $this->data = $this->getQuery($request->opname_id)->get();
@@ -42,7 +43,7 @@ class ReportOpnameHilangController extends MinimalController
 
         return moduleView(modulePathPrint(), $this->share([
             'data' => $this->data,
-            'opname' => $opname
+            'opname' => $opname,
         ]));
     }
 }

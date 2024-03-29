@@ -2,21 +2,16 @@
 
 namespace App\Dao\Traits;
 
-use App\Dao\Enums\BooleanType;
-use App\Dao\Enums\ProcessType;
-use App\Dao\Enums\RegisterType;
-use App\Dao\Scopes\FilterScope;
-use Facades\App\Models\User;
-use Illuminate\Support\Facades\Cache;
-use Facades\Modules\System\Dao\Models\Filter;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 
 trait DataTableTrait
 {
     abstract public function fieldDatatable(): array;
-    public function fieldStatus() : array { return [];}
+
+    public function fieldStatus(): array
+    {
+        return [];
+    }
 
     public function getSelectedField(): array
     {
@@ -30,7 +25,7 @@ trait DataTableTrait
 
     public function getExcelField()
     {
-        return collect($this->fieldDatatable())->where('excel', true)->pluck( 'code', 'name')->toArray();
+        return collect($this->fieldDatatable())->where('excel', true)->pluck('code', 'name')->toArray();
     }
 
     public function filter($query, $value)
@@ -38,21 +33,21 @@ trait DataTableTrait
         return $this->queryFilter($query);
     }
 
-    public function queryFilter($query){
+    public function queryFilter($query)
+    {
         $search = request()->get('search');
         $value = request()->get('filter') ? request()->get('filter') : $this->fieldSearching();
-        if($search){
+        if ($search) {
 
-            if($this->fieldStatus() && isset($this->fieldStatus()[$value])) {
+            if ($this->fieldStatus() && isset($this->fieldStatus()[$value])) {
                 $type = new \ReflectionClass($this->fieldStatus()[$value]);
-                $instance =  $type->newInstanceWithoutConstructor();
+                $instance = $type->newInstanceWithoutConstructor();
                 $convert = Str::of($search)->camel()->ucfirst();
                 $id = $instance->fromKey($convert) ?? false;
-                if($id){
+                if ($id) {
                     $query = $query->where($value, $id->value);
                 }
-            }
-            else{
+            } else {
                 $query = $query->where($value, 'like', "%{$search}%");
             }
 
@@ -61,26 +56,29 @@ trait DataTableTrait
         return $query;
     }
 
-    public function start_date($query){
+    public function start_date($query)
+    {
         $date = request()->get('start_date');
-        if($date){
+        if ($date) {
             $query = $query->whereDate($this->field_reported_at(), '>=', $date);
         }
 
         return $query;
     }
 
-    public function end_date($query){
+    public function end_date($query)
+    {
         $date = request()->get('end_date');
 
-        if($date){
+        if ($date) {
             $query = $query->whereDate($this->field_reported_at(), '<=', $date);
         }
 
         return $query;
     }
 
-    public function fieldSearching(){
+    public function fieldSearching()
+    {
 
         return $this->getKeyName();
     }

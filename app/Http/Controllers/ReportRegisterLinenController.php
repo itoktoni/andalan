@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Dao\Enums\CuciType;
 use App\Dao\Enums\RegisterType;
-use App\Dao\Models\Jenis;
+use App\Dao\Models\JenisLinen;
 use App\Dao\Models\Rs;
 use App\Dao\Models\Ruangan;
 use App\Dao\Models\ViewDetailLinen;
@@ -20,10 +20,11 @@ class ReportRegisterLinenController extends MinimalController
         self::$repository = self::$repository ?? $repository;
     }
 
-    protected function beforeForm(){
+    protected function beforeForm()
+    {
 
         $rs = Rs::getOptions();
-        $jenis = Jenis::getOptions();
+        $jenis = JenisLinen::getOptions();
         $ruangan = Ruangan::getOptions();
         $cuci = CuciType::getOptions();
         $register = RegisterType::getOptions();
@@ -37,11 +38,13 @@ class ReportRegisterLinenController extends MinimalController
         ];
     }
 
-    private function getQuery($request){
+    private function getQuery($request)
+    {
         return self::$repository->getPrint()->get();
     }
 
-    public function getPrint(Request $request){
+    public function getPrint(Request $request)
+    {
         set_time_limit(0);
         $rs = Rs::find(request()->get(ViewDetailLinen::field_rs_id()));
 
@@ -49,7 +52,7 @@ class ReportRegisterLinenController extends MinimalController
 
         return moduleView(modulePathPrint(), $this->share([
             'data' => $this->data,
-            'rs' => $rs
+            'rs' => $rs,
         ]));
     }
 }

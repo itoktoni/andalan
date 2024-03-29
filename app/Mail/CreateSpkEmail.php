@@ -3,10 +3,8 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 
 class CreateSpkEmail extends Mailable
 {
@@ -17,7 +15,6 @@ class CreateSpkEmail extends Mailable
      *
      * @return void
      */
-
     public $data;
 
     public function __construct($data)

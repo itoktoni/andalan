@@ -2,8 +2,8 @@
 
 namespace App\Dao\Facades;
 
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Facade;
+use Illuminate\Support\Str;
 use Plugins\Helper;
 
 class RoutesFacades extends Facade

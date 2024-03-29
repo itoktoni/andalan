@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Dao\Models\Jenis;
+use App\Dao\Models\JenisLinen;
 use App\Dao\Traits\ValidationTrait;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -10,14 +10,14 @@ class JenisRequest extends FormRequest
 {
     use ValidationTrait;
 
-    public function validation() : array
+    public function validation(): array
     {
         return [
-            Jenis::field_name() => 'required',
-            Jenis::field_category_id() => 'required',
-            Jenis::field_rs_id() => 'required',
-            Jenis::field_weight() => 'required|numeric',
-            Jenis::field_parstock() => 'required|numeric',
+            JenisLinen::field_name() => 'required',
+            JenisLinen::field_category_id() => 'required',
+            JenisLinen::field_rs_id() => 'required',
+            JenisLinen::field_weight() => 'required|numeric',
+            JenisLinen::field_parstock() => 'required|numeric',
             UPLOAD => 'image',
         ];
     }

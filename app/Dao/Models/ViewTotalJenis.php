@@ -10,6 +10,7 @@ class ViewTotalJenis extends Model
     use ViewTotalJenisEntity;
 
     protected $table = 'view_total_jenis';
+
     protected $primaryKey = 'view_total_jenis_id';
 
     protected $casts = [

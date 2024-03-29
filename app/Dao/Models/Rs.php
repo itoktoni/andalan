@@ -18,9 +18,10 @@ use Touhidurabir\ModelSanitize\Sanitizable as Sanitizable;
 
 class Rs extends Model
 {
-    use Sortable, FilterQueryString, Sanitizable, DataTableTrait, RsEntity, ActiveTrait, OptionTrait, PowerJoins, ApiTrait;
+    use ActiveTrait, ApiTrait, DataTableTrait, FilterQueryString, OptionTrait, PowerJoins, RsEntity, Sanitizable, Sortable;
 
     protected $table = 'rs';
+
     protected $primaryKey = 'rs_id';
 
     protected $fillable = [
@@ -41,7 +42,7 @@ class Rs extends Model
     ];
 
     protected $casts = [
-        'rs_id' => 'integer'
+        'rs_id' => 'integer',
     ];
 
     protected $filters = [
@@ -49,9 +50,11 @@ class Rs extends Model
     ];
 
     public $timestamps = false;
+
     public $incrementing = true;
 
-    public function fieldSearching(){
+    public function fieldSearching()
+    {
         return $this->field_name();
     }
 
@@ -66,7 +69,7 @@ class Rs extends Model
             DataBuilder::build($this->field_description())->name('Deskripsi')->show()->sort(),
         ];
 
-        if(level(UserLevel::Finance)){
+        if (level(UserLevel::Finance)) {
             $data = array_merge($data, [
                 DataBuilder::build($this->field_harga_cuci())->name('Harga Cuci')->show()->sort(),
                 DataBuilder::build($this->field_harga_sewa())->name('Harga Rental')->show()->sort(),
@@ -93,6 +96,6 @@ class Rs extends Model
 
     public function has_jenis()
     {
-        return $this->hasMany(Jenis::class, Jenis::field_rs_id(), $this->field_primary());
+        return $this->hasMany(JenisLinen::class, JenisLinen::field_rs_id(), $this->field_primary());
     }
 }

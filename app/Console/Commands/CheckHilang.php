@@ -12,7 +12,6 @@ use Plugins\History;
 
 class CheckHilang extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -50,14 +49,14 @@ class CheckHilang extends Command
         //     ->where(Detail::field_status_process(), '!=', ProcessType::Hilang)
         //     ->get();
 
-            $outstanding = Transaksi::query()
-                ->select(Transaksi::field_rfid())
-                ->joinRelationship(HAS_DETAIL)
-                ->whereDate(ViewDetailLinen::field_tanggal_update(), '<=', Carbon::now()->subMinutes(4320)->toDateString())
-                ->whereNull(Transaksi::field_status_bersih())
-                ->whereNotIn(ViewDetailLinen::field_status_trasaction(), BERSIH)
-                ->where(ViewDetailLinen::field_status_process(), '!=', ProcessType::Hilang)
-                ->get();
+        $outstanding = Transaksi::query()
+            ->select(Transaksi::field_rfid())
+            ->joinRelationship(HAS_DETAIL)
+            ->whereDate(ViewDetailLinen::field_tanggal_update(), '<=', Carbon::now()->subMinutes(4320)->toDateString())
+            ->whereNull(Transaksi::field_status_bersih())
+            ->whereNotIn(ViewDetailLinen::field_status_trasaction(), BERSIH)
+            ->where(ViewDetailLinen::field_status_process(), '!=', ProcessType::Hilang)
+            ->get();
 
         if ($outstanding) {
 

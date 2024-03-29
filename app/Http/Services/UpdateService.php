@@ -11,13 +11,14 @@ class UpdateService
     {
         $check = $repository->updateRepository($data->all(), $code);
         if ($check['status']) {
-            if(request()->wantsJson()){
+            if (request()->wantsJson()) {
                 return response()->json($check)->getData();
             }
             Alert::update();
         } else {
             Alert::error($check['message']);
         }
+
         return $check;
     }
 }

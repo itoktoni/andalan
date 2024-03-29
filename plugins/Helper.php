@@ -11,25 +11,26 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image;
-use Modules\Procurement\Dao\Facades\PoReceiveFacades;
-use Modules\Procurement\Dao\Facades\StockFacades;
 use Modules\System\Dao\Facades\FilterFacades;
 use Modules\System\Dao\Facades\TeamFacades;
-use Thedevsaddam\LaravelSchema\Schema\Schema as Table;
 
 class Helper
 {
     public static $cal;
+
     public static function base_url()
     {
         return config('app.url');
     }
+
     public static function access()
     {
         $split = explode('/', Route::current()->uri);
         $access = $split[0];
+
         return $access;
     }
+
     public static function secure()
     {
         return env('ENABLE_HTTPS', true);
@@ -42,55 +43,59 @@ class Helper
 
     public static function disableSecure($path)
     {
-        $path = asset('/backend/' . env('TEMPLATE_ADMIN', 'default') . '/' . $path, false);
+        $path = asset('/backend/'.env('TEMPLATE_ADMIN', 'default').'/'.$path, false);
+
         return $path;
     }
 
     public static function frontend($path)
     {
-        return self::asset('/frontend/' . env('TEMPLATE_FRONTEND', 'default') . '/' . $path);
+        return self::asset('/frontend/'.env('TEMPLATE_FRONTEND', 'default').'/'.$path);
     }
 
     public static function backend($path)
     {
-        return self::asset('/backend/' . env('TEMPLATE_ADMIN', 'default') . '/' . $path);
+        return self::asset('/backend/'.env('TEMPLATE_ADMIN', 'default').'/'.$path);
     }
 
     public static function credential($path)
     {
-        return self::asset('/credential/' . $path);
+        return self::asset('/credential/'.$path);
     }
 
     public static function files($path, $disable = false)
     {
         if ($disable) {
-            if (!file_exists(public_path('/files/' . $path, false))) {
+            if (! file_exists(public_path('/files/'.$path, false))) {
                 return $path = asset('/vendor/default/no_image.jpg', false);
             }
-            return $path = asset($path . '/files/' . $path, false);
+
+            return $path = asset($path.'/files/'.$path, false);
         }
 
-        if (!file_exists(public_path('/files/' . $path))) {
+        if (! file_exists(public_path('/files/'.$path))) {
             return $path = asset('/vendor/default/no_image.jpg');
         }
 
-        return self::asset('/files/' . $path);
+        return self::asset('/files/'.$path);
     }
 
     public static function print($path, $disable = false)
     {
         if ($disable) {
-            return $path = public_path('/files/' . $path);
+            return $path = public_path('/files/'.$path);
         }
-        return $path = public_path('/files/' . $path);
+
+        return $path = public_path('/files/'.$path);
     }
 
     public static function vendor($path)
     {
-        if (!file_exists(public_path('/vendor/' . $path))) {
+        if (! file_exists(public_path('/vendor/'.$path))) {
             return $path = asset('/vendor/default/no_image.jpg');
         }
-        return self::asset('/vendor/' . $path);
+
+        return self::asset('/vendor/'.$path);
     }
 
     public static function unic($length)
@@ -98,7 +103,7 @@ class Helper
         $chars = array_merge(range('a', 'z'), range('A', 'Z'));
         $length = intval($length) > 0 ? intval($length) : 16;
         $max = count($chars) - 1;
-        $str = "";
+        $str = '';
 
         while ($length--) {
             shuffle($chars);
@@ -112,8 +117,8 @@ class Helper
     public static function autoNumber($tablename, $fieldid, $prefix, $codelength)
     {
         $db = DB::table($tablename);
-        $db->select(DB::raw('max(' . $fieldid . ') as maxcode'));
-        $db->where($fieldid, "like", "$prefix%");
+        $db->select(DB::raw('max('.$fieldid.') as maxcode'));
+        $db->where($fieldid, 'like', "$prefix%");
 
         $ambil = $db->first();
         $data = $ambil->maxcode;
@@ -124,7 +129,8 @@ class Helper
         } else {
             $countcode = 1;
         }
-        $newcode = $prefix . str_pad($countcode, $codelength - strlen($prefix), "0", STR_PAD_LEFT);
+        $newcode = $prefix.str_pad($countcode, $codelength - strlen($prefix), '0', STR_PAD_LEFT);
+
         return $newcode;
     }
 
@@ -133,14 +139,15 @@ class Helper
         return (new \ReflectionClass($class))->getShortName();
     }
 
-    public static function getControllerFile(){
+    public static function getControllerFile()
+    {
 
         $path = app_path('Http/Controllers');
         $fileNames = [];
         $files = File::allFiles($path);
 
-        foreach($files as $file) {
-            if(!in_array($file->getFilenameWithoutExtension(), ['ForgotPasswordController', 'LoginController', 'RegisterController', 'ResetPasswordController', 'VerificationController'])){
+        foreach ($files as $file) {
+            if (! in_array($file->getFilenameWithoutExtension(), ['ForgotPasswordController', 'LoginController', 'RegisterController', 'ResetPasswordController', 'VerificationController'])) {
                 $code = 'App\\Http\\Controllers\\'.$file->getFilenameWithoutExtension();
                 $fileNames[$code] = $code;
             }
@@ -168,7 +175,7 @@ class Helper
 
     public static function formatNumber($value)
     {
-        return floatval(preg_replace("/[^0-9.]/", '', $value));
+        return floatval(preg_replace('/[^0-9.]/', '', $value));
     }
 
     public static function label($data)
@@ -215,6 +222,7 @@ class Helper
                 'width' => $value['width'] ?? false,
                 'class' => $value['class'] ?? false,
             ];
+
             return [$key => $data];
         });
 
@@ -237,42 +245,45 @@ class Helper
 
     public static function masterCheckbox($template = null)
     {
-        if (!empty($template)) {
-            return 'page.' . $template . '.checkbox';
+        if (! empty($template)) {
+            return 'page.'.$template.'.checkbox';
         }
+
         return 'page.master.checkbox';
     }
 
     public static function masterAction($template = null)
     {
-        if (!empty($template)) {
-            return 'page.' . $template . '.action';
+        if (! empty($template)) {
+            return 'page.'.$template.'.action';
         }
+
         return 'page.master.action';
     }
 
     public static function createImage($image)
     {
         $path = self::files('logo/image.jpg');
-        if (file_exists(public_path('files//' . $image))) {
+        if (file_exists(public_path('files//'.$image))) {
             $path = self::files($image);
         }
-        return '<img width="95" src="' . $path . '">';
+
+        return '<img width="95" src="'.$path.'">';
     }
 
     public static function createCheckbox($id)
     {
-        return '<input type="checkbox" name="id[]" value="' . $id . '">';
+        return '<input type="checkbox" name="id[]" value="'.$id.'">';
     }
 
     public static function createTotal($data, $comma = false)
     {
-        return '<div align="center">' . number_format($data, $comma) . '</span>';
+        return '<div align="center">'.number_format($data, $comma).'</span>';
     }
 
     public static function createCenter($data)
     {
-        return '<div align="center">' . $data . '</span>';
+        return '<div align="center">'.$data.'</span>';
     }
 
     public static function calculate($string)
@@ -280,6 +291,7 @@ class Helper
         if (self::$cal == null) {
             self::$cal = new StringCalc();
         }
+
         return self::$cal->calculate($string);
     }
 
@@ -296,22 +308,22 @@ class Helper
     {
         if (is_object($option)) {
             $data = $option->dataRepository()->get();
-            if ($cache && !Cache::has($option->getTable() . '_api')) {
-                Cache::put($option->getTable() . '_api', $data, config('website.cache'));
-                $data = Cache::get($option->getTable() . '_api');
-            } elseif ($cache && Cache::has($option->getTable() . '_api')) {
-                $data = Cache::get($option->getTable() . '_api');
+            if ($cache && ! Cache::has($option->getTable().'_api')) {
+                Cache::put($option->getTable().'_api', $data, config('website.cache'));
+                $data = Cache::get($option->getTable().'_api');
+            } elseif ($cache && Cache::has($option->getTable().'_api')) {
+                $data = Cache::get($option->getTable().'_api');
             }
 
             if (empty($data)) {
                 return [];
             }
 
-            if (!$raw) {
+            if (! $raw) {
                 $data = $data->pluck($option->searching, $option->getKeyName());
             }
             if ($placeholder) {
-                $data = $data->prepend('- Select ' . self::getNameTable($option->getTable()) . ' -', '');
+                $data = $data->prepend('- Select '.self::getNameTable($option->getTable()).' -', '');
             }
 
             return $data;
@@ -333,15 +345,18 @@ class Helper
             if (is_array($item)) {
                 return $item[0];
             }
+
             return $item;
         });
+
         return $status;
     }
 
     public static function createStatus($value, $option = false)
     {
         $background = $option::colors()[$value] ?? 'lightgrey';
-        return '<span style="background:'. $background.';" class="btn btn-xs btn-block btn-primary">' . $option::getDescription($value) . '</span>';
+
+        return '<span style="background:'.$background.';" class="btn btn-xs btn-block btn-primary">'.$option::getDescription($value).'</span>';
 
         // $color = 'default';
         // $label = 'Unknows';
@@ -356,19 +371,21 @@ class Helper
         return ucwords(str_replace('-', ' ', $value));
     }
 
-    public static function functionToLabel($value){
+    public static function functionToLabel($value)
+    {
 
         return Str::of($value)->snake('_')->replace('_', ' ')->title();
     }
 
-    public static function convertArrayToJson($array){
-        return json_decode (json_encode ($array), FALSE);
+    public static function convertArrayToJson($array)
+    {
+        return json_decode(json_encode($array), false);
     }
 
     public static function createTag($data, $implode = false)
     {
         $string = '';
-        if (!empty($data)) {
+        if (! empty($data)) {
             $collection = collect(json_decode($data))->map(function ($value) {
                 return str_replace('_', ' ', $value);
             });
@@ -377,21 +394,24 @@ class Helper
                 $string = $collection->implode($implode, ', ');
             }
         }
+
         return $string;
     }
 
     public static function createNumber($data, $active = true)
     {
         $status = $active ? 'success' : 'danger';
-        $class = '<h6 class="text-center text-' . $status . '">' . number_format($data) . '</h6>';
+        $class = '<h6 class="text-center text-'.$status.'">'.number_format($data).'</h6>';
+
         return $class;
     }
 
     public static function createSort($data)
     {
-        $class = "form-control input-sm text-center";
-        $aksi = '<input type="hidden" name="kode[]" value="' . $data['hidden'] . '">';
-        $aksi = $aksi . '<input type="text" name="order[]" style="width:50px;" class="' . $class . '" value="' . $data['value'] . '">';
+        $class = 'form-control input-sm text-center';
+        $aksi = '<input type="hidden" name="kode[]" value="'.$data['hidden'].'">';
+        $aksi = $aksi.'<input type="text" name="order[]" style="width:50px;" class="'.$class.'" value="'.$data['value'].'">';
+
         return $aksi;
     }
 
@@ -406,12 +426,13 @@ class Helper
             $print = $val == 'print' ? 'target=__blank' : '';
             if (array_key_exists($key, config('action'))) {
                 $button++;
-                $route = route($data['route'] . '_' . $key, ['code' => $id]);
-                $action = $action . '<a ' . $print . ' id="linkMenu" href="' . $route . '" class="btn btn-xs btn-' . $value[0] . '">' . $val . '</a> ';
+                $route = route($data['route'].'_'.$key, ['code' => $id]);
+                $action = $action.'<a '.$print.' id="linkMenu" href="'.$route.'" class="btn btn-xs btn-'.$value[0].'">'.$val.'</a> ';
             }
         }
         session()->put('button', $button);
-        return $action . '</div>';
+
+        return $action.'</div>';
     }
 
     public static function getNameTable($table)
@@ -421,6 +442,7 @@ class Helper
             $first = $explode[0];
             $table = str_replace($first, '', $table);
         }
+
         return ucwords(str_replace('_', ' ', $table));
     }
 
@@ -432,11 +454,11 @@ class Helper
             return [];
         }
 
-        if (!$raw) {
+        if (! $raw) {
             $data = $data->pluck($option->searching, $option->getKeyName());
         }
         if ($placeholder) {
-            $data = $data->prepend('- Select ' . self::getNameTable($option->getTable()) . ' -', '');
+            $data = $data->prepend('- Select '.self::getNameTable($option->getTable()).' -', '');
         }
 
         return $data;
@@ -449,6 +471,7 @@ class Helper
             if (empty($table)) {
                 return $arrayTable;
             }
+
             return $arrayTable[$table];
         }
 
@@ -475,22 +498,24 @@ class Helper
             $data[$value] = [false => $clean_table];
         }
 
-        if (!empty($merge)) {
+        if (! empty($merge)) {
             $data = array_merge($data, $merge);
         }
+
         return $data;
     }
 
     public static function fields($data)
     {
         $fields = self::listData($data);
+
         return $fields->keys()->all();
     }
 
     public static function checkJson($id, $data)
     {
         $status = false;
-        if (!empty($data)) {
+        if (! empty($data)) {
             $arr = json_decode($data);
             if (is_array($data) && in_array($id, $arr)) {
                 $status = true;
@@ -512,7 +537,8 @@ class Helper
         $icon = self::extension($data);
         $mapping = collect(config('icon'));
         $check = $mapping->has($icon);
-        return $check ? config('icon.' . $icon) : 'file';
+
+        return $check ? config('icon.'.$icon) : 'file';
     }
 
     public static function mode($data)
@@ -520,7 +546,8 @@ class Helper
         $icon = self::extension($data);
         $mapping = collect(config('ext'));
         $check = $mapping->has($icon);
-        return $check ? config('ext.' . $icon) : 'txt';
+
+        return $check ? config('ext.'.$icon) : 'txt';
     }
 
     public static function getMethod($class, $module = false)
@@ -559,10 +586,10 @@ class Helper
             'validateWithBag',
         ];
         foreach ($function->getMethods() as $method) {
-            if(!in_array($method->getName(), $unset) && $method->getModifiers() == 1){
+            if (! in_array($method->getName(), $unset) && $method->getModifiers() == 1) {
                 $function_name = str_replace('_', ' ', Str::snake($method->getName()));
-                $name = ucfirst(str_replace('get ','', $function_name));
-                $name = ucfirst(str_replace('Post ','', $name));
+                $name = ucfirst(str_replace('get ', '', $function_name));
+                $name = ucfirst(str_replace('Post ', '', $name));
 
                 $methodNames[] = [
                     Menus::field_primary() => $method->getName(),
@@ -573,6 +600,7 @@ class Helper
                 ];
             }
         }
+
         return $methodNames;
     }
 
@@ -598,10 +626,11 @@ class Helper
             'dispatchSync',
         ];
         foreach ($function as $method) {
-            if((!in_array($method, $unset))){
+            if ((! in_array($method, $unset))) {
                 $methodNames[$module.'.'.$method] = $method;
             }
         }
+
         return $methodNames;
     }
 
@@ -620,15 +649,16 @@ class Helper
             Cache::put('filter', $filter, 3000);
         }
 
-        if (!empty($filter)) {
+        if (! empty($filter)) {
             $data = $filter
-            ->where('module', str_replace('_api', '', Route::currentRouteName()))
-            ->where('table', $table)
-            ->all();
-            if (!empty($data)) {
+                ->where('module', str_replace('_api', '', Route::currentRouteName()))
+                ->where('table', $table)
+                ->all();
+            if (! empty($data)) {
                 return $data;
             }
         }
+
         return false;
     }
 
@@ -649,7 +679,7 @@ class Helper
                             }
                             break;
                         case 0:
-                            if (!request()->ajax() && request()->wantsJson()) {
+                            if (! request()->ajax() && request()->wantsJson()) {
                                 $auth = TeamFacades::where('api_token', request()->bearerToken())->first();
                             } else {
                                 $auth = Auth::user();
@@ -665,6 +695,7 @@ class Helper
                 }
             });
         }
+
         return $data;
     }
 
@@ -672,20 +703,21 @@ class Helper
     {
         $folder = config('action')['create'] ?? false;
         if ($folder) {
-            return Str::snake($folder) . '_' . $template . '.form';
+            return Str::snake($folder).'_'.$template.'.form';
         }
 
-        return 'page.' . $template . '.form';
+        return 'page.'.$template.'.form';
     }
 
-    public static function include($template, $folder = false){
+    public static function include($template, $folder = false)
+    {
         $list_action = array_values(config('action'));
         $folder = $list_action ? $list_action[0] : false;
         if ($folder) {
-            return ucfirst($folder) . '::page.' . $template . '.form';
+            return ucfirst($folder).'::page.'.$template.'.form';
         }
 
-        return 'page.' . $template . '.form';
+        return 'page.'.$template.'.form';
     }
 
     public static function includeForm($template, $form, $folder = false)
@@ -693,168 +725,183 @@ class Helper
         $list_action = array_values(config('action'));
         $folder = $list_action ? $list_action[0] : false;
         if ($folder) {
-            return ucfirst($folder) . '::page.' . $template . '.' . $form;
+            return ucfirst($folder).'::page.'.$template.'.'.$form;
         }
 
-        return 'page.' . $template . '.' . $form;
+        return 'page.'.$template.'.'.$form;
     }
 
     public static function setExtendBackend($additional = false)
     {
-        $path = 'backend.' . config('website.backend') . '.';
-        return $additional ? $path . '.' . $additional : $path . 'app';
+        $path = 'backend.'.config('website.backend').'.';
+
+        return $additional ? $path.'.'.$additional : $path.'app';
     }
 
     public static function setExtendPopup($additional = false)
     {
-        $path = 'backend.' . config('website.backend') . '.';
-        return $additional ? $path . '.' . $additional : $path . 'popup';
+        $path = 'backend.'.config('website.backend').'.';
+
+        return $additional ? $path.'.'.$additional : $path.'popup';
     }
 
     public static function setExtendFrontend($additional = false, $page = false)
     {
-        $path = 'frontend.' . config('website.frontend') . '.';
+        $path = 'frontend.'.config('website.frontend').'.';
         if ($additional && $page) {
-            $path = $path . 'page.' . $additional;
-        } elseif ($additional && !$page) {
-            $path = $path . $additional;
+            $path = $path.'page.'.$additional;
+        } elseif ($additional && ! $page) {
+            $path = $path.$additional;
         } else {
-            $path = $path . 'layouts';
+            $path = $path.'layouts';
         }
+
         return $path;
     }
 
     public static function setViewDashboard($template = 'default')
     {
-        return 'page.home.' . self::snake($template);
+        return 'page.home.'.self::snake($template);
     }
 
     public static function setViewEmail($template, $module = false)
     {
         if ($module) {
-            return ucfirst($module) . '::email.' . self::snake($template);
+            return ucfirst($module).'::email.'.self::snake($template);
         }
 
-        return 'email.' . self::snake($template);
+        return 'email.'.self::snake($template);
     }
 
     public static function setViewSpa($template, $module = false)
     {
         if ($module) {
-            return ucfirst($module) . '::spa.' . self::snake($template);
+            return ucfirst($module).'::spa.'.self::snake($template);
         }
 
-        return 'email.' . self::snake($template);
+        return 'email.'.self::snake($template);
     }
 
     public static function setViewPrint($template, $module = false)
     {
         if ($module) {
-            return ucfirst($module) . '::print.' . self::snake($template);
+            return ucfirst($module).'::print.'.self::snake($template);
         }
 
-        return 'print.' . self::snake($template);
+        return 'print.'.self::snake($template);
     }
 
     public static function setViewSave($template = 'master', $modular = false)
     {
         if ($modular) {
-            $view = ucfirst($modular) . '::page.' .self::snake($template) . '.save';
+            $view = ucfirst($modular).'::page.'.self::snake($template).'.save';
+
             return $view;
         }
 
-        return 'page.' . self::snake($template) . '.save';
+        return 'page.'.self::snake($template).'.save';
     }
 
     public static function setViewForm($template = 'master', $form = null, $modular = false)
     {
         if ($modular) {
-            $view = ucfirst($modular) . '::page.' . self::snake($template) . '.' . $form;
+            $view = ucfirst($modular).'::page.'.self::snake($template).'.'.$form;
+
             return $view;
         }
 
-        return 'page.' . self::snake($template) . '.' . $form;
+        return 'page.'.self::snake($template).'.'.$form;
     }
 
     public static function setViewCreate($template = 'master', $modular = false)
     {
         if ($modular) {
-            $view = ucfirst($modular) . '::page.' . self::snake($template) . '.create';
+            $view = ucfirst($modular).'::page.'.self::snake($template).'.create';
+
             return $view;
         }
 
-        return 'page.' . self::snake($template) . '.create';
+        return 'page.'.self::snake($template).'.create';
     }
 
     public static function setViewUpdate($template = 'master', $modular = false)
     {
         if ($modular) {
-            $view = ucfirst($modular) . '::page.' . self::snake($template) . '.update';
+            $view = ucfirst($modular).'::page.'.self::snake($template).'.update';
+
             return $view;
         }
 
-        return 'page.' . self::snake($template) . '.update';
+        return 'page.'.self::snake($template).'.update';
     }
 
     public static function setViewData($template = 'master', $modular = false)
     {
         if ($modular) {
-            $view = ucfirst($modular) . '::page.' . self::snake($template) . '.data';
+            $view = ucfirst($modular).'::page.'.self::snake($template).'.data';
+
             return $view;
         }
-        return 'page.' . self::snake($template) . '.data';
+
+        return 'page.'.self::snake($template).'.data';
     }
 
     public static function setViewPopup($template = 'master', $modular = false)
     {
         if ($modular) {
-            $view = ucfirst($modular) . '::page.' . self::snake($template) . '.popup';
+            $view = ucfirst($modular).'::page.'.self::snake($template).'.popup';
+
             return $view;
         }
-        return 'page.' . self::snake($template) . '.popup';
+
+        return 'page.'.self::snake($template).'.popup';
     }
 
     public static function setViewShow($template = 'master', $modular = false)
     {
         if ($modular) {
-            $view = ucfirst($modular) . '::page.' . self::snake($template) . '.show';
+            $view = ucfirst($modular).'::page.'.self::snake($template).'.show';
+
             return $view;
         }
 
-        return 'page.' . self::snake($template) . '.show';
+        return 'page.'.self::snake($template).'.show';
     }
 
     public static function setViewAction($template = 'master', $modular = false)
     {
         if ($modular) {
-            $view = ucfirst($modular) . '::page.' . self::snake($template) . '.actions';
+            $view = ucfirst($modular).'::page.'.self::snake($template).'.actions';
+
             return $view;
         }
 
-        return 'page.' . self::snake($template) . '.actions';
+        return 'page.'.self::snake($template).'.actions';
     }
 
     public static function setViewCheckbox($template = 'master', $modular = false)
     {
         if ($modular) {
-            $view = ucfirst($modular) . '::page.' . self::snake($template) . '.checkbox';
+            $view = ucfirst($modular).'::page.'.self::snake($template).'.checkbox';
+
             return $view;
         }
 
-        return 'page.' . self::snake($template) . '.checkbox';
+        return 'page.'.self::snake($template).'.checkbox';
     }
 
     public static function setViewFrontend($template = 'default')
     {
-        return 'frontend.' . config('website.frontend') . '.page.' . self::snake($template);
+        return 'frontend.'.config('website.frontend').'.page.'.self::snake($template);
     }
 
     public static function setViewLivewire($class, $folder = false)
     {
 
         $class = Str::snake(self::getClass($class));
-        $folder = $folder ? $folder . '.' . $class : $class;
-        return 'frontend.' . config('website.frontend') . '.page.' . $folder;
+        $folder = $folder ? $folder.'.'.$class : $class;
+
+        return 'frontend.'.config('website.frontend').'.page.'.$folder;
     }
 
     public static function getTemplate($class)
@@ -862,15 +909,17 @@ class Helper
         $controller = (new \ReflectionClass($class))->getShortName();
         $remove = Str::replaceLast('Controller', '', $controller);
         $clean = Str::replaceLast('Repository', '', $remove);
+
         return Str::snake($clean);
     }
 
     public static function uploadFile($file, $folder)
     {
         $name = false;
-        if (!empty($file)) { //handle images
-            $name = time() . "." . $file->getClientOriginalExtension();
+        if (! empty($file)) { //handle images
+            $name = time().'.'.$file->getClientOriginalExtension();
             $file->storeAs($folder, $name);
+
             return $name;
         }
     }
@@ -878,12 +927,12 @@ class Helper
     public static function uploadImage($file, $folder, $width = 400, $height = 150)
     {
         $name = false;
-        if (!empty($file)) { //handle images
-            $name = time() . "." . $file->getClientOriginalExtension();
+        if (! empty($file)) { //handle images
+            $name = time().'.'.$file->getClientOriginalExtension();
             $file->storeAs($folder, $name);
-            $file->storeAs($folder, 'thumbnail_' . $name);
+            $file->storeAs($folder, 'thumbnail_'.$name);
             //Resize image here
-            $thumbnailpath = public_path('files//' . $folder . '//' . 'thumbnail_' . $name);
+            $thumbnailpath = public_path('files//'.$folder.'//'.'thumbnail_'.$name);
             $img = Image::make($thumbnailpath)->resize($width, $height, function ($constraint) {
                 $constraint->aspectRatio();
             });
@@ -896,12 +945,13 @@ class Helper
     public static function removeImage($name, $folder)
     {
         $status = false;
-        $path = public_path('files//' . $folder . '//');
-        if (file_exists($path . $name)) {
-            unlink($path . $name);
-            unlink($path . 'thumbnail_' . $name);
+        $path = public_path('files//'.$folder.'//');
+        if (file_exists($path.$name)) {
+            unlink($path.$name);
+            unlink($path.'thumbnail_'.$name);
             $status = true;
         }
+
         return $status;
     }
 
@@ -961,71 +1011,76 @@ class Helper
     public static function penyebut($nilai)
     {
         $nilai = abs($nilai);
-        $huruf = array("", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas");
-        $temp = "";
+        $huruf = ['', 'satu', 'dua', 'tiga', 'empat', 'lima', 'enam', 'tujuh', 'delapan', 'sembilan', 'sepuluh', 'sebelas'];
+        $temp = '';
         if ($nilai < 12) {
-            $temp = " " . $huruf[$nilai];
+            $temp = ' '.$huruf[$nilai];
         } elseif ($nilai < 20) {
-            $temp = self::penyebut($nilai - 10) . " belas";
+            $temp = self::penyebut($nilai - 10).' belas';
         } elseif ($nilai < 100) {
-            $temp = self::penyebut($nilai / 10) . " puluh" . self::penyebut($nilai % 10);
+            $temp = self::penyebut($nilai / 10).' puluh'.self::penyebut($nilai % 10);
         } elseif ($nilai < 200) {
-            $temp = " seratus" . self::penyebut($nilai - 100);
+            $temp = ' seratus'.self::penyebut($nilai - 100);
         } elseif ($nilai < 1000) {
-            $temp = self::penyebut($nilai / 100) . " ratus" . self::penyebut($nilai % 100);
+            $temp = self::penyebut($nilai / 100).' ratus'.self::penyebut($nilai % 100);
         } elseif ($nilai < 2000) {
-            $temp = " seribu" . self::penyebut($nilai - 1000);
+            $temp = ' seribu'.self::penyebut($nilai - 1000);
         } elseif ($nilai < 1000000) {
-            $temp = self::penyebut($nilai / 1000) . " ribu" . self::penyebut($nilai % 1000);
+            $temp = self::penyebut($nilai / 1000).' ribu'.self::penyebut($nilai % 1000);
         } elseif ($nilai < 1000000000) {
-            $temp = self::penyebut($nilai / 1000000) . " juta" . self::penyebut($nilai % 1000000);
+            $temp = self::penyebut($nilai / 1000000).' juta'.self::penyebut($nilai % 1000000);
         } elseif ($nilai < 1000000000000) {
-            $temp = self::penyebut($nilai / 1000000000) . " milyar" . self::penyebut(fmod($nilai, 1000000000));
+            $temp = self::penyebut($nilai / 1000000000).' milyar'.self::penyebut(fmod($nilai, 1000000000));
         } elseif ($nilai < 1000000000000000) {
-            $temp = self::penyebut($nilai / 1000000000000) . " trilyun" . self::penyebut(fmod($nilai, 1000000000000));
+            $temp = self::penyebut($nilai / 1000000000000).' trilyun'.self::penyebut(fmod($nilai, 1000000000000));
         }
+
         return $temp;
     }
 
     public static function terbilang($nilai)
     {
         if ($nilai < 0) {
-            $hasil = "minus " . trim(self::penyebut($nilai));
+            $hasil = 'minus '.trim(self::penyebut($nilai));
         } else {
             $hasil = trim(self::penyebut($nilai));
         }
+
         return ucfirst($hasil);
     }
 
     public static function convertPhone($nohp)
     {
-        $nohp = str_replace(" ", "", $nohp);
+        $nohp = str_replace(' ', '', $nohp);
         // kadang ada penulisan no hp (0274) 778787
-        $nohp = str_replace("(", "", $nohp);
+        $nohp = str_replace('(', '', $nohp);
         // kadang ada penulisan no hp (0274) 778787
-        $nohp = str_replace(")", "", $nohp);
+        $nohp = str_replace(')', '', $nohp);
         // kadang ada penulisan no hp 0811.239.345
-        $nohp = str_replace(".", "", $nohp);
+        $nohp = str_replace('.', '', $nohp);
         // kadang ada penulisan np hp 0811-4242-2424
-        $nohp = str_replace("-", "", $nohp);
+        $nohp = str_replace('-', '', $nohp);
 
         // cek apakah no hp mengandung karakter + dan 0-9
-        if (!preg_match('/[^+0-9]/', trim($nohp))) {
+        if (! preg_match('/[^+0-9]/', trim($nohp))) {
             // cek apakah no hp karakter 1-3 adalah +62
             if (substr(trim($nohp), 0, 3) == '62') {
                 $hp = trim($nohp);
             }
             // cek apakah no hp karakter 1 adalah 0
             elseif (substr(trim($nohp), 0, 1) == '0') {
-                $hp = '62' . substr(trim($nohp), 1);
+                $hp = '62'.substr(trim($nohp), 1);
             }
         }
+
         return $hp;
     }
 
-    public static function getAlfabetByNumber($value){
+    public static function getAlfabetByNumber($value)
+    {
 
         $alphabet = range('A', 'Z');
+
         return $alphabet[$value]; // returns D
     }
 }

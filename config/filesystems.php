@@ -68,7 +68,7 @@ return [
             'driver' => 'webdav',
             'baseUri' => env('ALPHARA_URL'),
             'userName' => env('ALPHARA_USERNAME'),
-            'password' => env('ALPHARA_PASSWORD')
+            'password' => env('ALPHARA_PASSWORD'),
         ],
 
     ],

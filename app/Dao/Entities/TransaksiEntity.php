@@ -3,7 +3,6 @@
 namespace App\Dao\Entities;
 
 use App\Dao\Enums\BedaRsType;
-use App\Dao\Enums\BooleanType;
 use App\Dao\Enums\TransactionType;
 use App\Dao\Models\Rs;
 use App\Dao\Models\User;
@@ -144,7 +143,6 @@ trait TransaksiEntity
     {
         return 'transaksi_created_at';
     }
-
 
     public static function field_updated_by()
     {
@@ -295,5 +293,4 @@ trait TransaksiEntity
     {
         return $this->{$this->field_uuid_delivery()};
     }
-
 }

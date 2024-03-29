@@ -14,13 +14,14 @@ class UpdateMenuService
         if ($check['status']) {
             $check['data']->has_link()->sync($data->link);
             Session::forget('groups');
-            if(request()->wantsJson()){
+            if (request()->wantsJson()) {
                 return response()->json($check)->getData();
             }
             Alert::update();
         } else {
             Alert::error($check['message']);
         }
+
         return $check;
     }
 }

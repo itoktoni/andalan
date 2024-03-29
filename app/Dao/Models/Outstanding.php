@@ -18,9 +18,10 @@ use Touhidurabir\ModelSanitize\Sanitizable as Sanitizable;
 
 class Outstanding extends Model
 {
-    use Sortable, FilterQueryString, Sanitizable, DataTableTrait, OutstandingEntity, ActiveTrait, OptionTrait, PowerJoins, ApiTrait;
+    use ActiveTrait, ApiTrait, DataTableTrait, FilterQueryString, OptionTrait, OutstandingEntity, PowerJoins, Sanitizable, Sortable;
 
     protected $table = 'outstanding';
+
     protected $primaryKey = 'outstanding_rfid';
 
     protected $fillable = [
@@ -45,7 +46,7 @@ class Outstanding extends Model
 
     protected $casts = [
         'outstanding_rs_ori' => 'integer',
-        'outstanding_rs_scan' => 'integer'
+        'outstanding_rs_scan' => 'integer',
     ];
 
     protected $filters = [
@@ -53,10 +54,13 @@ class Outstanding extends Model
     ];
 
     public $timestamps = false;
+
     public $incrementing = false;
+
     protected $keyType = 'string';
 
-    public function fieldSearching(){
+    public function fieldSearching()
+    {
         return $this->field_name();
     }
 
@@ -70,7 +74,7 @@ class Outstanding extends Model
             DataBuilder::build($this->field_description())->name('Deskripsi')->show()->sort(),
         ];
 
-        if(level(UserLevel::Finance)){
+        if (level(UserLevel::Finance)) {
             $data = array_merge($data, [
                 DataBuilder::build($this->field_harga_cuci())->name('Harga Cuci')->show()->sort(),
                 DataBuilder::build($this->field_harga_sewa())->name('Harga Rental')->show()->sort(),
@@ -97,6 +101,6 @@ class Outstanding extends Model
 
     public function has_jenis()
     {
-        return $this->hasMany(Jenis::class, Jenis::field_rs_id(), $this->field_primary());
+        return $this->hasMany(JenisLinen::class, JenisLinen::field_rs_id(), $this->field_primary());
     }
 }

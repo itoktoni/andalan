@@ -16,14 +16,12 @@ trait HandlesBoundValues
      * Wether to retrieve the default value as a single
      * attribute or as a collection from the database.
      *
-     * @var boolean
+     * @var bool
      */
     protected $manyRelation = false;
 
     /**
      * Get an instance of FormDataBinder.
-     *
-     * @return FormDataBinder
      */
     private function getFormDataBinder(): FormDataBinder
     {
@@ -43,8 +41,7 @@ trait HandlesBoundValues
     /**
      * Get an item from the latest bound target.
      *
-     * @param mixed $bind
-     * @param string $name
+     * @param  mixed  $bind
      * @return mixed
      */
     private function getBoundValue($bind, string $name)
@@ -71,20 +68,17 @@ trait HandlesBoundValues
     /**
      * Formats a DateTimeInterface if the key is specified as a date or datetime in the model.
      *
-     * @param \Illuminate\Database\Eloquent\Model $model
-     * @param string $key
-     * @param DateTimeInterface $date
      * @return void
      */
     private function formatDateTime(Model $model, string $key, DateTimeInterface $date)
     {
-        if (!config('form-components.use_eloquent_date_casting')) {
+        if (! config('form-components.use_eloquent_date_casting')) {
             return $date;
         }
 
         $cast = $model->getCasts()[$key] ?? null;
 
-        if (!$cast || $cast === 'date' || $cast === 'datetime') {
+        if (! $cast || $cast === 'date' || $cast === 'datetime') {
             return Carbon::instance($date)->toJSON();
         }
 
@@ -114,13 +108,12 @@ trait HandlesBoundValues
     /**
      * Returns an array with the attached keys.
      *
-     * @param mixed $bind
-     * @param string $name
+     * @param  mixed  $bind
      * @return void
      */
     private function getAttachedKeysFromRelation($bind, string $name): ?array
     {
-        if (!$bind instanceof Model) {
+        if (! $bind instanceof Model) {
             return data_get($bind, $name);
         }
 

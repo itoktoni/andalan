@@ -20,7 +20,7 @@ class History
     public static function bulk($rfid, $status, $message = null)
     {
         $log = [];
-        foreach($rfid as $item){
+        foreach ($rfid as $item) {
             $log[] = [
                 ModelsHistory::field_name() => $item,
                 ModelsHistory::field_status() => $status,
@@ -30,9 +30,9 @@ class History
             ];
         }
 
-        if(!empty($log)){
+        if (! empty($log)) {
 
-            foreach(array_chunk($log, env('TRANSACTION_CHUNK')) as $save_log){
+            foreach (array_chunk($log, env('TRANSACTION_CHUNK')) as $save_log) {
                 ModelsHistory::insert($save_log);
             }
 

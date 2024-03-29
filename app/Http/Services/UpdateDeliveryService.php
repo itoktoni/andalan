@@ -19,8 +19,8 @@ class UpdateDeliveryService
 
         try {
 
-            $startDate = Carbon::createFromFormat('Y-m-d H:i', date('Y-m-d') . ' 13:00');
-            $endDate = Carbon::createFromFormat('Y-m-d H:i', date('Y-m-d') . ' 23:59');
+            $startDate = Carbon::createFromFormat('Y-m-d H:i', date('Y-m-d').' 13:00');
+            $endDate = Carbon::createFromFormat('Y-m-d H:i', date('Y-m-d').' 23:59');
 
             $check_date = Carbon::now()->between($startDate, $endDate);
             $report_date = Carbon::now();
@@ -31,11 +31,11 @@ class UpdateDeliveryService
             $transaksi = $status_transaksi;
             if ($transaksi == TransactionType::BersihKotor) {
                 $transaksi = TransactionType::Kotor;
-            } else if ($transaksi == TransactionType::BersihRetur){
+            } elseif ($transaksi == TransactionType::BersihRetur) {
                 $transaksi = TransactionType::Retur;
-            } else if ($transaksi == TransactionType::BersihRewash){
+            } elseif ($transaksi == TransactionType::BersihRewash) {
                 $transaksi = TransactionType::Rewash;
-            } else if ($transaksi == TransactionType::Unknown){
+            } elseif ($transaksi == TransactionType::Unknown) {
                 $transaksi = TransactionType::Register;
             }
 
@@ -74,6 +74,7 @@ class UpdateDeliveryService
                 History::bulk($data_rfid, ProcessType::Bersih);
             } else {
                 DB::rollBack();
+
                 return Notes::error('RFID tidak ditemukan!');
             }
 
@@ -86,6 +87,7 @@ class UpdateDeliveryService
 
         } catch (\Throwable $th) {
             DB::rollBack();
+
             return Notes::error($th->getMessage());
         }
     }

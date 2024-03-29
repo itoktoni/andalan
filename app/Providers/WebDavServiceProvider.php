@@ -13,7 +13,7 @@ class WebDavServiceProvider extends ServiceProvider
 {
     public function boot()
     {
-		Storage::extend('webdav', function ($app, $config) {
+        Storage::extend('webdav', function ($app, $config) {
             $adapter = new WebDAVAdapter(
                 new Client($config)
             );

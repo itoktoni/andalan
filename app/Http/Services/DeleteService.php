@@ -2,7 +2,6 @@
 
 namespace App\Http\Services;
 
-use Illuminate\Validation\Rule;
 use App\Dao\Interfaces\CrudInterface;
 use Plugins\Alert;
 

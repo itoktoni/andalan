@@ -2,12 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Dao\Models\Roles;
-use App\Dao\Models\Supplier;
 use App\Dao\Models\SystemRole;
 use App\Dao\Models\User;
 use App\Dao\Repositories\UserRepository;
-use App\Http\Controllers\MasterController;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\UserRequest;
 use App\Http\Services\CreateService;
@@ -37,25 +34,29 @@ class UserController extends MasterController
     public function postCreate(UserRequest $request, CreateService $service)
     {
         $data = $service->save(self::$repository, $request);
+
         return Response::redirectBack($data);
     }
 
     public function postUpdate($code, UserRequest $request, UpdateService $service)
     {
         $data = $service->update(self::$repository, $request, $code);
+
         return Response::redirectBack($data);
     }
 
-    public function changePassword(){
+    public function changePassword()
+    {
 
-        if(request()->method() == 'POST'){
+        if (request()->method() == 'POST') {
 
             User::find(auth()->user()->id)->update([
-                'password' => bcrypt(request()->get('password'))
+                'password' => bcrypt(request()->get('password')),
             ]);
 
             return redirect()->route('home');
         }
+
         return view('auth.change_password')->with($this->share());
     }
 
@@ -63,10 +64,10 @@ class UserController extends MasterController
     {
         $user = User::where('username', $request->username)->first();
 
-        if (!Hash::check($request->password, $user->password)) {
+        if (! Hash::check($request->password, $user->password)) {
             return Notes::error([
                 'password' => 'Password Tidak Di temukan',
-            ],'Login Gagal');
+            ], 'Login Gagal');
         }
 
         // if($user->tokens()){

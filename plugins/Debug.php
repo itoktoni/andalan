@@ -21,7 +21,6 @@ namespace Modules\System\Plugins;
 /**
  * Server Side Chrome PHP debugger class
  *
- * @package ChromePhp
  * @author Craig Campbell <iamcraigcampbell@gmail.com>
  */
 class Debug
@@ -94,16 +93,16 @@ class Debug
     /**
      * @var array
      */
-    protected $_json = array(
+    protected $_json = [
         'version' => self::VERSION,
-        'columns' => array('log', 'backtrace', 'type'),
-        'rows' => array()
-    );
+        'columns' => ['log', 'backtrace', 'type'],
+        'rows' => [],
+    ];
 
     /**
      * @var array
      */
-    protected $_backtraces = array();
+    protected $_backtraces = [];
 
     /**
      * @var bool
@@ -113,9 +112,9 @@ class Debug
     /**
      * @var array
      */
-    protected $_settings = array(
-        self::BACKTRACE_LEVEL => 1
-    );
+    protected $_settings = [
+        self::BACKTRACE_LEVEL => 1,
+    ];
 
     /**
      * @var ChromePhp
@@ -127,7 +126,7 @@ class Debug
      *
      * @var array
      */
-    protected $_processed = array();
+    protected $_processed = [];
 
     /**
      * constructor
@@ -149,42 +148,46 @@ class Debug
         if (self::$_instance === null) {
             self::$_instance = new self();
         }
+
         return self::$_instance;
     }
 
     /**
      * logs a variable to the console
      *
-     * @param mixed $data,... unlimited OPTIONAL number of additional logs [...]
+     * @param  mixed  $data,...  unlimited OPTIONAL number of additional logs [...]
      * @return void
      */
     public static function log()
     {
         $args = func_get_args();
+
         return self::_log('', $args);
     }
 
     /**
      * logs a warning to the console
      *
-     * @param mixed $data,... unlimited OPTIONAL number of additional logs [...]
+     * @param  mixed  $data,...  unlimited OPTIONAL number of additional logs [...]
      * @return void
      */
     public static function warn()
     {
         $args = func_get_args();
+
         return self::_log(self::WARN, $args);
     }
 
     /**
      * logs an error to the console
      *
-     * @param mixed $data,... unlimited OPTIONAL number of additional logs [...]
+     * @param  mixed  $data,...  unlimited OPTIONAL number of additional logs [...]
      * @return void
      */
     public static function error()
     {
         $args = func_get_args();
+
         return self::_log(self::ERROR, $args);
     }
 
@@ -196,18 +199,20 @@ class Debug
     public static function group()
     {
         $args = func_get_args();
+
         return self::_log(self::GROUP, $args);
     }
 
     /**
      * sends an info log
      *
-     * @param mixed $data,... unlimited OPTIONAL number of additional logs [...]
+     * @param  mixed  $data,...  unlimited OPTIONAL number of additional logs [...]
      * @return void
      */
     public static function info()
     {
         $args = func_get_args();
+
         return self::_log(self::INFO, $args);
     }
 
@@ -219,6 +224,7 @@ class Debug
     public static function groupCollapsed()
     {
         $args = func_get_args();
+
         return self::_log(self::GROUP_COLLAPSED, $args);
     }
 
@@ -230,6 +236,7 @@ class Debug
     public static function groupEnd()
     {
         $args = func_get_args();
+
         return self::_log(self::GROUP_END, $args);
     }
 
@@ -241,13 +248,14 @@ class Debug
     public static function table()
     {
         $args = func_get_args();
+
         return self::_log(self::TABLE, $args);
     }
 
     /**
      * internal logging call
      *
-     * @param string $type
+     * @param  string  $type
      * @return void
      */
     protected static function _log($type, array $args)
@@ -259,9 +267,9 @@ class Debug
 
         $logger = self::getInstance();
 
-        $logger->_processed = array();
+        $logger->_processed = [];
 
-        $logs = array();
+        $logs = [];
         foreach ($args as $arg) {
             $logs[] = $logger->_convert($arg);
         }
@@ -271,7 +279,7 @@ class Debug
 
         $backtrace_message = 'unknown';
         if (isset($backtrace[$level]['file']) && isset($backtrace[$level]['line'])) {
-            $backtrace_message = $backtrace[$level]['file'] . ' : ' . $backtrace[$level]['line'];
+            $backtrace_message = $backtrace[$level]['file'].' : '.$backtrace[$level]['line'];
         }
 
         $logger->_addRow($logs, $backtrace_message, $type);
@@ -280,13 +288,13 @@ class Debug
     /**
      * converts an object to a better format for logging
      *
-     * @param Object
+     * @param object
      * @return array
      */
     protected function _convert($object)
     {
         // if this isn't an object then just return it
-        if (!is_object($object)) {
+        if (! is_object($object)) {
             return $object;
         }
 
@@ -294,7 +302,7 @@ class Debug
         //Also avoid recursion when objects refer to each other
         $this->_processed[] = $object;
 
-        $object_as_array = array();
+        $object_as_array = [];
 
         // first add the class name
         $object_as_array['___class_name'] = get_class($object);
@@ -305,7 +313,7 @@ class Debug
 
             // same instance as parent object
             if ($value === $object || in_array($value, $this->_processed, true)) {
-                $value = 'recursion - parent object [' . get_class($value) . ']';
+                $value = 'recursion - parent object ['.get_class($value).']';
             }
             $object_as_array[$key] = $this->_convert($value);
         }
@@ -333,11 +341,12 @@ class Debug
 
             // same instance as parent object
             if ($value === $object || in_array($value, $this->_processed, true)) {
-                $value = 'recursion - parent object [' . get_class($value) . ']';
+                $value = 'recursion - parent object ['.get_class($value).']';
             }
 
             $object_as_array[$type] = $this->_convert($value);
         }
+
         return $object_as_array;
     }
 
@@ -351,15 +360,15 @@ class Debug
     {
         $static = $property->isStatic() ? ' static' : '';
         if ($property->isPublic()) {
-            return 'public' . $static . ' ' . $property->getName();
+            return 'public'.$static.' '.$property->getName();
         }
 
         if ($property->isProtected()) {
-            return 'protected' . $static . ' ' . $property->getName();
+            return 'protected'.$static.' '.$property->getName();
         }
 
         if ($property->isPrivate()) {
-            return 'private' . $static . ' ' . $property->getName();
+            return 'private'.$static.' '.$property->getName();
         }
     }
 
@@ -367,6 +376,7 @@ class Debug
      * adds a value to the data array
      *
      * @var mixed
+     *
      * @return void
      */
     protected function _addRow(array $logs, $backtrace, $type)
@@ -386,7 +396,7 @@ class Debug
             $this->_backtraces[] = $backtrace;
         }
 
-        $row = array($logs, $backtrace, $type);
+        $row = [$logs, $backtrace, $type];
 
         $this->_json['rows'][] = $row;
         $this->_writeHeader($this->_json);
@@ -394,13 +404,13 @@ class Debug
 
     protected function _writeHeader($data)
     {
-        header(self::HEADER_NAME . ': ' . $this->_encode($data));
+        header(self::HEADER_NAME.': '.$this->_encode($data));
     }
 
     /**
      * encodes the data to be sent along with the request
      *
-     * @param array $data
+     * @param  array  $data
      * @return string
      */
     protected function _encode($data)
@@ -423,7 +433,6 @@ class Debug
     /**
      * add ability to set multiple settings in one call
      *
-     * @param array $settings
      * @return void
      */
     public function addSettings(array $settings)
@@ -441,9 +450,10 @@ class Debug
      */
     public function getSetting($key)
     {
-        if (!isset($this->_settings[$key])) {
+        if (! isset($this->_settings[$key])) {
             return null;
         }
+
         return $this->_settings[$key];
     }
 }

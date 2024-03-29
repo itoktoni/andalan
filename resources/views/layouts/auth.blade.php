@@ -33,13 +33,13 @@
                                 <div class="d-flex flex-column h-100">
                                     <div class="mb-4 mb-md-5 text-center">
                                         <a href="index.html" class="d-block auth-logo">
-                                            <img src="assets/images/logo-sm.svg" alt="" height="28"> <span class="logo-txt">Minia</span>
+                                            <img src="{{ env('APP_LOGO') ? url(env('APP_LOGO')) : url('default.png') }}" alt="" height="28"> <span class="logo-txt">{{ env('APP_NAME') }}</span>
                                         </a>
                                     </div>
                                     <div class="auth-content my-auto">
                                         <div class="text-center">
                                             <h5 class="mb-0">Welcome Back !</h5>
-                                            <p class="text-muted mt-2">Sign in to continue to Minia.</p>
+                                            <p class="text-muted mt-2">Sign in to continue to {{ env('APP_NAME') }}.</p>
                                         </div>
 
 										@yield('content')
@@ -48,9 +48,6 @@
                                             <p class="text-muted mb-0">Don't have an account ? <a href="register.html"
                                                     class="text-primary fw-semibold"> Signup now </a> </p>
                                         </div>
-                                    </div>
-                                    <div class="mt-4 mt-md-5 text-center">
-                                        <p class="mb-0">© <script>document.write(new Date().getFullYear())</script> Minia   . Crafted with <i class="mdi mdi-heart text-danger"></i> by Themesbrand</p>
                                     </div>
                                 </div>
                             </div>

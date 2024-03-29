@@ -4,7 +4,6 @@ namespace App\Dao\Models;
 
 use App\Dao\Builder\DataBuilder;
 use App\Dao\Entities\SystemPermisionEntity;
-use App\Dao\Enums\BooleanType;
 use App\Dao\Traits\ActiveTrait;
 use App\Dao\Traits\DataTableTrait;
 use Illuminate\Database\Eloquent\Model;
@@ -15,9 +14,10 @@ use Touhidurabir\ModelSanitize\Sanitizable as Sanitizable;
 
 class SystemPermision extends Model
 {
-    use Sortable, FilterQueryString, Sanitizable, DataTableTrait, SystemPermisionEntity, ActiveTrait, ActiveTrait;
+    use ActiveTrait, ActiveTrait, DataTableTrait, FilterQueryString, Sanitizable, Sortable, SystemPermisionEntity;
 
     protected $table = 'system_permision';
+
     protected $primaryKey = 'system_permision_id';
 
     protected $fillable = [
@@ -42,9 +42,11 @@ class SystemPermision extends Model
     ];
 
     public $timestamps = false;
+
     public $incrementing = false;
 
-    public function fieldSearching(){
+    public function fieldSearching()
+    {
         return $this->field_code();
     }
 
@@ -67,7 +69,7 @@ class SystemPermision extends Model
 
     public static function boot()
     {
-        parent::saving(function($model){
+        parent::saving(function ($model) {
             $model->{self::field_module()} = Core::getControllerName($model->{self::field_controller()});
         });
         parent::boot();

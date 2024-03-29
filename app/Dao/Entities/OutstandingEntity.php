@@ -3,11 +3,10 @@
 namespace App\Dao\Entities;
 
 use App\Dao\Enums\CuciType;
-use App\Dao\Enums\LinenType;
 use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\RegisterType;
 use App\Dao\Enums\TransactionType;
-use App\Dao\Models\Jenis;
+use App\Dao\Models\JenisLinen;
 use App\Dao\Models\Rs;
 use App\Dao\Models\Ruangan;
 
@@ -40,7 +39,7 @@ trait OutstandingEntity
 
     public function getFieldWeightAttribute()
     {
-        return $this->{Jenis::field_weight()};
+        return $this->{JenisLinen::field_weight()};
     }
 
     public static function field_description()

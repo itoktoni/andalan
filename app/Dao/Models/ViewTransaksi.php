@@ -18,9 +18,10 @@ use Wildside\Userstamps\Userstamps;
 
 class ViewTransaksi extends Model
 {
-    use Sortable, FilterQueryString, Sanitizable, DataTableTrait, TransaksiEntity, ActiveTrait, OptionTrait, PowerJoins, ApiTrait, Userstamps;
+    use ActiveTrait, ApiTrait, DataTableTrait, FilterQueryString, OptionTrait, PowerJoins, Sanitizable, Sortable, TransaksiEntity, Userstamps;
 
     protected $table = 'view_transaksi';
+
     protected $primaryKey = 'transaksi_id';
 
     protected $fillable = [
@@ -53,9 +54,11 @@ class ViewTransaksi extends Model
     ];
 
     public $timestamps = false;
+
     public $incrementing = false;
 
-    public function fieldSearching(){
+    public function fieldSearching()
+    {
         return $this->field_name();
     }
 
@@ -82,5 +85,4 @@ class ViewTransaksi extends Model
     {
         return $this->hasOne(Rs::class, Rs::field_primary(), self::field_rs_id());
     }
-
 }

@@ -14,9 +14,10 @@ use Touhidurabir\ModelSanitize\Sanitizable as Sanitizable;
 
 class ViewInvoice extends Model
 {
-    use Sortable, FilterQueryString, Sanitizable, DataTableTrait, ViewInvoiceEntity, ActiveTrait, OptionTrait;
+    use ActiveTrait, DataTableTrait, FilterQueryString, OptionTrait, Sanitizable, Sortable, ViewInvoiceEntity;
 
     protected $table = 'view_invoice';
+
     protected $primaryKey = 'view_key';
 
     public $sortable = [
@@ -35,9 +36,11 @@ class ViewInvoice extends Model
     ];
 
     public $timestamps = false;
+
     public $incrementing = false;
 
-    public function fieldSearching(){
+    public function fieldSearching()
+    {
         return $this->field_name();
     }
 

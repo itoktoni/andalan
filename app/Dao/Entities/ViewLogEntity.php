@@ -50,5 +50,4 @@ trait ViewLogEntity
     {
         return $this->{$this->field_waktu()};
     }
-
 }

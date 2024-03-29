@@ -3,14 +3,7 @@
 namespace Plugins;
 
 use App\Dao\Enums\RoleLevel;
-use App\Dao\Facades\RoutesFacades;
-use App\Dao\Models\Filters;
-use App\Dao\Models\Groups;
-use App\Dao\Models\Routes;
-use Coderello\SharedData\Facades\SharedData;
 use Collective\Html\FormFacade as Form;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 
 class Template
@@ -31,6 +24,7 @@ class Template
     {
         $controller = (new \ReflectionClass($class))->getShortName();
         $clean = Str::replaceLast('Controller', '', $controller);
+
         return Str::snake($clean);
     }
 
@@ -39,47 +33,49 @@ class Template
         if (request()->ajax()) {
             return 'layouts.modal';
         }
-        return 'layouts.' . $template;
+
+        return 'layouts.'.$template;
     }
 
     public static function table($template = false)
     {
         if ($template) {
-            return 'pages.' . $template . '.table';
+            return 'pages.'.$template.'.table';
         }
 
-        return 'pages.' . self::$template . '.table';
+        return 'pages.'.self::$template.'.table';
     }
 
-    public static function print($template = false, $name = false) {
+    public static function print($template = false, $name = false)
+    {
         if ($name) {
-            return 'pages.' . $template . '.' . $name;
+            return 'pages.'.$template.'.'.$name;
         }
-        return 'pages.' . $template . '.print';
+
+        return 'pages.'.$template.'.print';
     }
 
     public static function form($template = false, $name = false)
     {
         if ($template && $name) {
-            return 'pages.' . $template . '.' . $name;
+            return 'pages.'.$template.'.'.$name;
         }
 
         if ($name) {
-            return 'pages.' . self::$template . '.' . $name;
+            return 'pages.'.self::$template.'.'.$name;
         }
 
         if ($template) {
-            return 'pages.' . $template . '.form';
+            return 'pages.'.$template.'.form';
         }
 
-        return 'pages.' . $template . '.' . $name;
+        return 'pages.'.$template.'.'.$name;
     }
 
     public static function isMobile()
     {
         return preg_match("/(android|avantgo|blackberry|bolt|boost|cricket|docomo
-        |fone|hiptop|mini|mobi|palm|phone|pie|tablet|up\.browser|up\.link|webos|wos)/i"
-        , $_SERVER["HTTP_USER_AGENT"]);
+        |fone|hiptop|mini|mobi|palm|phone|pie|tablet|up\.browser|up\.link|webos|wos)/i", $_SERVER['HTTP_USER_AGENT']);
     }
 
     public static function tableResponsive()
@@ -91,43 +87,46 @@ class Template
     {
         $string = '';
         if ($value->class) {
-            $string = " class=" . $value->class;
+            $string = ' class='.$value->class;
         }
         if ($value->width) {
-            $string = $string . 'style=width:' . $value->width;
+            $string = $string.'style=width:'.$value->width;
         }
+
         return $string;
     }
 
     public static function components($value)
     {
-        return 'components.' . $value;
+        return 'components.'.$value;
     }
 
     public static function form_table()
     {
         return Form::open([
-            'url' => route(SharedData::get('route') . '.getTable'),
+            'url' => route(SharedData::get('route').'.getTable'),
             'class' => '', 'method' => 'GET',
         ]);
     }
 
     public static function form_report($action = false)
     {
-        $name = $action ? SharedData::get('route') . '.' . $action : SharedData::get('route') . '.getPrint';
+        $name = $action ? SharedData::get('route').'.'.$action : SharedData::get('route').'.getPrint';
+
         return Form::open([
             'url' => route($name),
             'class' => 'form-horizontal needs-validation',
             'novalidate',
             'method' => 'GET',
-            'target' => '_blank'
+            'target' => '_blank',
         ]);
     }
 
     public static function form_open($model, $action = false)
     {
         if ($model) {
-            $name = $action ? SharedData::get('route') . '.' . $action : SharedData::get('route') . '.postUpdate';
+            $name = $action ? SharedData::get('route').'.'.$action : SharedData::get('route').'.postUpdate';
+
             return Form::model($model, [
                 'route' => [
                     $name,
@@ -138,7 +137,8 @@ class Template
                 'novalidate',
             ]);
         } else {
-            $name = $action ? SharedData::get('route') . '.' . $action : SharedData::get('route') . '.postCreate';
+            $name = $action ? SharedData::get('route').'.'.$action : SharedData::get('route').'.postCreate';
+
             return Form::open([
                 'url' => route($name),
                 'class' => 'form-submit form-horizontal needs-validation',
@@ -181,28 +181,35 @@ class Template
         ]);
     }
 
-    public static function isUser(){
+    public static function isUser()
+    {
         return auth()->user()->type == RoleLevel::Pengguna;
     }
 
-    public static function isTeknisi(){
+    public static function isTeknisi()
+    {
         return auth()->user()->type == RoleLevel::Teknisi;
     }
 
-    public static function isVendor(){
-        return auth()->user()->type == RoleLevel::Teknisi && !empty(auth()->user()->vendor);
+    public static function isVendor()
+    {
+        return auth()->user()->type == RoleLevel::Teknisi && ! empty(auth()->user()->vendor);
     }
 
-    public static function isAdmin(){
+    public static function isAdmin()
+    {
         return auth()->user()->type == RoleLevel::Admin;
     }
 
-    public static function isDeveloper(){
+    public static function isDeveloper()
+    {
         return auth()->user()->type == RoleLevel::Developer;
     }
 
-    public static function greatherAdmin(){
+    public static function greatherAdmin()
+    {
         return true;
+
         return auth()->user()->type >= RoleLevel::Admin;
     }
 }

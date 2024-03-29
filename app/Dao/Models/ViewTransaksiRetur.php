@@ -10,6 +10,7 @@ class ViewTransaksiRetur extends Model
     use ViewTransaksiReturEntity;
 
     protected $table = 'view_transaksi_retur';
+
     protected $primaryKey = 'view_transaksi_retur_id';
 
     protected $casts = [

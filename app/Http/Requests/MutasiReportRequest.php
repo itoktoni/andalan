@@ -9,7 +9,7 @@ class MutasiReportRequest extends FormRequest
 {
     use ValidationTrait;
 
-    public function validation() : array
+    public function validation(): array
     {
         return [
             'start_date' => 'required',
@@ -17,5 +17,4 @@ class MutasiReportRequest extends FormRequest
             'view_rs_id' => 'required',
         ];
     }
-
 }

@@ -44,18 +44,21 @@ class PermissionController extends MasterController
     public function postCreate(MenuRequest $request, CreateService $service)
     {
         $data = $service->save(self::$repository, $request);
+
         return Response::redirectBack($data);
     }
 
     public function postUpdate($code, GeneralRequest $request, UpdateService $service)
     {
         $data = $service->update(self::$repository, $request, $code);
+
         return Response::redirectBack($data);
     }
 
     public function postSort(SortRequest $request)
     {
         $data = self::$service->sort($request);
+
         return Response::redirectBack($data);
     }
 

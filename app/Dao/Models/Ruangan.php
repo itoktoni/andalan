@@ -9,20 +9,18 @@ use App\Dao\Traits\ApiTrait;
 use App\Dao\Traits\DataTableTrait;
 use App\Dao\Traits\OptionTrait;
 use App\Http\Resources\GeneralResource;
-use App\Http\Resources\RuanganResource;
 use Illuminate\Database\Eloquent\Model;
 use Kirschbaum\PowerJoins\PowerJoins;
 use Kyslik\ColumnSortable\Sortable;
 use Mehradsadeghi\FilterQueryString\FilterQueryString as FilterQueryString;
-use PHPUnit\Framework\MockObject\Api;
-use Plugins\Query;
 use Touhidurabir\ModelSanitize\Sanitizable as Sanitizable;
 
 class Ruangan extends Model
 {
-    use Sortable, FilterQueryString, Sanitizable, DataTableTrait, RuanganEntity, ActiveTrait, OptionTrait, PowerJoins, ApiTrait;
+    use ActiveTrait, ApiTrait, DataTableTrait, FilterQueryString, OptionTrait, PowerJoins, RuanganEntity, Sanitizable, Sortable;
 
     protected $table = 'ruangan';
+
     protected $primaryKey = 'ruangan_id';
 
     protected $fillable = [
@@ -38,7 +36,7 @@ class Ruangan extends Model
     ];
 
     protected $casts = [
-        'ruangan_id' => 'integer'
+        'ruangan_id' => 'integer',
     ];
 
     protected $filters = [
@@ -46,9 +44,11 @@ class Ruangan extends Model
     ];
 
     public $timestamps = false;
+
     public $incrementing = true;
 
-    public function fieldSearching(){
+    public function fieldSearching()
+    {
         return $this->field_name();
     }
 

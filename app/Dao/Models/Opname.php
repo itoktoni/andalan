@@ -4,9 +4,6 @@ namespace App\Dao\Models;
 
 use App\Dao\Builder\DataBuilder;
 use App\Dao\Entities\OpnameEntity;
-use App\Dao\Entities\RsEntity;
-use App\Dao\Enums\OpnameType;
-use App\Dao\Enums\UserLevel;
 use App\Dao\Traits\ActiveTrait;
 use App\Dao\Traits\ApiTrait;
 use App\Dao\Traits\DataTableTrait;
@@ -21,9 +18,10 @@ use Wildside\Userstamps\Userstamps;
 
 class Opname extends Model
 {
-    use Sortable, FilterQueryString, Sanitizable, DataTableTrait, OpnameEntity, ActiveTrait, OptionTrait, PowerJoins, ApiTrait, Userstamps;
+    use ActiveTrait, ApiTrait, DataTableTrait, FilterQueryString, OpnameEntity, OptionTrait, PowerJoins, Sanitizable, Sortable, Userstamps;
 
     protected $table = 'opname';
+
     protected $primaryKey = 'opname_id';
 
     protected $fillable = [
@@ -51,7 +49,7 @@ class Opname extends Model
     protected $casts = [
         'opname_id_rs' => 'int',
         'opname_id' => 'int',
-        'opname_status' => 'int'
+        'opname_status' => 'int',
     ];
 
     protected $filteopname = [
@@ -59,15 +57,19 @@ class Opname extends Model
     ];
 
     const CREATED_AT = 'opname_created_at';
+
     const UPDATED_AT = 'opname_updated_at';
 
     const CREATED_BY = 'opname_created_by';
+
     const UPDATED_BY = 'opname_updated_by';
 
     public $timestamps = true;
+
     public $incrementing = true;
 
-    public function fieldSearching(){
+    public function fieldSearching()
+    {
         return $this->field_name();
     }
 

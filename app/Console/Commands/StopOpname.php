@@ -11,7 +11,6 @@ use Plugins\History;
 
 class StopOpname extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -44,12 +43,12 @@ class StopOpname extends Command
     public function handle()
     {
         $data = Opname::where(Opname::field_end(), '<', date('y-m-d'))->get();
-        if($data->count() > 0){
+        if ($data->count() > 0) {
             $pluck = $data->pluck(Opname::field_primary(), Opname::field_primary());
 
             Opname::whereIn(Opname::field_primary(), $pluck)
                 ->update([
-                    Opname::field_status() => OpnameType::Selesai
+                    Opname::field_status() => OpnameType::Selesai,
                 ]);
 
             $rfid = OpnameDetail::select(OpnameDetail::field_rfid())

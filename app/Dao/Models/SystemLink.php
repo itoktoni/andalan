@@ -9,18 +9,20 @@ use App\Dao\Traits\ActiveTrait;
 use App\Dao\Traits\DataTableTrait;
 use App\Dao\Traits\OptionTrait;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 use Kyslik\ColumnSortable\Sortable;
 use Mehradsadeghi\FilterQueryString\FilterQueryString as FilterQueryString;
 use Plugins\Core;
-use Illuminate\Support\Str;
 use Touhidurabir\ModelSanitize\Sanitizable as Sanitizable;
 
 class SystemLink extends Model
 {
-    use Sortable, FilterQueryString, Sanitizable, DataTableTrait, SystemLinkEntity, ActiveTrait, OptionTrait;
+    use ActiveTrait, DataTableTrait, FilterQueryString, OptionTrait, Sanitizable, Sortable, SystemLinkEntity;
 
     protected $table = 'system_link';
+
     protected $primaryKey = 'system_link_code';
+
     protected $keyType = 'string';
 
     protected $fillable = [
@@ -43,7 +45,7 @@ class SystemLink extends Model
     ];
 
     protected $casts = [
-        'system_link_sort' => 'integer'
+        'system_link_sort' => 'integer',
     ];
 
     protected $filters = [
@@ -51,9 +53,11 @@ class SystemLink extends Model
     ];
 
     public $timestamps = false;
+
     public $incrementing = false;
 
-    public function fieldSearching(){
+    public function fieldSearching()
+    {
         return $this->field_name();
     }
 
@@ -72,21 +76,20 @@ class SystemLink extends Model
     public static function boot()
     {
         parent::creating(function ($model) {
-            if(empty($model->{SystemLink::field_action()}) && ($model->{SystemLink::field_type()} == MenuType::Menu)){
+            if (empty($model->{SystemLink::field_action()}) && ($model->{SystemLink::field_type()} == MenuType::Menu)) {
                 $act = '.getCreate';
                 $model->{SystemLink::field_action()} = Core::getControllerName($model->{SystemLink::field_controller()}).$act;
             }
         });
 
-        parent::saving(function($model){
-            if($model->{SystemLink::field_type()} == MenuType::Menu){
+        parent::saving(function ($model) {
+            if ($model->{SystemLink::field_type()} == MenuType::Menu) {
 
                 $model->{SystemLink::field_primary()} = Core::getControllerName($model->{SystemLink::field_controller()});
-                if(empty($model->{SystemLink::field_url()})){
+                if (empty($model->{SystemLink::field_url()})) {
                     $model->{SystemLink::field_url()} = Core::getControllerName($model->{SystemLink::field_controller()});
                 }
-            }
-            else{
+            } else {
                 $model->{SystemLink::field_primary()} = Str::snake($model->{SystemLink::field_name()});
             }
         });

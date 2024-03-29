@@ -24,8 +24,7 @@ class FormDataBinder
     /**
      * Bind a target to the current instance
      *
-     * @param mixed $target
-     * @return void
+     * @param  mixed  $target
      */
     public function bind($target): void
     {
@@ -44,8 +43,6 @@ class FormDataBinder
 
     /**
      * Remove the last binding.
-     *
-     * @return void
      */
     public function pop(): void
     {
@@ -54,8 +51,6 @@ class FormDataBinder
 
     /**
      * Returns wether the form is bound to a Livewire model.
-     *
-     * @return boolean
      */
     public function isWired(): bool
     {
@@ -74,8 +69,6 @@ class FormDataBinder
 
     /**
      * Returns the modifier, if set.
-     *
-     * @return string|null
      */
     public function getWireModifier(): ?string
     {
@@ -85,8 +78,7 @@ class FormDataBinder
     /**
      * Enable Livewire binding with an optional modifier.
      *
-     * @param bool|string $modifier
-     * @return void
+     * @param  bool|string  $modifier
      */
     public function wire($modifier = null): void
     {
@@ -99,8 +91,6 @@ class FormDataBinder
 
     /**
      * Disable Livewire binding.
-     *
-     * @return void
      */
     public function endWire(): void
     {

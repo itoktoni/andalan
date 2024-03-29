@@ -23,5 +23,4 @@ trait ViewTotalJenisEntity
     {
         return $this->{$this->field_total()};
     }
-
 }

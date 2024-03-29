@@ -3,24 +3,24 @@
 namespace App\Dao\Models;
 
 use App\Dao\Builder\DataBuilder;
-use App\Dao\Entities\RoutesEntity;
 use App\Dao\Entities\SystemRoleEntity;
 use App\Dao\Traits\ActiveTrait;
 use App\Dao\Traits\DataTableTrait;
 use App\Dao\Traits\OptionTrait;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Foundation\Console\Presets\Bootstrap;
+use Illuminate\Support\Str;
 use Kyslik\ColumnSortable\Sortable;
 use Mehradsadeghi\FilterQueryString\FilterQueryString as FilterQueryString;
 use Touhidurabir\ModelSanitize\Sanitizable as Sanitizable;
-use Illuminate\Support\Str;
 
 class SystemRole extends Model
 {
-    use Sortable, FilterQueryString, Sanitizable, DataTableTrait, SystemRoleEntity, ActiveTrait, ActiveTrait, OptionTrait;
+    use ActiveTrait, ActiveTrait, DataTableTrait, FilterQueryString, OptionTrait, Sanitizable, Sortable, SystemRoleEntity;
 
     protected $table = 'system_role';
+
     protected $primaryKey = 'system_role_code';
+
     protected $keyType = 'string';
 
     protected $fillable = [
@@ -46,6 +46,7 @@ class SystemRole extends Model
     ];
 
     public $timestamps = false;
+
     public $incrementing = false;
 
     public function fieldSearching()
@@ -71,7 +72,7 @@ class SystemRole extends Model
     public static function boot()
     {
         parent::creating(function ($model) {
-            if(empty($model->{SystemRole::field_primary()})){
+            if (empty($model->{SystemRole::field_primary()})) {
                 $model->{SystemRole::field_primary()} = Str::camel($model->{SystemRole::field_name()});
             }
         });

@@ -13,7 +13,7 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        if(auth()->check()){
+        if (auth()->check()) {
             return redirect()->route('login');
         }
     }
@@ -25,7 +25,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-        if(auth()->check() && auth()->user()->active == false){
+        if (auth()->check() && auth()->user()->active == false) {
             return redirect()->route('login');
         }
 
@@ -37,11 +37,13 @@ class HomeController extends Controller
         return LaravelWebConsole::show();
     }
 
-    public function doc(){
+    public function doc()
+    {
         return view('doc');
     }
 
-    public function error402(){
+    public function error402()
+    {
         return view('errors.402');
     }
 }

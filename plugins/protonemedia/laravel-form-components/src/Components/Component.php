@@ -24,15 +24,13 @@ abstract class Component extends BaseComponent
 
         $config = config("form-components.components.{$alias}");
 
-        $framework = config("form-components.framework");
+        $framework = config('form-components.framework');
 
         return str_replace('{framework}', $framework, $config['view']);
     }
 
     /**
      * Returns a boolean wether the form is wired to a Livewire component.
-     *
-     * @return boolean
      */
     public function isWired(): bool
     {
@@ -45,18 +43,14 @@ abstract class Component extends BaseComponent
 
     /**
      * The inversion of 'isWired()'.
-     *
-     * @return boolean
      */
     public function isNotWired(): bool
     {
-        return !$this->isWired();
+        return ! $this->isWired();
     }
 
     /**
      * Returns the optional wire modifier.
-     *
-     * @return string
      */
     public function wireModifier(): ?string
     {
@@ -67,8 +61,6 @@ abstract class Component extends BaseComponent
 
     /**
      * Generates an ID, once, for this component.
-     *
-     * @return string
      */
     public function id(): string
     {
@@ -85,19 +77,16 @@ abstract class Component extends BaseComponent
 
     /**
      * Generates an ID by the name attribute.
-     *
-     * @return string
      */
     protected function generateIdByName(): string
     {
-        return "auto_id_" . $this->name;
+        return 'auto_id_'.$this->name;
     }
 
     /**
      * Converts a bracket-notation to a dotted-notation
      *
-     * @param string $name
-     * @return string
+     * @param  string  $name
      */
     protected static function convertBracketsToDots($name): string
     {

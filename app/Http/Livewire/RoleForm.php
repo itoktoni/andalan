@@ -2,38 +2,41 @@
 
 namespace App\Http\Livewire;
 
-use App\Dao\Enums\RoleLevel;
-use App\Dao\Models\SystemGroup;
 use Livewire\Component;
-
 
 class RoleForm extends Component
 {
     public $data;
+
     public $show;
 
     protected $listeners = ['showModal' => 'showModal'];
 
-    public function mount($data) {
+    public function mount($data)
+    {
         $this->data = $data;
         $this->show = false;
     }
 
-    public function showModal($data) {
+    public function showModal($data)
+    {
         $this->data = $data;
 
         $this->doShow();
     }
 
-    public function doShow() {
+    public function doShow()
+    {
         $this->show = true;
     }
 
-    public function doClose() {
+    public function doClose()
+    {
         $this->show = false;
     }
 
-    public function doSomething() {
+    public function doSomething()
+    {
         // Do Something With Your Modal
 
         // Close Modal After Logic

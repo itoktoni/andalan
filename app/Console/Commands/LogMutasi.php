@@ -5,11 +5,9 @@ namespace App\Console\Commands;
 use App\Dao\Models\Mutasi;
 use App\Dao\Models\ViewMutasi;
 use Illuminate\Console\Command;
-use Illuminate\Support\Carbon;
 
 class LogMutasi extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -45,7 +43,7 @@ class LogMutasi extends Command
 
         if (Mutasi::where(Mutasi::field_tanggal(), $tanggal)->count() == 0) {
 
-            $data_mutasi = ViewMutasi::get()->map(function ($item) use($tanggal){
+            $data_mutasi = ViewMutasi::get()->map(function ($item) use ($tanggal) {
 
                 $register = $item->total_stock;
                 $mutasi = $item->total_bersih + $item->total_kotor;
@@ -67,7 +65,7 @@ class LogMutasi extends Command
                 }
 
                 return [
-                    'mutasi_nama' => $item->rs_nama . ' ' . $item->jenis_nama . ' ' . $tanggal,
+                    'mutasi_nama' => $item->rs_nama.' '.$item->jenis_nama.' '.$tanggal,
                     'mutasi_tanggal' => $tanggal,
                     'mutasi_rs_id' => $item->rs_id,
                     'mutasi_rs_nama' => $item->rs_nama,

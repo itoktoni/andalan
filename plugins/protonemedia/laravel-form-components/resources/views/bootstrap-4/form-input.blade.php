@@ -63,7 +63,7 @@ $class = 'form-control';
     @if(!empty($icon))
     <div class="input-group-append">
         <button class="btn btn-primary" type="submit">
-            <i class="fas fa-{{ $icon }}"></i>
+            <i class="dripicons-{{ $icon }}"></i>
         </button>
     </div>
     @endif

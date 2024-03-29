@@ -4,7 +4,6 @@ namespace App\Dao\Models;
 
 use App\Dao\Builder\DataBuilder;
 use App\Dao\Entities\FiltersEntity;
-use App\Dao\Enums\BooleanType;
 use App\Dao\Traits\ActiveTrait;
 use App\Dao\Traits\DataTableTrait;
 use Illuminate\Database\Eloquent\Model;
@@ -14,9 +13,10 @@ use Touhidurabir\ModelSanitize\Sanitizable as Sanitizable;
 
 class Filters extends Model
 {
-    use Sortable, FilterQueryString, Sanitizable, DataTableTrait, FiltersEntity, ActiveTrait;
+    use ActiveTrait, DataTableTrait, FilterQueryString, FiltersEntity, Sanitizable, Sortable;
 
     protected $table = 'filters';
+
     protected $primaryKey = 'filter_id';
 
     protected $fillable = [
@@ -42,9 +42,11 @@ class Filters extends Model
     ];
 
     public $timestamps = false;
+
     public $incrementing = false;
 
-    public function fieldSearching(){
+    public function fieldSearching()
+    {
         return $this->field_primary();
     }
 

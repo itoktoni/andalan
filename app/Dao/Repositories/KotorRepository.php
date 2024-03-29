@@ -20,17 +20,17 @@ class KotorRepository extends MasterRepository implements CrudInterface
             ->leftJoinRelationship('has_rs')
             ->sortable()->filter();
 
-            if(request()->hasHeader('authorization')){
-                if($paging = request()->get('paginate')){
-                    return $query->paginate($paging);
-                }
-
-                if(method_exists($this->model, 'getApiCollection')){
-                    return $this->model->getApiCollection($query->get());
-                }
-
-                return Notes::data($query->get());
+        if (request()->hasHeader('authorization')) {
+            if ($paging = request()->get('paginate')) {
+                return $query->paginate($paging);
             }
+
+            if (method_exists($this->model, 'getApiCollection')) {
+                return $this->model->getApiCollection($query->get());
+            }
+
+            return Notes::data($query->get());
+        }
 
         $query = env('PAGINATION_SIMPLE') ? $query->simplePaginate(env('PAGINATION_NUMBER')) : $query->paginate(env('PAGINATION_NUMBER'));
 

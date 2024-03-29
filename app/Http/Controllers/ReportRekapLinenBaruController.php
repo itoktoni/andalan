@@ -19,7 +19,8 @@ class ReportRekapLinenBaruController extends MinimalController
         self::$repository = self::$repository ?? $repository;
     }
 
-    protected function beforeForm(){
+    protected function beforeForm()
+    {
 
         $rs = Rs::getOptions();
         $user = User::getOptions();
@@ -30,7 +31,8 @@ class ReportRekapLinenBaruController extends MinimalController
         ];
     }
 
-    private function getQueryBersih($request){
+    private function getQueryBersih($request)
+    {
         $query = self::$repository->getDetailAllBersih([TransactionType::Register]);
 
         if ($start_date = $request->start_rekap) {
@@ -44,19 +46,20 @@ class ReportRekapLinenBaruController extends MinimalController
         return $query->get();
     }
 
-    private function getQueryKotor($request){
+    private function getQueryKotor($request)
+    {
         $query = self::$repository->getDetailAllKotor([TransactionType::Kotor]);
 
         if ($start_date = $request->start_rekap) {
             $bersih_from = Carbon::createFromFormat('Y-m-d', $start_date) ?? false;
-            if($bersih_from){
+            if ($bersih_from) {
                 $query = $query->whereDate(Transaksi::field_created_at(), '>=', $bersih_from->addDay(-1)->format('Y-m-d'));
             }
         }
 
         if ($end_date = $request->end_rekap) {
             $bersih_to = Carbon::createFromFormat('Y-m-d', $end_date) ?? false;
-            if($bersih_to){
+            if ($bersih_to) {
                 $query = $query->whereDate(Transaksi::field_created_at(), '<=', $bersih_to->addDay(-1)->format('Y-m-d'));
             }
         }
@@ -64,7 +67,8 @@ class ReportRekapLinenBaruController extends MinimalController
         return $query->get();
     }
 
-    public function getPrint(RekapReportRequest $request){
+    public function getPrint(RekapReportRequest $request)
+    {
         set_time_limit(0);
         ini_set('memory_limit', '512M');
         $location = $linen = $lawan = [];

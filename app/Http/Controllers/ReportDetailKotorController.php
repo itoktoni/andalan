@@ -16,7 +16,8 @@ class ReportDetailKotorController extends MinimalController
         self::$repository = self::$repository ?? $repository;
     }
 
-    protected function beforeForm(){
+    protected function beforeForm()
+    {
 
         $rs = Rs::getOptions();
         $user = User::getOptions();
@@ -27,11 +28,13 @@ class ReportDetailKotorController extends MinimalController
         ];
     }
 
-    private function getQuery($request){
+    private function getQuery($request)
+    {
         return self::$repository->getDetailKotor()->get();
     }
 
-    public function getPrint(TransactionReportRequest $request){
+    public function getPrint(TransactionReportRequest $request)
+    {
         set_time_limit(0);
         $rs = Rs::find(request()->get(Rs::field_primary()));
 
@@ -39,7 +42,7 @@ class ReportDetailKotorController extends MinimalController
 
         return moduleView(modulePathPrint(), $this->share([
             'data' => $this->data,
-            'rs' => $rs
+            'rs' => $rs,
         ]));
     }
 }

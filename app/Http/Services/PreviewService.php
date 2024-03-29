@@ -10,10 +10,10 @@ class PreviewService
         $data = $code->all();
         $preview = null;
 
-        if (isset($data['from']) && !empty($data['from'])) {
+        if (isset($data['from']) && ! empty($data['from'])) {
             $linen = $linen->whereDate('item_linen_created_at', '>=', $data['from']);
         }
-        if (isset($data['to']) && !empty($data['to'])) {
+        if (isset($data['to']) && ! empty($data['to'])) {
             $linen = $linen->whereDate('item_linen_created_at', '<=', $data['to']);
         }
 

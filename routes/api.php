@@ -34,12 +34,10 @@ use App\PushSubscription;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Plugins\History;
 use Plugins\Notes;
 use Plugins\Query;
-use Symfony\Component\Process\Process;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,13 +49,13 @@ use Symfony\Component\Process\Process;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
  */
-Route::post("push-subscribe", function(Request $request) {
+Route::post('push-subscribe', function (Request $request) {
     PushSubscription::create(['data' => $request->getContent()]);
 });
 
 Route::post('login', [UserController::class, 'postLoginApi'])->name('postLoginApi');
 
-Route::middleware(['auth:sanctum'])->group(function () use ($routes) {
+Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::get('status_register', function () {
 
@@ -121,6 +119,7 @@ Route::middleware(['auth:sanctum'])->group(function () use ($routes) {
             'rsid' => $rsid,
         ]);
         $resource = new DownloadCollection($data);
+
         return $resource;
     });
 
@@ -239,7 +238,7 @@ Route::middleware(['auth:sanctum'])->group(function () use ($routes) {
         try {
 
             $code = env('CODE_BERSIH', 'BSH');
-            $autoNumber = Query::autoNumber(Transaksi::getTableName(), Transaksi::field_delivery(), $code . date('ymd'), env('AUTO_NUMBER', 15));
+            $autoNumber = Query::autoNumber(Transaksi::getTableName(), Transaksi::field_delivery(), $code.date('ymd'), env('AUTO_NUMBER', 15));
 
             if ($request->status_register == RegisterType::GantiChip) {
                 $transaksi_status = TransactionType::Kotor;
@@ -253,8 +252,8 @@ Route::middleware(['auth:sanctum'])->group(function () use ($routes) {
 
                 DB::beginTransaction();
 
-                foreach($request->rfid as $item){
-                    $detail [] = [
+                foreach ($request->rfid as $item) {
+                    $detail[] = [
                         Detail::field_primary() => $item,
                         Detail::field_rs_id() => $request->rs_id,
                         Detail::field_ruangan_id() => $request->ruangan_id,
@@ -269,7 +268,7 @@ Route::middleware(['auth:sanctum'])->group(function () use ($routes) {
                         Detail::field_updated_by() => auth()->user()->id,
                     ];
 
-                    $register [] = [
+                    $register[] = [
                         Register::field_name() => $item,
                         Register::field_rs_id() => $request->rs_id,
                         Register::field_ruangan_id() => $request->ruangan_id,
@@ -284,7 +283,7 @@ Route::middleware(['auth:sanctum'])->group(function () use ($routes) {
                         Register::field_updated_by() => auth()->user()->id,
                     ];
 
-                    $outstanding [] = [
+                    $outstanding[] = [
                         Outstanding::field_primary() => $item,
                         Outstanding::field_rs_id() => $request->rs_id,
                         Outstanding::field_ruangan_id() => $request->ruangan_id,
@@ -302,7 +301,7 @@ Route::middleware(['auth:sanctum'])->group(function () use ($routes) {
                 Register::insert($register);
                 // Outstanding::insert($outstanding);
 
-                $history = collect($request->rfid)->map(function ($item) use ($request) {
+                $history = collect($request->rfid)->map(function ($item) {
 
                     return [
                         ModelsHistory::field_name() => $item,
@@ -317,6 +316,7 @@ Route::middleware(['auth:sanctum'])->group(function () use ($routes) {
                 DB::commit();
 
                 $return = ViewDetailLinen::whereIn(ViewDetailLinen::field_primary(), $request->rfid)->get();
+
                 return Notes::data(DetailResource::collection($return));
 
             } else {
@@ -387,6 +387,7 @@ Route::middleware(['auth:sanctum'])->group(function () use ($routes) {
             return Notes::error($request->all(), $th->getMessage());
         } catch (\Throwable $th) {
             DB::rollBack();
+
             return Notes::error($request->all(), $th->getMessage());
         }
 
@@ -396,10 +397,11 @@ Route::middleware(['auth:sanctum'])->group(function () use ($routes) {
         try {
             $data = ViewDetailLinen::findOrFail($rfid);
             $collection = new DetailResource($data);
+
             return Notes::data($collection);
 
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
-            return Notes::error($rfid, 'RFID ' . $rfid . ' tidak ditemukan');
+            return Notes::error($rfid, 'RFID '.$rfid.' tidak ditemukan');
         } catch (\Throwable $th) {
             return Notes::error($rfid, $th->getMessage());
         }
@@ -411,6 +413,7 @@ Route::middleware(['auth:sanctum'])->group(function () use ($routes) {
             $data = $query->filter()->paginate(env('PAGINATION_NUMBER', 10));
 
             $collection = new DetailCollection($data);
+
             return $collection;
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
             return Notes::error('data RFID tidak ditemukan');
@@ -424,12 +427,12 @@ Route::middleware(['auth:sanctum'])->group(function () use ($routes) {
 
             $item = Query::getDetail()->whereIn(Detail::field_primary(), $request->rfid)->get();
 
-            if($item->count() == 0){
+            if ($item->count() == 0) {
                 return Notes::error('data RFID tidak ditemukan');
             }
 
             $collection = [];
-            foreach($item as $data){
+            foreach ($item as $data) {
 
                 $collection[] = [
                     'linen_id' => $data->detail_rfid,
@@ -462,6 +465,7 @@ Route::middleware(['auth:sanctum'])->group(function () use ($routes) {
         try {
             $data = ViewDetailLinen::whereIn(ViewDetailLinen::field_primary(), $request->rfid)->get();
             $collection = DetailResource::collection($data);
+
             return Notes::data($collection);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
             return Notes::error('data RFID tidak ditemukan');
@@ -501,6 +505,7 @@ Route::middleware(['auth:sanctum'])->group(function () use ($routes) {
             }
 
             $view = ViewDetailLinen::findOrFail($rfid);
+
             return Notes::data(new DetailResource($view));
 
         } catch (\Throwable $th) {
@@ -570,8 +575,8 @@ Route::middleware(['auth:sanctum'])->group(function () use ($routes) {
                 TransactionType::Register,
             ]))) {
 
-                $startDate = Carbon::createFromFormat('Y-m-d H:i', date('Y-m-d') . ' 00:00');
-                $endDate = Carbon::createFromFormat('Y-m-d H:i', date('Y-m-d') . ' 05:59');
+                $startDate = Carbon::createFromFormat('Y-m-d H:i', date('Y-m-d').' 00:00');
+                $endDate = Carbon::createFromFormat('Y-m-d H:i', date('Y-m-d').' 05:59');
 
                 $check_date = Carbon::now()->between($startDate, $endDate);
 
@@ -580,7 +585,7 @@ Route::middleware(['auth:sanctum'])->group(function () use ($routes) {
                 }
 
                 $data_transaksi[] = [
-                    Transaksi::field_key() => Query::autoNumber((new Transaksi())->getTable(), Transaksi::field_key(), 'GROUP' . date('ymd') . $code_rs, 20),
+                    Transaksi::field_key() => Query::autoNumber((new Transaksi())->getTable(), Transaksi::field_key(), 'GROUP'.date('ymd').$code_rs, 20),
                     Transaksi::field_rfid() => $rfid,
                     Transaksi::field_status_transaction() => $status_baru,
                     Transaksi::field_rs_id() => $rs_id,
@@ -640,13 +645,13 @@ Route::middleware(['auth:sanctum'])->group(function () use ($routes) {
             ];
 
             $status_grouping = ProcessType::Grouping;
-            if(in_array($data->field_status_process, [ProcessType::Barcode, ProcessType::Delivery])){
+            if (in_array($data->field_status_process, [ProcessType::Barcode, ProcessType::Delivery])) {
                 $status_grouping = $data->field_status_process;
             }
 
             return $service->save($status_baru, $status_grouping, $data_transaksi, $linen, $log, $collection);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
-            return Notes::error($rfid, 'RFID ' . $rfid . ' tidak ditemukan');
+            return Notes::error($rfid, 'RFID '.$rfid.' tidak ditemukan');
         } catch (\Throwable $th) {
             return Notes::error($rfid, $th->getMessage());
         }
@@ -694,11 +699,11 @@ Route::middleware(['auth:sanctum'])->group(function () use ($routes) {
 
         if ($transaksi == TransactionType::BersihKotor) {
             $transaksi = TransactionType::Kotor;
-        } else if ($transaksi == TransactionType::BersihRetur){
+        } elseif ($transaksi == TransactionType::BersihRetur) {
             $transaksi = TransactionType::Retur;
-        } else if ($transaksi == TransactionType::BersihRewash){
+        } elseif ($transaksi == TransactionType::BersihRewash) {
             $transaksi = TransactionType::Rewash;
-        } else if ($transaksi == TransactionType::Unknown){
+        } elseif ($transaksi == TransactionType::Unknown) {
             $transaksi = TransactionType::Register;
         }
 
@@ -720,6 +725,7 @@ Route::middleware(['auth:sanctum'])->group(function () use ($routes) {
                 ->get();
 
             $collection = OpnameResource::collection($data);
+
             return Notes::data($collection);
 
         } catch (\Throwable $th) {
@@ -732,6 +738,7 @@ Route::middleware(['auth:sanctum'])->group(function () use ($routes) {
             $data = Opname::with([HAS_RS])->find($id);
 
             $collection = new OpnameResource($data);
+
             return Notes::data($collection);
 
         } catch (\Throwable $th) {
@@ -741,6 +748,7 @@ Route::middleware(['auth:sanctum'])->group(function () use ($routes) {
 
     Route::post('/opname', function (OpnameDetailRequest $request, SaveOpnameService $service) {
         $data = $service->save($request->{Opname::field_primary()}, $request->data);
+
         return $data;
     });
 

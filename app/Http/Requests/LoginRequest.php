@@ -12,6 +12,7 @@ class LoginRequest extends FormRequest
      * @return array
      */
     private $rules;
+
     private $model;
 
     public function prepareForValidation()

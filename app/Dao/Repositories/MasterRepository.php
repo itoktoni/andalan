@@ -9,10 +9,13 @@ use Plugins\Notes;
 class MasterRepository implements CrudInterface
 {
     public $model;
+
     public static $paginate = true;
 
-    public function setDisablePaginate(){
+    public function setDisablePaginate()
+    {
         self::$paginate = false;
+
         return $this;
     }
 
@@ -22,17 +25,17 @@ class MasterRepository implements CrudInterface
             ->select($this->model->getSelectedField())
             ->sortable()->filter();
 
-            if(request()->hasHeader('authorization')){
-                if($paging = request()->get('paginate')){
-                    return Notes::data($query->paginate($paging));
-                }
-
-                if(method_exists($this->model, 'getApiResource')){
-                    return $this->model->getApiCollection($query->get());
-                }
-
-                return Notes::data($query->get());
+        if (request()->hasHeader('authorization')) {
+            if ($paging = request()->get('paginate')) {
+                return Notes::data($query->paginate($paging));
             }
+
+            if (method_exists($this->model, 'getApiResource')) {
+                return $this->model->getApiCollection($query->get());
+            }
+
+            return Notes::data($query->get());
+        }
 
         $query = env('PAGINATION_SIMPLE') ? $query->simplePaginate(env('PAGINATION_NUMBER')) : $query->paginate(env('PAGINATION_NUMBER'));
 
@@ -43,6 +46,7 @@ class MasterRepository implements CrudInterface
     {
         try {
             $activity = $this->model->create($request);
+
             return Notes::create($activity);
         } catch (QueryException $ex) {
             return Notes::error($ex->getMessage());
@@ -54,6 +58,7 @@ class MasterRepository implements CrudInterface
         try {
             $update = $this->model->findOrFail($code);
             $update->update($request);
+
             return Notes::update($update);
         } catch (QueryException $ex) {
             return Notes::error($ex->getMessage());
@@ -64,6 +69,7 @@ class MasterRepository implements CrudInterface
     {
         try {
             is_array($request) ? $this->model->destroy(array_values($request)) : $this->model->destroy($request);
+
             return Notes::delete($request);
         } catch (QueryException $ex) {
             return Notes::error($ex->getMessage());
@@ -78,5 +84,4 @@ class MasterRepository implements CrudInterface
             abort(500, $ex->getMessage());
         }
     }
-
 }

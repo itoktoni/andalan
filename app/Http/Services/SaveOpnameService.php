@@ -3,9 +3,7 @@
 namespace App\Http\Services;
 
 use App\Dao\Enums\BooleanType;
-use App\Dao\Enums\OpnameType;
 use App\Dao\Enums\ProcessType;
-use App\Dao\Enums\SyncType;
 use App\Dao\Enums\TransactionType;
 use App\Dao\Models\OpnameDetail;
 use Illuminate\Support\Facades\DB;
@@ -27,7 +25,7 @@ class SaveOpnameService
             $waktu = date('Y-m-d H:i:s');
             $insert_register = $scan_rs = false;
 
-            foreach($scan_rfid as $rfid){
+            foreach ($scan_rfid as $rfid) {
                 $detail = isset($data_opname[$rfid]) ? $data_opname[$rfid] : false;
                 $item = [
                     OpnameDetail::field_rfid() => $rfid,
@@ -42,7 +40,7 @@ class SaveOpnameService
                     OpnameDetail::field_ketemu() => BooleanType::Yes,
                 ];
 
-                if (!$detail) {
+                if (! $detail) {
                     $item = array_merge($item, [
                         OpnameDetail::field_waktu() => $waktu,
                     ]);
@@ -52,7 +50,7 @@ class SaveOpnameService
                         OpnameDetail::field_sync() => BooleanType::Yes,
                     ]);
 
-                } else if($detail->opname_detail_ketemu == BooleanType::Yes){
+                } elseif ($detail->opname_detail_ketemu == BooleanType::Yes) {
                     $item = array_merge($item, [
                         OpnameDetail::field_register() => BooleanType::Yes,
                         OpnameDetail::field_transaksi() => $detail->opname_detail_transaksi,
@@ -62,7 +60,7 @@ class SaveOpnameService
                         OpnameDetail::field_waktu() => $detail->opname_detail_waktu,
                         OpnameDetail::field_sync() => BooleanType::No,
                     ]);
-                } else if($detail->opname_detail_ketemu == BooleanType::No){
+                } elseif ($detail->opname_detail_ketemu == BooleanType::No) {
                     $item = array_merge($item, [
                         OpnameDetail::field_waktu() => $waktu,
                         OpnameDetail::field_sync() => BooleanType::Yes,
@@ -74,26 +72,28 @@ class SaveOpnameService
                 $sent[] = $item;
             }
 
-            if($insert_register){
+            if ($insert_register) {
                 OpnameDetail::insert($insert_register);
             }
 
-            if($scan_rs){
+            if ($scan_rs) {
                 OpnameDetail::whereIn(OpnameDetail::field_rfid(), $scan_rs)
-                ->update([
-                    OpnameDetail::field_ketemu() => BooleanType::Yes,
-                    OpnameDetail::field_scan_rs() => BooleanType::Yes,
-                    OpnameDetail::field_waktu() => $waktu,
-                ]);
+                    ->update([
+                        OpnameDetail::field_ketemu() => BooleanType::Yes,
+                        OpnameDetail::field_scan_rs() => BooleanType::Yes,
+                        OpnameDetail::field_waktu() => $waktu,
+                    ]);
 
                 PluginsHistory::bulk($scan_rs, ProcessType::Opname, 'Ketemu ketika Opname');
             }
 
             DB::commit();
-           return Notes::create($sent);
+
+            return Notes::create($sent);
 
         } catch (\Throwable $th) {
             DB::rollBack();
+
             return Notes::error($th->getMessage());
         }
 

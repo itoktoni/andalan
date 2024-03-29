@@ -37,7 +37,7 @@ return [
     // Multi-user credentials (OPTIONAL)
     // Example: 'user' => 'password', 'user1' => 'password1'
     'accounts' => [
-    //  'user' => 'password',
+        //  'user' => 'password',
     ],
 
     // Hash incoming password

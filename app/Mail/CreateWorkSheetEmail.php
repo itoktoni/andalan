@@ -15,8 +15,9 @@ class CreateWorkSheetEmail extends Mailable
      *
      * @return void
      */
+    public $data;
 
-    public $data, $type;
+    public $type;
 
     public function __construct($data, $type)
     {

@@ -15,8 +15,13 @@ class CreateMovementEmail extends Mailable
      *
      * @return void
      */
+    public $data;
 
-    public $data, $product_name, $location_old, $location_new;
+    public $product_name;
+
+    public $location_old;
+
+    public $location_new;
 
     public function __construct($data, $product_name, $location_old, $location_new)
     {

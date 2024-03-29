@@ -2,14 +2,10 @@
 
 namespace App\Providers;
 
-use App\Dao\Enums\RoleLevel;
 use Illuminate\Pagination\Paginator;
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\ServiceProvider;
 use Plugins\Query;
-use ProtoneMedia\LaravelFormComponents\Components\Form;
-use ProtoneMedia\LaravelFormComponents\Components\FormInput;
-use ProtoneMedia\LaravelFormComponents\Components\FormSelect;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -34,9 +30,9 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::useBootstrap();
         $roles = Query::role();
-        if($roles){
-            foreach($roles as $role){
-                Blade::if($role->field_primary, function () use($role) {
+        if ($roles) {
+            foreach ($roles as $role) {
+                Blade::if($role->field_primary, function () use ($role) {
                     return auth()->check() && auth()->user()->role == $role->field_primary;
                 });
             }

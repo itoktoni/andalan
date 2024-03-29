@@ -1,14 +1,16 @@
 <x-layout>
-    <x-card>
-        <x-form :model="$model" :upload="true">
-            <x-action form="form" />
+    <x-card label="Company Settings">
+        <x-form action="{{ route('save-settings') }}" :model="$model" :upload="true">
+            <x-action form="null">
+                <x-button type="submit" label="Simpan" />
+            </x-action>
 
             @bind($model)
                 <x-form-input col="6" value="{{ env('APP_NAME') }}" label="Nama Perusahaan" name="name" />
                 <x-form-input col="6" value="{{ env('APP_TITLE') }}" label="Nama Title" name="title" />
                 <x-form-upload col="3" name="logo" />
                 <div class="col-md-3">
-                    <img class="img-thumbnail img-fluid" src="{{ env('APP_LOGO') ? url('public/storage/'.env('APP_LOGO')) : url('assets/media/image/logo.png') }}" alt="">
+                    <img class="img-thumbnail img-fluid" src="{{ env('APP_LOGO') ? url(env('APP_LOGO')) : url('default.png') }}" alt="logo">
                 </div>
                 <x-form-input col="6" value="{{ env('APP_LOCATION') }}" label="Lokasi Report" name="location" />
                 <x-form-input col="3" value="{{ env('TRANSACTION_DAY_ALLOWED') }}" label="Toleransi hari Tembak kotor" name="transaction_day" />

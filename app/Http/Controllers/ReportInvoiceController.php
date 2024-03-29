@@ -3,16 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Dao\Enums\CuciType;
-use App\Dao\Models\Jenis;
+use App\Dao\Models\JenisLinen;
 use App\Dao\Models\Rs;
 use App\Dao\Models\User;
 use App\Dao\Models\ViewInvoice;
 use App\Dao\Repositories\ViewInvoiceRepository;
 use App\Http\Requests\InvoiceReportRequest;
 use Carbon\CarbonPeriod;
-use DateInterval;
-use DatePeriod;
-use DateTime;
 
 class ReportInvoiceController extends MinimalController
 {
@@ -65,13 +62,13 @@ class ReportInvoiceController extends MinimalController
         $tanggal = $linen = $lawan = $nama = [];
 
         $rs_id = request()->get(Rs::field_primary());
-        $linen = Jenis::select([
-            Jenis::field_primary(),
-            Jenis::field_name(),
-            Jenis::field_weight(),
+        $linen = JenisLinen::select([
+            JenisLinen::field_primary(),
+            JenisLinen::field_name(),
+            JenisLinen::field_weight(),
         ])
-        ->where(Jenis::field_rs_id(), $rs_id)
-        ->orderBy(Jenis::field_name(), 'ASC')->get() ?? [];
+            ->where(JenisLinen::field_rs_id(), $rs_id)
+            ->orderBy(JenisLinen::field_name(), 'ASC')->get() ?? [];
 
         $rs = Rs::find($rs_id);
 

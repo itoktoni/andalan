@@ -20,7 +20,8 @@ class RsController extends MasterController
         self::$service = self::$service ?? $service;
     }
 
-    protected function beforeForm(){
+    protected function beforeForm()
+    {
 
         $ruangan = Ruangan::getOptions();
         $status = LinenType::getOptions();
@@ -34,12 +35,14 @@ class RsController extends MasterController
     public function postCreate(RsRequest $request, CreateRsService $service)
     {
         $data = $service->save(self::$repository, $request->all());
+
         return Response::redirectBack($data);
     }
 
     public function postUpdate($code, RsRequest $request, UpdateRsService $service)
     {
         $data = $service->update(self::$repository, $request->all(), $code);
+
         return Response::redirectBack($data);
     }
 
@@ -50,6 +53,7 @@ class RsController extends MasterController
 
         $this->beforeForm();
         $this->beforeUpdate($code);
+
         return moduleView(modulePathForm(), $this->share([
             'model' => $data,
             'selected' => $selected,

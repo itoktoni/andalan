@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Dao\Enums\CuciType;
 use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\RegisterType;
-use App\Dao\Models\Jenis;
+use App\Dao\Models\JenisLinen;
 use App\Dao\Models\Rs;
 use App\Dao\Models\Ruangan;
 use App\Dao\Models\ViewDetailLinen;
@@ -26,7 +26,7 @@ class ReportPendingLinenController extends MinimalController
     protected function beforeForm()
     {
         $rs = Rs::getOptions();
-        $jenis = Jenis::getOptions();
+        $jenis = JenisLinen::getOptions();
         $ruangan = Ruangan::getOptions();
         $cuci = CuciType::getOptions();
         $register = RegisterType::getOptions();

@@ -9,7 +9,7 @@ use App\Dao\Enums\RegisterType;
 use App\Dao\Enums\TransactionType;
 use App\Dao\Models\Detail;
 use App\Dao\Models\History;
-use App\Dao\Models\Jenis;
+use App\Dao\Models\JenisLinen;
 use App\Dao\Models\OpnameDetail;
 use App\Dao\Models\Rs;
 use App\Dao\Models\Ruangan;
@@ -34,6 +34,7 @@ class DetailController extends MasterController
     public function postUpdate($code, GeneralRequest $request, UpdateService $service)
     {
         $data = $service->update(self::$repository, $request, $code);
+
         return Response::redirectBack($data);
     }
 
@@ -41,7 +42,7 @@ class DetailController extends MasterController
     {
         $rs = Rs::getOptions();
         $ruangan = Ruangan::getOptions();
-        $jenis = Jenis::getOptions();
+        $jenis = JenisLinen::getOptions();
         $cuci = CuciType::getOptions();
         $transaction = DetailType::getOptions();
         $process = ProcessType::getOptions();
@@ -60,35 +61,33 @@ class DetailController extends MasterController
 
     public function getData()
     {
-        $query = self::$repository->dataRepository()
-                //  ->showSql()
-                ;
+        $query = self::$repository->dataRepository();
 
-        if($status = request()->get('status')){
-            if($status == DetailType::Register){
+        if ($status = request()->get('status')) {
+            if ($status == DetailType::Register) {
                 $query = $query->where(Transaksi::field_status_transaction(), TransactionType::Register);
-            } else if($status == DetailType::LinenBaru){
+            } elseif ($status == DetailType::LinenBaru) {
                 $query = $query->where(Transaksi::field_status_bersih(), TransactionType::Register);
-            } else if($status == DetailType::Kotor){
+            } elseif ($status == DetailType::Kotor) {
                 $query = $query->where(Transaksi::field_status_transaction(), TransactionType::Kotor);
-            } else if($status == DetailType::Retur){
+            } elseif ($status == DetailType::Retur) {
                 $query = $query->where(Transaksi::field_status_transaction(), TransactionType::Retur);
-            } else if($status == DetailType::Rewash){
+            } elseif ($status == DetailType::Rewash) {
                 $query = $query->where(Transaksi::field_status_transaction(), TransactionType::Rewash);
-            } else if($status == DetailType::BersihKotor){
+            } elseif ($status == DetailType::BersihKotor) {
                 $query = $query->where(Transaksi::field_status_bersih(), TransactionType::BersihKotor);
-            } else if($status == DetailType::BersihRetur){
+            } elseif ($status == DetailType::BersihRetur) {
                 $query = $query->where(Transaksi::field_status_bersih(), TransactionType::BersihRetur);
-            } else if($status == DetailType::BersihRewash){
+            } elseif ($status == DetailType::BersihRewash) {
                 $query = $query->where(Transaksi::field_status_bersih(), TransactionType::BersihRewash);
-            } else if($status == DetailType::Pending){
+            } elseif ($status == DetailType::Pending) {
                 $query = $query->where(ViewDetailLinen::field_status_process(), ProcessType::Pending)
-                                ->whereNULL(Transaksi::field_status_bersih())
-                                ->groupBy(ViewDetailLinen::field_primary());
-            } else if($status == DetailType::Hilang){
+                    ->whereNULL(Transaksi::field_status_bersih())
+                    ->groupBy(ViewDetailLinen::field_primary());
+            } elseif ($status == DetailType::Hilang) {
                 $query = $query->where(ViewDetailLinen::field_status_process(), ProcessType::Hilang)
-                                ->whereNULL(Transaksi::field_status_bersih())
-                                ->groupBy(ViewDetailLinen::field_primary());
+                    ->whereNULL(Transaksi::field_status_bersih())
+                    ->groupBy(ViewDetailLinen::field_primary());
             }
         }
 
@@ -100,7 +99,7 @@ class DetailController extends MasterController
             $query = $query->whereDate(Detail::field_created_at(), '<=', $end);
         }
 
-        return $query->fastPaginate(100);
+        return $query->paginate(100);
     }
 
     public function getTable()
@@ -125,8 +124,8 @@ class DetailController extends MasterController
 
         $model = $this->get($code);
         $history = History::where(History::field_name(), $code)
-        ->orderBy(History::field_created_at(), 'DESC')
-        ->limit(10)->get();
+            ->orderBy(History::field_created_at(), 'DESC')
+            ->limit(10)->get();
 
         return moduleView(modulePathForm('history'), $this->share([
             'model' => $model,
@@ -148,18 +147,19 @@ class DetailController extends MasterController
         $code = request()->get('code');
         $data = self::$service->delete(self::$repository, $code);
         $this->deleteAll([$code]);
+
         return Response::redirectBack($data);
     }
 
     public function postTable()
     {
-        if(request()->exists('delete')){
+        if (request()->exists('delete')) {
             $code = array_unique(request()->get('code'));
             $data = self::$service->delete(self::$repository, $code);
             $this->deleteAll($code);
         }
 
-        if(request()->exists('sort')){
+        if (request()->exists('sort')) {
             $sort = array_unique(request()->get('sort'));
             $data = self::$service->sort(self::$repository, $sort);
         }
@@ -167,7 +167,8 @@ class DetailController extends MasterController
         return Response::redirectBack($data);
     }
 
-    private function deleteAll($code) {
+    private function deleteAll($code)
+    {
         OpnameDetail::whereIn(OpnameDetail::field_rfid(), $code)->delete();
         Transaksi::whereIn(Transaksi::field_rfid(), $code)->delete();
     }

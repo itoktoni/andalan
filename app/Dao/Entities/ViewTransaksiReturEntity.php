@@ -23,5 +23,4 @@ trait ViewTransaksiReturEntity
     {
         return $this->{$this->field_total()};
     }
-
 }

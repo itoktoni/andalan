@@ -4,13 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Dao\Enums\CetakType;
 use App\Dao\Enums\ProcessType;
-use App\Dao\Enums\RegisterType;
 use App\Dao\Models\Cetak;
 use App\Dao\Models\Detail;
 use App\Dao\Models\Transaksi;
 use App\Dao\Models\ViewBarcode;
 use App\Dao\Models\ViewDetailLinen;
-use App\Dao\Models\ViewTransaksi;
 use App\Dao\Repositories\TransaksiRepository;
 use App\Http\Requests\BarcodeRequest;
 use App\Http\Requests\GeneralRequest;
@@ -18,11 +16,9 @@ use App\Http\Services\CreateService;
 use App\Http\Services\SingleService;
 use App\Http\Services\UpdateBarcodeService;
 use App\Http\Services\UpdateService;
-use Faker\Provider\Barcode;
 use Plugins\Alert;
 use Plugins\History as PluginsHistory;
 use Plugins\Notes;
-use Plugins\Query;
 use Plugins\Response;
 
 class BarcodeController extends MasterController
@@ -36,24 +32,28 @@ class BarcodeController extends MasterController
     public function postCreate(GeneralRequest $request, CreateService $service)
     {
         $data = $service->save(self::$repository, $request);
+
         return Response::redirectBack($data);
     }
 
     public function postUpdate($code, GeneralRequest $request, UpdateService $service)
     {
         $data = $service->update(self::$repository, $request, $code);
+
         return Response::redirectBack($data);
     }
 
     public function getData()
     {
         $query = self::$repository->dataBarcode();
+
         return $query;
     }
 
     public function getTable()
     {
         $data = $this->getData();
+
         return moduleView(modulePathTable(), [
             'data' => $data,
             'fields' => self::$repository->barcode->getShowField(),
@@ -77,7 +77,7 @@ class BarcodeController extends MasterController
     public function getUpdate($code)
     {
         $transaksi = $this->getTransaksi($code);
-        if (!$transaksi) {
+        if (! $transaksi) {
             return Response::redirectTo(moduleRoute('getTable'));
         }
 
@@ -96,7 +96,7 @@ class BarcodeController extends MasterController
                 Detail::field_status_process() => ProcessType::Grouping,
             ]);
 
-            PluginsHistory::log($transaksi->field_rfid, ProcessType::DeleteBarcode, 'Data di delete dari barcode ' . $transaksi->field_primary);
+            PluginsHistory::log($transaksi->field_rfid, ProcessType::DeleteBarcode, 'Data di delete dari barcode '.$transaksi->field_primary);
             Notes::delete($transaksi->get()->toArray());
             Alert::delete();
 
@@ -111,6 +111,7 @@ class BarcodeController extends MasterController
             $transaksi->transaksi_status_bersih = null;
             $transaksi->save();
         }
+
         return Response::redirectBack();
     }
 
@@ -153,22 +154,24 @@ class BarcodeController extends MasterController
     public function barcode(BarcodeRequest $request, UpdateBarcodeService $service)
     {
         $check = $service->update($request->rfid, $request->code, $request->status_transaksi, $request->ruangan_id, $request->rs_id);
+
         return $check;
     }
 
-    public function print($code){
+    public function print($code)
+    {
 
         $total = Transaksi::where(Transaksi::field_barcode(), $code)
-        ->join((new ViewDetailLinen())->getTable(), ViewDetailLinen::field_primary(), Transaksi::field_rfid())
-        ->get();
+            ->join((new ViewDetailLinen())->getTable(), ViewDetailLinen::field_primary(), Transaksi::field_rfid())
+            ->get();
 
         $data = null;
         $passing = [];
 
-        if($total->count() > 0){
+        if ($total->count() > 0) {
 
             $cetak = Cetak::where(Cetak::field_name(), $code)->first();
-            if(!$cetak){
+            if (! $cetak) {
                 $cetak = Cetak::create([
                     Cetak::field_date() => date('Y-m-d'),
                     Cetak::field_name() => $code,
@@ -179,7 +182,7 @@ class BarcodeController extends MasterController
                 ]);
             }
 
-            $data = $total->mapToGroups(function($item){
+            $data = $total->mapToGroups(function ($item) {
                 $parse = [
                     'id' => $item->view_linen_id,
                     'nama' => $item->view_linen_nama,
@@ -188,7 +191,7 @@ class BarcodeController extends MasterController
                 return [$item[ViewDetailLinen::field_id()] => $parse];
             });
 
-            foreach($data as $item){
+            foreach ($data as $item) {
                 $return[] = [
                     'id' => $item[0]['id'],
                     'nama' => $item[0]['nama'],

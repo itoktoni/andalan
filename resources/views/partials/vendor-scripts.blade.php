@@ -2,8 +2,6 @@
 <script src="{{ url('assets/libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ url('assets/libs/metismenu/metisMenu.min.js') }}"></script>
 <script src="{{ url('assets/libs/simplebar/simplebar.min.js') }}"></script>
-<script src="{{ url('assets/libs/node-waves/waves.min.js') }}"></script>
-<script src="{{ url('assets/libs/feather-icons/feather.min.js') }}"></script>
 <script src="{{ url('assets/libs/stacktable/stacktable.min.js') }}"></script>
 <script
   src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/js/selectize.min.js"

@@ -10,6 +10,7 @@ class Core
     {
         $controller = (new \ReflectionClass($class))->getShortName();
         $clean = Str::replaceLast('Controller', '', $controller);
+
         return Str::snake($clean);
     }
 
@@ -45,10 +46,10 @@ class Core
             'dispatchSync',
         ];
         foreach ($function->getMethods() as $method) {
-            if(!in_array($method->getName(), $unset) && $method->getModifiers() == 1){
+            if (! in_array($method->getName(), $unset) && $method->getModifiers() == 1) {
                 $function_name = str_replace('_', ' ', Str::snake($method->getName()));
-                $name = ucfirst(str_replace('get ','', $function_name));
-                $name = ucfirst(str_replace('Post ','', $name));
+                $name = ucfirst(str_replace('get ', '', $function_name));
+                $name = ucfirst(str_replace('Post ', '', $name));
 
                 $methodNames[] = [
                     'primary' => $method->getName(),
@@ -60,6 +61,7 @@ class Core
                 ];
             }
         }
+
         return collect($methodNames);
     }
 }

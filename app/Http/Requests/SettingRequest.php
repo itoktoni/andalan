@@ -9,7 +9,7 @@ class SettingRequest extends FormRequest
 {
     use ValidationTrait;
 
-    public function validation() : array
+    public function validation(): array
     {
         return [
             'name' => 'required|min:3',

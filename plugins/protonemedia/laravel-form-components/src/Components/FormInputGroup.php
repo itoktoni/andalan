@@ -7,6 +7,7 @@ class FormInputGroup extends Component
     use HandlesValidationErrors;
 
     public string $name;
+
     public string $label;
 
     /**
@@ -16,8 +17,8 @@ class FormInputGroup extends Component
      */
     public function __construct(string $name = '', string $label = '', bool $showErrors = true)
     {
-        $this->name       = $name;
-        $this->label      = $label;
+        $this->name = $name;
+        $this->label = $label;
         $this->showErrors = $name && $showErrors;
     }
 }

@@ -4,10 +4,11 @@ namespace ProtoneMedia\LaravelFormComponents\Components;
 
 class FormRange extends Component
 {
-    use HandlesValidationErrors;
     use HandlesDefaultAndOldValue;
+    use HandlesValidationErrors;
 
     public string $name;
+
     public string $label;
 
     public $value;
@@ -25,8 +26,8 @@ class FormRange extends Component
         $language = null,
         bool $showErrors = true
     ) {
-        $this->name       = $name;
-        $this->label      = $label;
+        $this->name = $name;
+        $this->label = $label;
         $this->showErrors = $showErrors;
 
         if ($language) {

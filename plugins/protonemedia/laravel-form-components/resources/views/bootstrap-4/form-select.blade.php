@@ -1,4 +1,4 @@
-<div class="form-group {{ $col }} {{ $errors->has($name) ? 'has-error' : '' }}">
+<div class="form-group {{ $col }} {{ $errors->has($name) ? 'has-danger' : '' }}">
     <x-form-label :label="$label" :for="$attributes->get('id') ?: $id()" />
 
     @if((!empty($prepend) or !empty($append)))

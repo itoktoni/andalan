@@ -15,7 +15,8 @@ class ReportAppInvoiceController extends MinimalController
         self::$repository = self::$repository ?? $repository;
     }
 
-    protected function beforeForm(){
+    protected function beforeForm()
+    {
 
         $rs = ViewRs::getOptions();
 
@@ -24,12 +25,13 @@ class ReportAppInvoiceController extends MinimalController
         ];
     }
 
-    public function getPrint(){
+    public function getPrint()
+    {
         set_time_limit(0);
         $this->data = self::$repository->getPrint()->get();
 
         $date = $linen = [];
-        if($this->data){
+        if ($this->data) {
 
             $date = $this->data->unique(ViewInvoice::field_tanggal())->pluck(ViewInvoice::field_tanggal());
             $linen = $this->data->mapToGroups(function ($item, $key) {
@@ -42,7 +44,7 @@ class ReportAppInvoiceController extends MinimalController
             'model' => $this->data->first(),
             'data' => $this->data,
             'linen' => $linen,
-            'date' => $date
+            'date' => $date,
         ]));
     }
 }

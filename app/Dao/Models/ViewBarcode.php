@@ -7,6 +7,7 @@ use App\Dao\Builder\DataBuilder;
 class ViewBarcode extends ViewTransaksi
 {
     protected $table = 'view_barcode';
+
     protected $primaryKey = 'transaksi_id';
 
     public function fieldDatatable(): array

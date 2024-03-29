@@ -6,6 +6,7 @@
     <title>{{ env('APP_NAME') }} - {{ env('APP_DESCRIPTION') }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     @include('partials/head-css')
+    <link rel="shortcut icon" href="#">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @yield('head')
 
@@ -13,6 +14,13 @@
     @livewireStyles
 
     <style>
+    .table-responsive{
+        margin-bottom: 10px;
+    }
+
+    .pagination{
+        overflow-x: auto;
+    }
     .max-content
     {
         width: max-content;
@@ -59,6 +67,35 @@
 
     .form-group{
         margin-bottom: 10px;
+    }
+
+    #sidebar-menu ul li a i{
+        font-size: 1rem;
+        line-height: unset;
+        vertical-align: sub;
+    }
+
+    #sidebar-menu .has-arrow:after {
+        content: "V" !important;
+        font-family: 'dripicons-v2';
+        display: block;
+        float: right;
+        -webkit-transition: -webkit-transform .2s;
+        transition: -webkit-transform .2s;
+        transition: transform .2s;
+        transition: transform .2s, -webkit-transform .2s;
+        font-size: 1.1rem;
+        margin-right: -5px;
+        margin-top: -2px;
+    }
+
+    .navbar-header .header-item i{
+        font-size: 1.25rem;
+    }
+
+    .navbar-header .dropdown-item i{
+        margin-right: 10px;
+        vertical-align: sub;
     }
 
     @media (max-width: 800px) {

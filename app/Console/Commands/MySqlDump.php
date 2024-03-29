@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use Ifsnop\Mysqldump as IMysqldump;
+use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -55,14 +55,14 @@ class MySqlDump extends Command
             $contents = File::get(storage_path('app/'.$name));
             $alphara = Storage::disk('alphara')->put('Rebuild/'.$name, $contents);
 
-            if($alphara){
+            if ($alphara) {
                 $this->info('Backup Finish '.$name);
             }
 
             unlink(storage_path('app/'.$name));
 
         } catch (\Exception $e) {
-            $errror = 'mysqldump-php error: ' . $e->getMessage();
+            $errror = 'mysqldump-php error: '.$e->getMessage();
             $this->error($errror);
         }
     }

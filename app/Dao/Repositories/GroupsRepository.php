@@ -3,7 +3,6 @@
 namespace App\Dao\Repositories;
 
 use App\Dao\Interfaces\CrudInterface;
-use App\Dao\Models\Groups;
 use App\Dao\Models\SystemGroup;
 
 class GroupsRepository extends MasterRepository implements CrudInterface

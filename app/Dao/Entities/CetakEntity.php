@@ -93,5 +93,4 @@ trait CetakEntity
     {
         return $this->{$this->field_delivery()};
     }
-
 }

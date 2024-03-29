@@ -16,9 +16,8 @@ class GeneralRequest extends FormRequest
         $this->model = request()->route()->getController()::$repository->model ?? false;
     }
 
-    public function validation() : array
+    public function validation(): array
     {
         return $this->model ? [$this->model->field_name() => 'required'] : [];
     }
-
 }

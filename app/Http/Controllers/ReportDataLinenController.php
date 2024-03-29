@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Dao\Models\Jenis;
+use App\Dao\Models\JenisLinen;
 use App\Dao\Models\Kategori;
 use App\Dao\Models\Rs;
 use App\Dao\Models\Ruangan;
@@ -20,12 +20,13 @@ class ReportDataLinenController extends MinimalController
         self::$repository = self::$repository ?? $repository;
     }
 
-    protected function beforeForm(){
+    protected function beforeForm()
+    {
 
         $rs = Rs::getOptions();
         $ruangan = Ruangan::getOptions();
         $kategori = Kategori::getOptions();
-        $jenis = Jenis::getOptions();
+        $jenis = JenisLinen::getOptions();
 
         self::$share = [
             'jenis' => $jenis,
@@ -35,16 +36,18 @@ class ReportDataLinenController extends MinimalController
         ];
     }
 
-    private function getQuery($request){
+    private function getQuery($request)
+    {
         return self::$repository->getPrintDataMaster()->get();
     }
 
-    private function exportExcel($request) {
+    private function exportExcel($request)
+    {
         $writer = SimpleExcelWriter::streamDownload('data_linen.xlsx');
-        self::$repository->getPrintDataMaster()->chunk(1000, function($item) use ($writer){
-            foreach($item as $key => $table){
+        self::$repository->getPrintDataMaster()->chunk(1000, function ($item) use ($writer) {
+            foreach ($item as $key => $table) {
                 $writer->addRow([
-                    'No.' => $key+1,
+                    'No.' => $key + 1,
                     'NO. RFID' => $table->field_primary,
                     'KATEGORI LINEN' => $table->view_kategori_nama,
                     'LINEN' => $table->field_name,
@@ -73,16 +76,18 @@ class ReportDataLinenController extends MinimalController
         return $writer->toBrowser();
     }
 
-    public function getPrint(Request $request){
+    public function getPrint(Request $request)
+    {
         set_time_limit(0);
         $rs = Rs::find(request()->get(ViewDetailLinen::field_rs_id()));
 
         $this->data = [];
-        if($request->action == 'export' || $this->getQuery($request)->count() > env('APP_CHUNK', 10000)){
+        if ($request->action == 'export' || $this->getQuery($request)->count() > env('APP_CHUNK', 10000)) {
             return $this->exportExcel($request);
         }
 
         $this->data = $this->getQuery($request);
+
         return moduleView(modulePathPrint(), $this->share([
             'data' => $this->data,
             'rs' => $rs,

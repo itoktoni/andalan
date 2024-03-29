@@ -10,6 +10,7 @@ class ViewLog extends Model
     use ViewLogEntity;
 
     protected $table = 'view_log';
+
     protected $primaryKey = 'view_log_rfid';
 
     protected $casts = [

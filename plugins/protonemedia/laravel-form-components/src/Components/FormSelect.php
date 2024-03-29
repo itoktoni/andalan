@@ -8,20 +8,31 @@ use Illuminate\Support\Str;
 
 class FormSelect extends Component
 {
-    use HandlesValidationErrors;
     use HandlesBoundValues;
+    use HandlesValidationErrors;
 
     public string $name;
+
     public $label;
+
     public $options;
+
     public $api;
+
     public $col;
+
     public $prepend;
+
     public $append;
+
     public $selectedKey;
+
     public $search;
+
     public bool $multiple;
+
     public bool $floating;
+
     public string $placeholder;
 
     /**
@@ -46,16 +57,16 @@ class FormSelect extends Component
         bool $floating = false,
         string $placeholder = ''
     ) {
-        $this->name         = $name;
-        $this->label        = $label;
-        $this->options      = $options;
-        $this->api          = $api;
-        $this->col          = $col;
-        $this->prepend          = $prepend;
-        $this->append          = $append;
-        $this->search          = $search;
+        $this->name = $name;
+        $this->label = $label;
+        $this->options = $options;
+        $this->api = $api;
+        $this->col = $col;
+        $this->prepend = $prepend;
+        $this->append = $append;
+        $this->search = $search;
         $this->manyRelation = $manyRelation;
-        $this->placeholder  = $placeholder;
+        $this->placeholder = $placeholder;
 
         if ($this->isNotWired()) {
             $inputName = static::convertBracketsToDots(Str::before($name, '[]'));
@@ -71,17 +82,17 @@ class FormSelect extends Component
             }
         }
 
-        $this->multiple   = $multiple;
+        $this->multiple = $multiple;
         $this->showErrors = $showErrors;
-        $this->floating   = $floating && !$multiple;
+        $this->floating = $floating && ! $multiple;
 
         $this->col = $this->col ? 'col-md-'.$this->col : 'col';
 
-        if(!is_bool($this->label)){
+        if (! is_bool($this->label)) {
             $this->label = $this->label ? $this->label : formatLabel($name);
         }
 
-        if(empty($placeholder)){
+        if (empty($placeholder)) {
             $this->placeholder = '- Silahkan pilih -';
         }
     }

@@ -7,19 +7,20 @@ use App\Dao\Entities\UserEntity;
 use App\Dao\Traits\ActiveTrait;
 use App\Dao\Traits\DataTableTrait;
 use App\Dao\Traits\OptionTrait;
-use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Kirschbaum\PowerJoins\PowerJoins;
 use Kyslik\ColumnSortable\Sortable;
+use Laravel\Sanctum\HasApiTokens;
 use Mehradsadeghi\FilterQueryString\FilterQueryString as FilterQueryString;
 use Touhidurabir\ModelSanitize\Sanitizable as Sanitizable;
 
 class User extends Authenticatable
 {
-    use Notifiable, HasApiTokens, Sortable, FilterQueryString, Sanitizable, DataTableTrait, UserEntity, ActiveTrait, PowerJoins, OptionTrait;
+    use ActiveTrait, DataTableTrait, FilterQueryString, HasApiTokens, Notifiable, OptionTrait, PowerJoins, Sanitizable, Sortable, UserEntity;
 
     protected $table = 'users';
+
     protected $primaryKey = 'id';
 
     protected $fillable = [
@@ -55,6 +56,7 @@ class User extends Authenticatable
     ];
 
     public $timestamps = true;
+
     public $incrementing = true;
 
     public function fieldSearching()
@@ -84,6 +86,7 @@ class User extends Authenticatable
     {
         $query = $this->queryFilter($query);
         $query = $query->orderBy(SystemRole::field_name(), $direction);
+
         return $query;
     }
 

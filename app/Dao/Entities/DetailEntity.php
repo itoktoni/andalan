@@ -3,14 +3,14 @@
 namespace App\Dao\Entities;
 
 use App\Dao\Enums\CuciType;
-use App\Dao\Enums\LinenType;
 use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\RegisterType;
 use App\Dao\Enums\TransactionType;
-use App\Dao\Models\Jenis;
+use App\Dao\Models\JenisBahan;
+use App\Dao\Models\JenisLinen;
 use App\Dao\Models\Rs;
 use App\Dao\Models\Ruangan;
-use App\Dao\Models\ViewTransaksiCuci;
+use App\Dao\Models\Supplier;
 
 trait DetailEntity
 {
@@ -41,7 +41,7 @@ trait DetailEntity
 
     public function getFieldWeightAttribute()
     {
-        return $this->{Jenis::field_weight()};
+        return $this->{JenisLinen::field_weight()};
     }
 
     public static function field_description()
@@ -82,6 +82,36 @@ trait DetailEntity
     public function getFieldRsNameAttribute()
     {
         return $this->{Rs::field_name()};
+    }
+
+    public static function field_bahan_id()
+    {
+        return 'detail_id_bahan';
+    }
+
+    public function getFieldBahanIdAttribute()
+    {
+        return $this->{$this->field_bahan_id()};
+    }
+
+    public function getFieldBahanNameAttribute()
+    {
+        return $this->{JenisBahan::field_name()};
+    }
+
+    public static function field_supplier_id()
+    {
+        return 'detail_id_supplier';
+    }
+
+    public function getFieldSupplierIdAttribute()
+    {
+        return $this->{$this->field_supplier_id()};
+    }
+
+    public function getFieldSupplierNameAttribute()
+    {
+        return $this->{Supplier::field_name()};
     }
 
     public static function field_status_cuci()

@@ -11,8 +11,8 @@ class Layout extends Component
      *
      * @return void
      */
-
     public $label;
+
     public $action;
 
     public function __construct($label = null, $action = null)

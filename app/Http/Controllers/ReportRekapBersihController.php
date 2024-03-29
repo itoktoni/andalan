@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Dao\Enums\TransactionType;
 use App\Dao\Models\Rs;
-use App\Dao\Models\Transaksi;
 use App\Dao\Models\User;
 use App\Dao\Repositories\TransaksiRepository;
 use App\Http\Requests\RekapReportRequest;
@@ -20,7 +19,8 @@ class ReportRekapBersihController extends MinimalController
         self::$repository = self::$repository ?? $repository;
     }
 
-    protected function beforeForm(){
+    protected function beforeForm()
+    {
 
         $rs = Rs::getOptions();
         $user = User::getOptions();
@@ -31,7 +31,8 @@ class ReportRekapBersihController extends MinimalController
         ];
     }
 
-    private function getQueryBersih($request){
+    private function getQueryBersih($request)
+    {
         // $query = self::$repository->getDetailAllBersih([TransactionType::BersihKotor]);
 
         $query = DB::table('view_rekap_bersih')->where('view_rs_id', $request->rs_id);
@@ -47,21 +48,22 @@ class ReportRekapBersihController extends MinimalController
         return $query->get();
     }
 
-    private function getQueryKotor($request){
+    private function getQueryKotor($request)
+    {
         // $query = self::$repository->getDetailAllKotor([TransactionType::Kotor]);
 
         $query = DB::table('view_rekap_kotor')->where('view_rs_id', $request->rs_id);
 
         if ($start_date = $request->start_rekap) {
             $bersih_from = Carbon::createFromFormat('Y-m-d', $start_date) ?? false;
-            if($bersih_from){
+            if ($bersih_from) {
                 $query = $query->where('view_tanggal', '>=', $bersih_from->addDay(-1)->format('Y-m-d'));
             }
         }
 
         if ($end_date = $request->end_rekap) {
             $bersih_to = Carbon::createFromFormat('Y-m-d', $end_date) ?? false;
-            if($bersih_to){
+            if ($bersih_to) {
                 $query = $query->where('view_tanggal', '<=', $bersih_to->addDay(-1)->format('Y-m-d'));
             }
         }
@@ -69,7 +71,8 @@ class ReportRekapBersihController extends MinimalController
         return $query->get();
     }
 
-    public function getPrint(RekapReportRequest $request){
+    public function getPrint(RekapReportRequest $request)
+    {
         set_time_limit(0);
         ini_set('memory_limit', '512M');
 

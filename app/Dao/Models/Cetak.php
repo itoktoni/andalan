@@ -17,9 +17,10 @@ use Touhidurabir\ModelSanitize\Sanitizable as Sanitizable;
 
 class Cetak extends Model
 {
-    use Sortable, FilterQueryString, Sanitizable, DataTableTrait, CetakEntity, ActiveTrait, OptionTrait, PowerJoins, ApiTrait;
+    use ActiveTrait, ApiTrait, CetakEntity, DataTableTrait, FilterQueryString, OptionTrait, PowerJoins, Sanitizable, Sortable;
 
     protected $table = 'cetak';
+
     protected $primaryKey = 'cetak_id';
 
     protected $fillable = [
@@ -42,7 +43,7 @@ class Cetak extends Model
     ];
 
     protected $casts = [
-        'cetak_date' => 'date:Y-m-d'
+        'cetak_date' => 'date:Y-m-d',
     ];
 
     protected $filters = [
@@ -50,9 +51,11 @@ class Cetak extends Model
     ];
 
     public $timestamps = false;
+
     public $incrementing = true;
 
-    public function fieldSearching(){
+    public function fieldSearching()
+    {
         return $this->field_name();
     }
 

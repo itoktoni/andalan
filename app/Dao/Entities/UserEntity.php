@@ -2,7 +2,6 @@
 
 namespace App\Dao\Entities;
 
-use App\Dao\Models\Roles;
 use App\Dao\Models\Supplier;
 use App\Dao\Models\SystemRole;
 

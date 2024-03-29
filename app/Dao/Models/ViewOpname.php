@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class ViewOpname extends Model
 {
     protected $table = 'view_opname';
+
     protected $primaryKey = 'so_id';
 
     public function has_jenis()
     {
-        return $this->hasOne(Jenis::class, Jenis::field_primary(), Jenis::field_primary());
+        return $this->hasOne(JenisLinen::class, JenisLinen::field_primary(), JenisLinen::field_primary());
     }
 
     public function has_ruangan()

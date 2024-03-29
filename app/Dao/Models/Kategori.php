@@ -17,9 +17,10 @@ use Touhidurabir\ModelSanitize\Sanitizable as Sanitizable;
 
 class Kategori extends Model
 {
-    use Sortable, FilterQueryString, Sanitizable, DataTableTrait, KategoriEntity, ActiveTrait, OptionTrait, PowerJoins, ApiTrait;
+    use ActiveTrait, ApiTrait, DataTableTrait, FilterQueryString, KategoriEntity, OptionTrait, PowerJoins, Sanitizable, Sortable;
 
     protected $table = 'kategori';
+
     protected $primaryKey = 'kategori_id';
 
     protected $fillable = [
@@ -34,7 +35,7 @@ class Kategori extends Model
     ];
 
     protected $casts = [
-        'kategori_id' => 'integer'
+        'kategori_id' => 'integer',
     ];
 
     protected $filters = [
@@ -42,9 +43,11 @@ class Kategori extends Model
     ];
 
     public $timestamps = false;
+
     public $incrementing = true;
 
-    public function fieldSearching(){
+    public function fieldSearching()
+    {
         return $this->field_name();
     }
 

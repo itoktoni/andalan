@@ -9,7 +9,7 @@
         @case('update')
             @can(ACTION_UPDATE)
             <x-button module="getUpdate" key="{{ $model->field_primary }}" color="primary"
-                icon="edit-alt" />
+                icon="document-edit" />
             @endcan
             @break
         @case('delete')

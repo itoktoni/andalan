@@ -28,11 +28,11 @@ class DeliveryRequest extends FormRequest
 
         if ($transaksi == TransactionType::BersihKotor) {
             $transaksi = TransactionType::Kotor;
-        } else if ($transaksi == TransactionType::BersihRetur){
+        } elseif ($transaksi == TransactionType::BersihRetur) {
             $transaksi = TransactionType::Retur;
-        } else if ($transaksi == TransactionType::BersihRewash){
+        } elseif ($transaksi == TransactionType::BersihRewash) {
             $transaksi = TransactionType::Rewash;
-        } else if ($transaksi == TransactionType::Unknown){
+        } elseif ($transaksi == TransactionType::Unknown) {
             $transaksi = TransactionType::Register;
         }
 
@@ -68,8 +68,8 @@ class DeliveryRequest extends FormRequest
                 $code = env('CODE_DELIVERY_REWASH', 'BWSH');
                 break;
             case TransactionType::Register:
-                    $code = env('CODE_DELIVERY_REGISTER', 'BBRU');
-                    break;
+                $code = env('CODE_DELIVERY_REGISTER', 'BBRU');
+                break;
             default:
                 $code = env('CODE_DELIVERY_BERSIH', 'BBSH');
                 break;
@@ -84,5 +84,4 @@ class DeliveryRequest extends FormRequest
             'code' => $autoNumber,
         ]);
     }
-
 }

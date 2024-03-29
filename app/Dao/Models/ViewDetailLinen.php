@@ -9,9 +9,10 @@ use Mehradsadeghi\FilterQueryString\FilterQueryString;
 
 class ViewDetailLinen extends Model
 {
-    use ViewDetailLinenEntity, FilterQueryString, PowerJoins;
+    use FilterQueryString, PowerJoins, ViewDetailLinenEntity;
 
     protected $table = 'view_detail_linen';
+
     protected $primaryKey = 'view_linen_rfid';
 
     protected $casts = [
@@ -40,19 +41,21 @@ class ViewDetailLinen extends Model
         'view_tanggal_delete',
     ];
 
-    public function start_date($query){
+    public function start_date($query)
+    {
         $date = request()->get('start_date');
-        if($date){
+        if ($date) {
             $query = $query->whereDate($this->field_reported_at(), '>=', $date);
         }
 
         return $query;
     }
 
-    public function end_date($query){
+    public function end_date($query)
+    {
         $date = request()->get('end_date');
 
-        if($date){
+        if ($date) {
             $query = $query->whereDate($this->field_reported_at(), '<=', $date);
         }
 

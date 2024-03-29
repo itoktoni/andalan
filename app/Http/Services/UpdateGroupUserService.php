@@ -10,7 +10,7 @@ class UpdateGroupUserService extends UpdateService
     public function update(CrudInterface $repository, $data, $code)
     {
         $check = $repository->updateRepository($data->all(), $code);
-        if($check['status']){
+        if ($check['status']) {
 
             $getData = $check['data'] ?? [];
             $getData->connection_group_module()->sync($data->get('groups'));
@@ -21,6 +21,7 @@ class UpdateGroupUserService extends UpdateService
         } else {
             Alert::error($check['message']);
         }
+
         return $check;
     }
 }

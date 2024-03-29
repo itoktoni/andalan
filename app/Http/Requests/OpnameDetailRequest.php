@@ -2,12 +2,8 @@
 
 namespace App\Http\Requests;
 
-use App\Dao\Enums\BooleanType;
-use App\Dao\Enums\OpnameType;
-use App\Dao\Models\Detail;
 use App\Dao\Models\Opname;
 use App\Dao\Models\OpnameDetail;
-use App\Dao\Models\Rs;
 use App\Dao\Traits\ValidationTrait;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -15,7 +11,7 @@ class OpnameDetailRequest extends FormRequest
 {
     use ValidationTrait;
 
-    public function validation() : array
+    public function validation(): array
     {
         return [
             Opname::field_primary() => 'required',
@@ -30,7 +26,7 @@ class OpnameDetailRequest extends FormRequest
         $data = OpnameDetail::whereIn(OpnameDetail::field_rfid(), $this->rfid)
             ->where(OpnameDetail::field_opname(), $this->opname_id)
             ->get()
-            ->mapWithKeys(function($item){
+            ->mapWithKeys(function ($item) {
                 return [$item->opname_detail_rfid => $item];
             });
 
@@ -39,8 +35,7 @@ class OpnameDetailRequest extends FormRequest
         $send['code'] = $this->code;
 
         $this->merge([
-            'data' => $send
+            'data' => $send,
         ]);
     }
-
 }

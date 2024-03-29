@@ -12,19 +12,19 @@ class CreateRsService
         $check = false;
         try {
             $check = $repository->saveRepository($data);
-            if(isset($check['status']) && $check['status']){
+            if (isset($check['status']) && $check['status']) {
                 $check['data']->has_ruangan()->sync($data['ruangan']);
-                if(request()->wantsJson()){
+                if (request()->wantsJson()) {
                     return response()->json($check)->getData();
                 }
                 Alert::create();
-            }
-            else{
+            } else {
                 $message = env('APP_DEBUG') ? $check['data'] : $check['message'];
                 Alert::error($message);
             }
         } catch (\Throwable $th) {
             Alert::error($th->getMessage());
+
             return $th->getMessage();
         }
 

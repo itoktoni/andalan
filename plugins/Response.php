@@ -2,8 +2,6 @@
 
 namespace Plugins;
 
-use Coderello\SharedData\Facades\SharedData;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
 class Response
@@ -15,8 +13,8 @@ class Response
 
     public static function redirectBack($data = null, $back = false)
     {
-        if(request()->hasHeader('authorization')){
-           return self::sentJson($data);
+        if (request()->hasHeader('authorization')) {
+            return self::sentJson($data);
         }
 
         // if(isset($data['name']) && $data['name'] == 'Update' && !$back){
@@ -31,6 +29,7 @@ class Response
         if (request()->wantsJson()) {
             return self::sentJson($data);
         }
+
         return redirect()->back()->withInput();
     }
 
@@ -39,6 +38,7 @@ class Response
         if (request()->wantsJson()) {
             return self::sentJson($data);
         }
+
         return redirect()->refresh();
     }
 
@@ -47,6 +47,7 @@ class Response
         if (request()->wantsJson()) {
             return self::sentJson($data);
         }
+
         return redirect()->away($path);
     }
 
@@ -55,6 +56,7 @@ class Response
         if ($params) {
             return redirect()->to($path, $params);
         }
+
         return redirect()->to($path);
     }
 
@@ -63,6 +65,7 @@ class Response
         if ($params) {
             return redirect()->route($route, $params);
         }
+
         return redirect()->route($route);
     }
 
@@ -71,6 +74,7 @@ class Response
         if ($params) {
             return redirect()->to($action, $params);
         }
+
         return redirect()->route(moduleRoute($action));
     }
 }

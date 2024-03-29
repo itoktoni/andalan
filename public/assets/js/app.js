@@ -363,13 +363,9 @@ File: Main Js File
         initSettings();
         initPreloader();
         layoutSetting();
-        Waves.init();
         initCheckAll();
     }
 
     init();
 
 })(jQuery)
-
-
-feather.replace()

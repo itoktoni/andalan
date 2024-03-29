@@ -11,8 +11,12 @@ class EnvType extends Enum implements LocalizedEnum
     use StatusTrait;
 
     const Local = 'local';
+
     const Production = 'production';
+
     const Staging = 'staging';
+
     const Testing = 'testing';
+
     const Mirror = 'mirror';
 }

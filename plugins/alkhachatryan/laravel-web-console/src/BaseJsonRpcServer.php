@@ -6,56 +6,69 @@ namespace Alkhachatryan\LaravelWebConsole;
  * JSON RPC Server for Eaze.
  *
  * Reads $_GET['rawRequest'] or php://input for Request Data
+ *
  * @link       http://www.jsonrpc.org/specification
  * @link       http://dojotoolkit.org/reference-guide/1.8/dojox/rpc/smd.html
+ *
  * @author     Sergeyfast
  */
 class BaseJsonRpcServer
 {
     const ParseError = -32700;
+
     const InvalidRequest = -32600;
+
     const MethodNotFound = -32601;
+
     const InvalidParams = -32602;
+
     const InternalError = -32603;
 
     /**
      * Exposed Instances.
-     * @var object[]    namespace => method
+     *
+     * @var object[] namespace => method
      */
     protected $instances = [];
 
     /**
      * Decoded Json Request.
+     *
      * @var object|array
      */
     protected $request;
 
     /**
      * Array of Received Calls.
+     *
      * @var array
      */
     protected $calls = [];
 
     /**
      * Array of Responses for Calls.
+     *
      * @var array
      */
     protected $response = [];
 
     /**
      * Has Calls Flag (not notifications).
+     *
      * @var bool
      */
     protected $hasCalls = false;
 
     /**
      * Is Batch Call in using.
+     *
      * @var bool
      */
     private $isBatchCall = false;
 
     /**
      * Hidden Methods.
+     *
      * @var array
      */
     protected $hiddenMethods = [
@@ -64,42 +77,48 @@ class BaseJsonRpcServer
 
     /**
      * Content Type.
+     *
      * @var string
      */
     public $ContentType = 'application/json';
 
     /**
      * Allow Cross-Domain Requests.
+     *
      * @var bool
      */
     public $IsXDR = true;
 
     /**
      * Max Batch Calls.
+     *
      * @var int
      */
     public $MaxBatchCalls = 10;
 
     /**
      * Error Messages.
+     *
      * @var array
      */
     protected $errorMessages = [
-        self::ParseError     => 'Parse error',
+        self::ParseError => 'Parse error',
         self::InvalidRequest => 'Invalid Request',
         self::MethodNotFound => 'Method not found',
-        self::InvalidParams  => 'Invalid params',
-        self::InternalError  => 'Internal error',
+        self::InvalidParams => 'Invalid params',
+        self::InternalError => 'Internal error',
     ];
 
     /**
      * Cached Reflection Methods.
+     *
      * @var \ReflectionMethod[]
      */
     private $reflectionMethods = [];
 
     /**
      * Validate Request.
+     *
      * @return int error
      */
     private function getRequest()
@@ -143,27 +162,29 @@ class BaseJsonRpcServer
 
     /**
      * Get Error Response.
-     * @param int   $code
-     * @param mixed $id
-     * @param null  $data
+     *
+     * @param  int  $code
+     * @param  mixed  $id
+     * @param  null  $data
      * @return array
      */
     private function getError($code, $id = null, $data = null)
     {
         return [
             'jsonrpc' => '2.0',
-            'id'      => $id,
-            'error'   => [
-                'code'    => $code,
+            'id' => $id,
+            'error' => [
+                'code' => $code,
                 'message' => isset($this->errorMessages[$code]) ? $this->errorMessages[$code] : $this->errorMessages[self::InternalError],
-                'data'    => $data,
+                'data' => $data,
             ],
         ];
     }
 
     /**
      * Check for jsonrpc version and correct method.
-     * @param object $call
+     *
+     * @param  object  $call
      * @return array|null
      */
     private function validateCall($call)
@@ -256,7 +277,7 @@ class BaseJsonRpcServer
 
     /**
      * Process Call.
-     * @param $call
+     *
      * @return array|null
      */
     private function processCall($call)
@@ -291,14 +312,15 @@ class BaseJsonRpcServer
 
         return [
             'jsonrpc' => '2.0',
-            'result'  => $result,
-            'id'      => $id,
+            'result' => $result,
+            'id' => $id,
         ];
     }
 
     /**
      * Create new Instance.
-     * @param object $instance
+     *
+     * @param  object  $instance
      */
     public function __construct($instance = null)
     {
@@ -311,8 +333,9 @@ class BaseJsonRpcServer
 
     /**
      * Register Instance.
-     * @param object $instance
-     * @param string $namespace default is empty string
+     *
+     * @param  object  $instance
+     * @param  string  $namespace  default is empty string
      * @return $this
      */
     public function RegisterInstance($instance, $namespace = '')
@@ -384,7 +407,7 @@ class BaseJsonRpcServer
 
     /**
      * Get Doc Comment.
-     * @param $comment
+     *
      * @return string|null
      */
     private function getDocDescription($comment)
@@ -400,17 +423,18 @@ class BaseJsonRpcServer
     /**
      * Get Service Map
      * Maybe not so good realization of auto-discover via doc blocks.
+     *
      * @return array
      */
     private function getServiceMap()
     {
         $result = [
-            'transport'   => 'POST',
-            'envelope'    => 'JSON-RPC-2.0',
-            'SMDVersion'  => '2.0',
+            'transport' => 'POST',
+            'envelope' => 'JSON-RPC-2.0',
+            'SMDVersion' => '2.0',
             'contentType' => 'application/json',
-            'target'      => ! empty($_SERVER['REQUEST_URI']) ? substr($_SERVER['REQUEST_URI'], 0, strpos($_SERVER['REQUEST_URI'], '?')) : '',
-            'services'    => [],
+            'target' => ! empty($_SERVER['REQUEST_URI']) ? substr($_SERVER['REQUEST_URI'], 0, strpos($_SERVER['REQUEST_URI'], '?')) : '',
+            'services' => [],
             'description' => '',
         ];
 

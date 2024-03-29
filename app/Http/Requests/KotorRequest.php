@@ -3,11 +3,9 @@
 namespace App\Http\Requests;
 
 use App\Dao\Enums\TransactionType;
-use App\Dao\Models\Detail;
 use App\Dao\Repositories\TransaksiRepository;
 use App\Dao\Traits\ValidationTrait;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Str;
 
 class KotorRequest extends FormRequest
 {
@@ -20,7 +18,7 @@ class KotorRequest extends FormRequest
         $this->model = $repository->model;
     }
 
-    public function validation() : array
+    public function validation(): array
     {
         return [
             KEY => 'required',
@@ -32,9 +30,8 @@ class KotorRequest extends FormRequest
     public function prepareForValidation()
     {
         $this->merge([
-            $this->model->field_rs_id() =>  $this->rs_id,
-            $this->model->field_status_transaction() =>  TransactionType::Kotor,
+            $this->model->field_rs_id() => $this->rs_id,
+            $this->model->field_status_transaction() => TransactionType::Kotor,
         ]);
     }
-
 }

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Dao\Models\Jenis;
+use App\Dao\Models\JenisLinen;
 use App\Dao\Models\Opname;
 use App\Dao\Models\ViewOpname;
 use App\Dao\Repositories\OpnameRepository;
@@ -21,7 +21,7 @@ class ReportRekapOpnameController extends MinimalController
     protected function beforeForm()
     {
         $opname = Query::getOpnameList();
-        $jenis = Jenis::getOptions();
+        $jenis = JenisLinen::getOptions();
 
         self::$share = [
             'jenis' => $jenis,
@@ -40,7 +40,7 @@ class ReportRekapOpnameController extends MinimalController
 
         $opname = ViewOpname::where(Opname::field_primary(), $request->opname_id)
             ->where('rs_id', $this->data->opname_id_rs);
-        if($jenis_id = $request->jenis_id){
+        if ($jenis_id = $request->jenis_id) {
             $opname->where('jenis_id', $jenis_id);
         }
 

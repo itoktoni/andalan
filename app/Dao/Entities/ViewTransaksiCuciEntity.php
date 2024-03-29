@@ -23,5 +23,4 @@ trait ViewTransaksiCuciEntity
     {
         return $this->{$this->field_total()};
     }
-
 }

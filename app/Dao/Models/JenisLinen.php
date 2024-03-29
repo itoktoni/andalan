@@ -3,8 +3,7 @@
 namespace App\Dao\Models;
 
 use App\Dao\Builder\DataBuilder;
-use App\Dao\Entities\JenisEntity;
-use App\Dao\Entities\NamaLinenEntity;
+use App\Dao\Entities\JenisLinenEntity;
 use App\Dao\Traits\ActiveTrait;
 use App\Dao\Traits\ApiTrait;
 use App\Dao\Traits\DataTableTrait;
@@ -16,17 +15,20 @@ use Kyslik\ColumnSortable\Sortable;
 use Mehradsadeghi\FilterQueryString\FilterQueryString as FilterQueryString;
 use Touhidurabir\ModelSanitize\Sanitizable as Sanitizable;
 
-class Jenis extends Model
+class JenisLinen extends Model
 {
-    use Sortable, FilterQueryString, Sanitizable, DataTableTrait, JenisEntity, ActiveTrait, OptionTrait, PowerJoins, ApiTrait, PowerJoins;
+    use ActiveTrait, ApiTrait, DataTableTrait, FilterQueryString, JenisLinenEntity, OptionTrait, PowerJoins, PowerJoins, Sanitizable, Sortable;
 
-    protected $table = 'jenis';
+    protected $table = 'jenis_linen';
+
     protected $primaryKey = 'jenis_id';
 
     protected $fillable = [
         'jenis_id',
         'jenis_id_rs',
         'jenis_id_kategori',
+        // 'jenis_id_jenis_bahan',
+        // 'jenis_id_supplier',
         'jenis_nama',
         'jenis_deskripsi',
         'jenis_gambar',
@@ -57,9 +59,11 @@ class Jenis extends Model
     protected $with = ['has_category'];
 
     public $timestamps = false;
+
     public $incrementing = true;
 
-    public function fieldSearching(){
+    public function fieldSearching()
+    {
         return $this->field_name();
     }
 
@@ -90,6 +94,16 @@ class Jenis extends Model
         return $this->hasOne(Rs::class, Rs::field_primary(), self::field_rs_id());
     }
 
+    public function has_supplier()
+    {
+        return $this->hasOne(Supplier::class, Supplier::field_primary(), self::field_supplier_id());
+    }
+
+    public function has_bahan()
+    {
+        return $this->hasOne(JenisBahan::class, JenisBahan::field_primary(), self::field_bahan_id());
+    }
+
     public function has_detail()
     {
         return $this->hasMany(Detail::class, Detail::field_jenis_id(), self::field_rs_id());
@@ -118,5 +132,4 @@ class Jenis extends Model
 
         parent::boot();
     }
-
 }

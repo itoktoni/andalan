@@ -3,23 +3,33 @@
 namespace App\Http\Controllers;
 
 use App\Dao\Enums\BooleanType;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\DeleteRequest;
 use App\Http\Services\DeleteService;
-use Coderello\SharedData\Facades\SharedData;
 use Plugins\Response;
+use Plugins\SharedData;
 use Plugins\Template;
 
 class ReportController extends Controller
 {
     public static $service;
+
     public static $repository;
+
     public static $template;
+
     public static $share = [];
 
-    protected function beforeForm(){}
-    protected function beforeCreate(){}
-    protected function beforeUpdate($code){}
+    protected function beforeForm()
+    {
+    }
+
+    protected function beforeCreate()
+    {
+    }
+
+    protected function beforeUpdate($code)
+    {
+    }
 
     protected function share($data = [])
     {
@@ -27,18 +37,21 @@ class ReportController extends Controller
         $view = [
             'status' => $status,
         ];
+
         return self::$share = array_merge($view, $data, self::$share);
     }
 
     public function getData()
     {
         $query = self::$repository->dataRepository();
+
         return $query;
     }
 
     public function getTable()
     {
         $data = $this->getData();
+
         return view(Template::table(SharedData::get('template')))->with($this->share([
             'data' => $data,
             'fields' => self::$repository->model->getShowField(),
@@ -49,6 +62,7 @@ class ReportController extends Controller
     {
         $this->beforeForm();
         $this->beforeCreate();
+
         return view(Template::form(SharedData::get('template')))->with($this->share());
     }
 
@@ -56,6 +70,7 @@ class ReportController extends Controller
     {
         $this->beforeForm();
         $this->beforeUpdate($code);
+
         return view(Template::form(SharedData::get('template')))->with($this->share([
             'model' => $this->get($code),
         ]));
@@ -67,6 +82,7 @@ class ReportController extends Controller
         if ($relation) {
             return self::$service->get(self::$repository, $code, $relation);
         }
+
         return self::$service->get(self::$repository, $code);
     }
 
@@ -74,6 +90,7 @@ class ReportController extends Controller
     {
         $code = $request->get('code');
         $data = $service->delete(self::$repository, $code);
+
         return Response::redirectBack($data);
     }
 }

@@ -6,6 +6,7 @@ use App\Dao\Builder\DataBuilder;
 use App\Dao\Entities\DetailEntity;
 use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\RegisterType;
+use App\Dao\Models\History as HistoryModel;
 use App\Dao\Traits\ActiveTrait;
 use App\Dao\Traits\ApiTrait;
 use App\Dao\Traits\DataTableTrait;
@@ -15,28 +16,40 @@ use Illuminate\Database\Eloquent\Model;
 use Kirschbaum\PowerJoins\PowerJoins;
 use Kyslik\ColumnSortable\Sortable;
 use Mehradsadeghi\FilterQueryString\FilterQueryString as FilterQueryString;
-use App\Dao\Models\History as HistoryModel;
 use Touhidurabir\ModelSanitize\Sanitizable as Sanitizable;
 use Wildside\Userstamps\Userstamps;
-use Laravel\Scout\Searchable;
 
 class Detail extends Model
 {
-    use Searchable, Sortable, FilterQueryString, Sanitizable, DataTableTrait, DetailEntity, ActiveTrait, OptionTrait, PowerJoins, ApiTrait, Userstamps;
+    use ActiveTrait, ApiTrait, DataTableTrait, DetailEntity, FilterQueryString, OptionTrait, PowerJoins, Sanitizable, Sortable, Userstamps;
 
     protected $table = 'detail';
-    protected $primaryKey = 'detail_rfid';
+
+    protected $primaryKey = 'detail_id';
 
     protected $fillable = [
+        'detail_id',
         'detail_rfid',
         'detail_id_rs',
         'detail_id_ruangan',
         'detail_id_jenis',
+        'detail_id_bahan',
+        'detail_id_supplier',
         'detail_status_cuci',
         'detail_status_transaksi',
         'detail_status_proses',
         'detail_status_register',
         'detail_deskripsi',
+        'detail_total_bersih_rewash',
+        'detail_total_bersih_retur',
+        'detail_total_bersih_kotor',
+        'detail_total_kotor',
+        'detail_total_retur',
+        'detail_total_rewash',
+        'detail_total_cuci',
+        'detail_noted',
+        'detail_tanggal_cek',
+
         'detail_created_at',
         'detail_updated_at',
         'detail_deleted_at',
@@ -52,9 +65,6 @@ class Detail extends Model
 
     protected $casts = [
         'detail_rfid' => 'string',
-        'detail_status_proses' => 'integer',
-        'detail_status_cuci' => 'integer',
-        'detail_status_register' => 'integer',
         'detail_status_transaksi' => 'integer',
     ];
 
@@ -73,51 +83,38 @@ class Detail extends Model
     ];
 
     protected $dates = [
-        SELF::CREATED_AT,
-        SELF::UPDATED_AT,
-        SELF::DELETED_AT,
+        self::CREATED_AT,
+        self::UPDATED_AT,
+        self::DELETED_AT,
     ];
 
     const CREATED_AT = 'detail_created_at';
+
     const UPDATED_AT = 'detail_updated_at';
+
     const DELETED_AT = 'detail_deleted_at';
 
     const CREATED_BY = 'detail_created_by';
+
     const UPDATED_BY = 'detail_updated_by';
+
     const DELETED_BY = 'detail_deleted_by';
 
-    public $timestamps = false;
-    public $incrementing = false;
-    protected $keyType = 'string';
+    public $timestamps = true;
 
-    /**
-     * Get the name of the index associated with the model.
-     */
-    public function searchableAs(): string
+    public $incrementing = true;
+    // protected $keyType = 'string';
+
+    public function fieldSearching()
     {
-        return 'detail_linen_rfid';
-    }
-
-     /**
-     * Get the indexable data array for the model.
-     *
-     * @return array<string, mixed>
-     */
-    public function toSearchableArray(): array
-    {
-        return [
-            Detail::field_primary() => $this->detail_rfid
-        ];
-    }
-
-    public function fieldSearching(){
         return $this->field_name();
     }
 
-    public function fieldStatus(): array {
+    public function fieldStatus(): array
+    {
         return [
             $this->field_status_process() => ProcessType::class,
-            $this->field_status_register() => RegisterType::class
+            $this->field_status_register() => RegisterType::class,
         ];
     }
 
@@ -143,7 +140,7 @@ class Detail extends Model
 
     public function has_jenis()
     {
-        return $this->hasOne(Jenis::class, Jenis::field_primary(), self::field_jenis_id());
+        return $this->hasOne(JenisLinen::class, JenisLinen::field_primary(), self::field_jenis_id());
     }
 
     public function has_ruangan()
@@ -154,6 +151,16 @@ class Detail extends Model
     public function has_rs()
     {
         return $this->hasOne(Rs::class, Rs::field_primary(), self::field_rs_id());
+    }
+
+    public function has_bahan()
+    {
+        return $this->hasOne(JenisBahan::class, JenisBahan::field_primary(), self::field_bahan_id());
+    }
+
+    public function has_supplier()
+    {
+        return $this->hasOne(Supplier::class, Supplier::field_primary(), self::field_supplier_id());
     }
 
     public function has_user()

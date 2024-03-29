@@ -38,6 +38,6 @@
         @if($label)
             {{ $label ? __($label) : $slot }}
         @else
-            <i class="bx bx-{{ $icon }}"></i>
+            <i class="dripicons-{{ $icon }}"></i>
         @endif
     </{{ $href ? 'a' : 'button' }}>

@@ -2,9 +2,6 @@
 
 namespace App\Dao\Traits;
 
-use Illuminate\Contracts\Validation\Validator;
-use Illuminate\Http\Exceptions\HttpResponseException;
-
 trait ValidationTrait
 {
     abstract public function validation(): array;
@@ -24,23 +21,24 @@ trait ValidationTrait
                     $builder = '';
                     foreach ($string as $value) {
                         if (strpos($value, 'unique') === false) {
-                            $builder = $builder . $value . '|';
+                            $builder = $builder.$value.'|';
                         }
                     }
-                    $key = rtrim($builder, "|");
+                    $key = rtrim($builder, '|');
                 } else {
                     $key = $item;
                 }
+
                 return $key;
             });
 
             return $collection->toArray();
         }
 
-        if(request()->segment(5) == 'delete'){
+        if (request()->segment(5) == 'delete') {
 
             return [
-                'code' => 'required'
+                'code' => 'required',
             ];
         }
 

@@ -106,5 +106,4 @@ trait OpnameEntity
     {
         return $this->getFieldStatusAttribute() ? OpnameType::getDescription($this->getFieldStatusAttribute()) : 'Draft';
     }
-
 }

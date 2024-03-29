@@ -33,5 +33,4 @@ trait RuanganEntity
     {
         return $this->{$this->field_description()};
     }
-
 }

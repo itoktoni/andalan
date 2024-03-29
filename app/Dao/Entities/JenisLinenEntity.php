@@ -2,11 +2,13 @@
 
 namespace App\Dao\Entities;
 
+use App\Dao\Models\JenisBahan;
 use App\Dao\Models\Kategori;
 use App\Dao\Models\Rs;
+use App\Dao\Models\Supplier;
 use App\Dao\Models\ViewTotalJenis;
 
-trait JenisEntity
+trait JenisLinenEntity
 {
     public static function field_primary()
     {
@@ -63,6 +65,40 @@ trait JenisEntity
         return $this->{Rs::field_name()};
     }
 
+    /*
+    public static function field_bahan_id()
+    {
+        return 'jenis_id_jenis_bahan';
+    }
+
+    public function getFieldBahanIdAttribute()
+    {
+        return $this->{$this->field_bahan_id()};
+    }
+
+    public function getFieldBahanNameAttribute()
+    {
+        return $this->{JenisBahan::field_name()};
+    }
+
+
+    public static function field_supplier_id()
+    {
+        return 'jenis_id_supplier';
+    }
+
+    public function getFieldSupplierIdAttribute()
+    {
+        return $this->{$this->field_supplier_id()};
+    }
+
+    public function getFieldSupplierNameAttribute()
+    {
+        return $this->{Supplier::field_name()};
+    }
+
+    */
+
     public static function field_category_id()
     {
         return 'jenis_id_kategori';
@@ -117,5 +153,4 @@ trait JenisEntity
     {
         return $this->{ViewTotalJenis::field_total()};
     }
-
 }

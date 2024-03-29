@@ -2,14 +2,9 @@
 
 namespace App\Dao\Entities;
 
-use App\Dao\Enums\OpnameType;
 use App\Dao\Enums\ProcessType;
-use App\Dao\Enums\StatusType;
-use App\Dao\Enums\StockType;
 use App\Dao\Enums\TransactionType;
-use App\Dao\Models\Jenis;
 use App\Dao\Models\Rs;
-use App\Dao\Models\Ruangan;
 
 trait OpnameDetailEntity
 {

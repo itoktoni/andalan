@@ -3,27 +3,31 @@
 namespace App\Http\Controllers;
 
 use App\Dao\Enums\BooleanType;
-use App\Dao\Models\Rs;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\DeleteRequest;
-use App\Http\Requests\GeneralRequest;
-use App\Http\Services\CreateService;
 use App\Http\Services\DeleteService;
-use App\Http\Services\UpdateService;
-use Coderello\SharedData\Facades\SharedData;
 use Plugins\Response;
-use Plugins\Template;
 
 class MasterController extends Controller
 {
     public static $service;
+
     public static $repository;
+
     public static $template;
+
     public static $share = [];
 
-    protected function beforeForm(){}
-    protected function beforeCreate(){}
-    protected function beforeUpdate($code){}
+    protected function beforeForm()
+    {
+    }
+
+    protected function beforeCreate()
+    {
+    }
+
+    protected function beforeUpdate($code)
+    {
+    }
 
     protected function share($data = [])
     {
@@ -32,12 +36,14 @@ class MasterController extends Controller
             'status' => $status,
             'model' => false,
         ];
+
         return self::$share = array_merge($view, self::$share, $data);
     }
 
     public function getData()
     {
         $query = self::$repository->dataRepository();
+
         return $query;
     }
 
@@ -45,6 +51,7 @@ class MasterController extends Controller
     {
         $code = request()->get('code');
         $data = self::$service->delete(self::$repository, $code);
+
         return Response::redirectBack($data);
     }
 
@@ -52,12 +59,14 @@ class MasterController extends Controller
     {
         $code = $request->get('code');
         $data = $service->delete(self::$repository, $code);
+
         return Response::redirectBack($data);
     }
 
     public function getTable()
     {
         $data = $this->getData();
+
         return moduleView(modulePathTable(), [
             'data' => $data,
             'fields' => self::$repository->model->getShowField(),
@@ -66,12 +75,12 @@ class MasterController extends Controller
 
     public function postTable()
     {
-        if(request()->exists('delete')){
+        if (request()->exists('delete')) {
             $code = array_unique(request()->get('code'));
             $data = self::$service->delete(self::$repository, $code);
         }
 
-        if(request()->exists('sort')){
+        if (request()->exists('sort')) {
             $sort = array_unique(request()->get('sort'));
             $data = self::$service->sort(self::$repository, $sort);
         }
@@ -83,6 +92,7 @@ class MasterController extends Controller
     {
         $this->beforeForm();
         $this->beforeCreate();
+
         return moduleView(modulePathForm(), $this->share());
     }
 
@@ -90,6 +100,7 @@ class MasterController extends Controller
     {
         $this->beforeForm();
         $this->beforeUpdate($code);
+
         return moduleView(modulePathForm(), $this->share([
             'model' => $this->get($code),
         ]));
@@ -101,6 +112,7 @@ class MasterController extends Controller
         if ($relation) {
             return self::$service->get(self::$repository, $code, $relation);
         }
+
         return self::$service->get(self::$repository, $code);
     }
 }

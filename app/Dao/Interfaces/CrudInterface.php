@@ -2,7 +2,6 @@
 
 namespace App\Dao\Interfaces;
 
-interface CrudInterface extends CreateInterface, UpdateInterface, DeleteInterface, SingleInterface, DataInterface
+interface CrudInterface extends CreateInterface, DataInterface, DeleteInterface, SingleInterface, UpdateInterface
 {
-
 }

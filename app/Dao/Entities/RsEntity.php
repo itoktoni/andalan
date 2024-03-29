@@ -98,5 +98,4 @@ trait RsEntity
     {
         return $this->{$this->field_status()};
     }
-
 }

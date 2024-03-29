@@ -12,13 +12,14 @@ class UpdateRsService
         $check = $repository->updateRepository($data, $code);
         if ($check['status']) {
             $check['data']->has_ruangan()->sync($data['ruangan']);
-            if(request()->wantsJson()){
+            if (request()->wantsJson()) {
                 return response()->json($check)->getData();
             }
             Alert::update();
         } else {
             Alert::error($check['message']);
         }
+
         return $check;
     }
 }

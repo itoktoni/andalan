@@ -4,20 +4,21 @@ use Alkhachatryan\LaravelWebConsole\LaravelWebConsoleServiceProvider;
 use App\Dao\Enums\BedaRsType;
 use App\Dao\Enums\BooleanType;
 use App\Dao\Enums\CuciType;
+use App\Dao\Enums\FilterType;
+use App\Dao\Enums\LinenType;
 use App\Dao\Enums\MenuType;
 use App\Dao\Enums\ObsesimanType;
 use App\Dao\Enums\ProcessType;
-use App\Dao\Enums\LinenType;
 use App\Dao\Enums\TransactionType;
-use App\Dao\Enums\FilterType;
 use App\Dao\Enums\UserLevel;
 use App\Dao\Models\Transaksi;
 use App\Providers\CacheableAuthUserServiceProvider;
-use Coderello\SharedData\Facades\SharedData;
+// use Coderello\SharedData\Facades\SharedData;
+use Illuminate\Support\Str;
 use Plugins\Query;
+use Plugins\SharedData;
 use Plugins\Template;
 use Plugins\Views;
-use Illuminate\Support\Str;
 
 return [
 
@@ -182,7 +183,6 @@ return [
         Illuminate\View\ViewServiceProvider::class,
         App\Providers\WebDavServiceProvider::class,
 
-
         /*
          * Package Service Providers...
          */
@@ -267,6 +267,7 @@ return [
         'MenuType' => MenuType::class,
         'LinenType' => LinenType::class,
         'UserLevel' => UserLevel::class,
+        // 'SharedData' => SharedData::class,
         'SharedData' => SharedData::class,
         'Query' => Query::class,
         'Str' => Str::class,

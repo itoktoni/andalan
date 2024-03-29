@@ -12,7 +12,6 @@ class RsResource extends JsonResource
      * @param  \Illuminate\Http\Request  $request
      * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
      */
-
     public static $model;
 
     public function toArray($request)

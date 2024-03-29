@@ -23,5 +23,4 @@ trait ViewTransaksiRewashEntity
     {
         return $this->{$this->field_total()};
     }
-
 }

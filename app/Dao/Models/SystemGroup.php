@@ -3,9 +3,7 @@
 namespace App\Dao\Models;
 
 use App\Dao\Builder\DataBuilder;
-use App\Dao\Entities\RoutesEntity;
 use App\Dao\Entities\SystemGroupEntity;
-use App\Dao\Enums\BooleanType;
 use App\Dao\Traits\ActiveTrait;
 use App\Dao\Traits\DataTableTrait;
 use App\Dao\Traits\OptionTrait;
@@ -16,10 +14,12 @@ use Touhidurabir\ModelSanitize\Sanitizable as Sanitizable;
 
 class SystemGroup extends Model
 {
-    use Sortable, FilterQueryString, Sanitizable, DataTableTrait, SystemGroupEntity, ActiveTrait, ActiveTrait, OptionTrait;
+    use ActiveTrait, ActiveTrait, DataTableTrait, FilterQueryString, OptionTrait, Sanitizable, Sortable, SystemGroupEntity;
 
     protected $table = 'system_group';
+
     protected $primaryKey = 'system_group_code';
+
     protected $keyType = 'string';
 
     protected $fillable = [
@@ -39,7 +39,7 @@ class SystemGroup extends Model
     ];
 
     protected $casts = [
-        'system_group_sort' => 'integer'
+        'system_group_sort' => 'integer',
     ];
 
     protected $filters = [
@@ -47,9 +47,11 @@ class SystemGroup extends Model
     ];
 
     public $timestamps = false;
+
     public $incrementing = false;
 
-    public function fieldSearching(){
+    public function fieldSearching()
+    {
         return $this->field_name();
     }
 

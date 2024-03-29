@@ -14,14 +14,14 @@ class Lang
         $string = Str::of($code)->explode('.');
         $key = $string->first;
         $lang = Cache::forget('lang_'.$key);
-        if(!Cache::has($key) && FacadesLang::has($key)){
+        if (! Cache::has($key) && FacadesLang::has($key)) {
             Cache::put('lang_'.$key, FacadesLang::get($key));
         }
 
         $lang = Cache::get('lang_'.$key);
         Log::info($lang);
 
-        if(FacadesLang::has($code)){
+        if (FacadesLang::has($code)) {
 
             return trans($code);
         }

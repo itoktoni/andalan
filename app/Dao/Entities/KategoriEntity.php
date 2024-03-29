@@ -33,5 +33,4 @@ trait KategoriEntity
     {
         return $this->{$this->field_description()};
     }
-
 }

@@ -3,18 +3,28 @@
 namespace App\Http\Controllers;
 
 use App\Dao\Enums\BooleanType;
-use App\Http\Controllers\Controller;
 
 class MinimalController extends Controller
 {
     public static $service;
+
     public static $repository;
+
     public static $template;
+
     public static $share = [];
 
-    protected function beforeForm(){}
-    protected function beforeCreate(){}
-    protected function beforeUpdate($code){}
+    protected function beforeForm()
+    {
+    }
+
+    protected function beforeCreate()
+    {
+    }
+
+    protected function beforeUpdate($code)
+    {
+    }
 
     protected function share($data = [])
     {
@@ -23,6 +33,7 @@ class MinimalController extends Controller
             'status' => $status,
             'model' => false,
         ];
+
         return self::$share = array_merge($view, self::$share, $data);
     }
 
@@ -30,6 +41,7 @@ class MinimalController extends Controller
     {
         $this->beforeForm();
         $this->beforeCreate();
+
         return moduleView(modulePathForm(), $this->share());
     }
 }

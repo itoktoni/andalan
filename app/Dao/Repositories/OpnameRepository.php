@@ -22,31 +22,33 @@ class OpnameRepository extends MasterRepository implements CrudInterface
             ->leftJoinRelationship('has_rs')
             ->sortable()->filter();
 
-            if(request()->hasHeader('authorization')){
-                if($paging = request()->get('paginate')){
-                    return $query->paginate($paging);
-                }
-
-                if(method_exists($this->model, 'getApiCollection')){
-                    return $this->model->getApiCollection($query->get());
-                }
-
-                return Notes::data($query->get());
+        if (request()->hasHeader('authorization')) {
+            if ($paging = request()->get('paginate')) {
+                return $query->paginate($paging);
             }
+
+            if (method_exists($this->model, 'getApiCollection')) {
+                return $this->model->getApiCollection($query->get());
+            }
+
+            return Notes::data($query->get());
+        }
 
         $query = env('PAGINATION_SIMPLE') ? $query->simplePaginate(env('PAGINATION_NUMBER')) : $query->paginate(env('PAGINATION_NUMBER'));
 
         return $query;
     }
 
-    public function getOpnameByID($opname_id){
+    public function getOpnameByID($opname_id)
+    {
         $query = $this->getOpnameReport()
-        ->where(OpnameDetail::field_opname(), $opname_id);
+            ->where(OpnameDetail::field_opname(), $opname_id);
 
         return $query;
     }
 
-    public function getOpnameReport(){
+    public function getOpnameReport()
+    {
         $query = OpnameDetail::query()
             ->addSelect(DB::raw('*'))
             ->leftJoinRelationship('has_view')

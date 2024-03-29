@@ -10,11 +10,10 @@ class OpnameReportRequest extends FormRequest
 {
     use ValidationTrait;
 
-    public function validation() : array
+    public function validation(): array
     {
         return [
             Opname::field_primary() => 'required',
         ];
     }
-
 }

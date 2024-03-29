@@ -8,7 +8,6 @@ use App\Dao\Models\Transaksi;
 use App\Dao\Models\User;
 use App\Dao\Repositories\TransaksiRepository;
 use App\Http\Requests\DeliveryReportRequest;
-use App\Http\Requests\TransactionReportRequest;
 use Illuminate\Support\Facades\DB;
 
 class ReportDetailPengirimanReturController extends MinimalController
@@ -20,7 +19,8 @@ class ReportDetailPengirimanReturController extends MinimalController
         self::$repository = self::$repository ?? $repository;
     }
 
-    protected function beforeForm(){
+    protected function beforeForm()
+    {
 
         $rs = Rs::getOptions();
         $user = User::getOptions();
@@ -31,7 +31,8 @@ class ReportDetailPengirimanReturController extends MinimalController
         ];
     }
 
-    private function getQuery($request){
+    private function getQuery($request)
+    {
         $query = self::$repository->getDetailBersih(TransactionType::BersihRetur)
             ->addSelect(['*', DB::raw('user_delivery.name as user_delivery')])
             ->leftJoinRelationship(HAS_RETUR)
@@ -48,7 +49,8 @@ class ReportDetailPengirimanReturController extends MinimalController
         return $query->orderBy('view_linen_nama', 'ASC')->get();
     }
 
-    public function getPrint(DeliveryReportRequest $request){
+    public function getPrint(DeliveryReportRequest $request)
+    {
         set_time_limit(0);
         $rs = Rs::find(request()->get(Rs::field_primary()));
 
@@ -56,7 +58,7 @@ class ReportDetailPengirimanReturController extends MinimalController
 
         return moduleView(modulePathPrint(), $this->share([
             'data' => $this->data,
-            'rs' => $rs
+            'rs' => $rs,
         ]));
     }
 }

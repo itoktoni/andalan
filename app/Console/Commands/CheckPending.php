@@ -12,7 +12,6 @@ use Plugins\History as PluginsHistory;
 
 class CheckPending extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -51,15 +50,15 @@ class CheckPending extends Command
         //     ->where(Detail::field_status_process(), '!=', ProcessType::Pending)
         //     ->get();
 
-            $outstanding = Transaksi::query()
-                ->select(Transaksi::field_rfid())
-                ->joinRelationship(HAS_DETAIL)
-                ->whereDate(ViewDetailLinen::field_tanggal_update(), '>=', Carbon::now()->subMinutes(1440)->toDateString())
-                ->whereDate(ViewDetailLinen::field_tanggal_update(), '<', Carbon::now()->toDateString())
-                ->whereNull(Transaksi::field_status_bersih())
-                ->whereNotIn(ViewDetailLinen::field_status_trasaction(), BERSIH)
-                ->where(ViewDetailLinen::field_status_process(), '!=', ProcessType::Pending)
-                ->get();
+        $outstanding = Transaksi::query()
+            ->select(Transaksi::field_rfid())
+            ->joinRelationship(HAS_DETAIL)
+            ->whereDate(ViewDetailLinen::field_tanggal_update(), '>=', Carbon::now()->subMinutes(1440)->toDateString())
+            ->whereDate(ViewDetailLinen::field_tanggal_update(), '<', Carbon::now()->toDateString())
+            ->whereNull(Transaksi::field_status_bersih())
+            ->whereNotIn(ViewDetailLinen::field_status_trasaction(), BERSIH)
+            ->where(ViewDetailLinen::field_status_process(), '!=', ProcessType::Pending)
+            ->get();
 
         if ($outstanding) {
 

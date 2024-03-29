@@ -19,7 +19,6 @@ use App\Http\Services\UpdateService;
 use Plugins\Alert;
 use Plugins\History as PluginsHistory;
 use Plugins\Notes;
-use Plugins\Query;
 use Plugins\Response;
 
 class DeliveryController extends MasterController
@@ -33,24 +32,28 @@ class DeliveryController extends MasterController
     public function postCreate(GeneralRequest $request, CreateService $service)
     {
         $data = $service->save(self::$repository, $request);
+
         return Response::redirectBack($data);
     }
 
     public function postUpdate($code, GeneralRequest $request, UpdateService $service)
     {
         $data = $service->update(self::$repository, $request, $code);
+
         return Response::redirectBack($data);
     }
 
     public function getData()
     {
         $query = self::$repository->dataDelivery();
+
         return $query;
     }
 
     public function getTable()
     {
         $data = $this->getData();
+
         return moduleView(modulePathTable(), [
             'data' => $data,
             'fields' => self::$repository->delivery->getShowField(),
@@ -74,7 +77,7 @@ class DeliveryController extends MasterController
     public function getUpdate($code)
     {
         $transaksi = $this->getTransaksi($code);
-        if (!$transaksi) {
+        if (! $transaksi) {
             return Response::redirectTo(moduleRoute('getTable'));
         }
 
@@ -93,7 +96,7 @@ class DeliveryController extends MasterController
                 Detail::field_status_process() => ProcessType::Barcode,
             ]);
 
-            PluginsHistory::log($transaksi->field_rfid, ProcessType::DeleteDelivery, 'Data di delete dari barcode ' . $transaksi->field_primary);
+            PluginsHistory::log($transaksi->field_rfid, ProcessType::DeleteDelivery, 'Data di delete dari barcode '.$transaksi->field_primary);
             Notes::delete($transaksi->get()->toArray());
             Alert::delete();
 
@@ -103,6 +106,7 @@ class DeliveryController extends MasterController
 
             $transaksi->save();
         }
+
         return Response::redirectBack();
     }
 
@@ -139,22 +143,24 @@ class DeliveryController extends MasterController
     public function delivery(DeliveryRequest $request, UpdateDeliveryService $service)
     {
         $check = $service->update($request->code, $request->status_transaksi);
+
         return $check;
     }
 
-    public function print($code){
+    public function print($code)
+    {
 
         $total = Transaksi::where(Transaksi::field_delivery(), $code)
-        ->join((new ViewDetailLinen())->getTable(), ViewDetailLinen::field_primary(), Transaksi::field_rfid())
-        ->get();
+            ->join((new ViewDetailLinen())->getTable(), ViewDetailLinen::field_primary(), Transaksi::field_rfid())
+            ->get();
 
         $data = null;
         $passing = [];
 
-        if($total->count() > 0){
+        if ($total->count() > 0) {
 
             $cetak = Cetak::where(Cetak::field_name(), $code)->first();
-            if(!$cetak){
+            if (! $cetak) {
                 $cetak = Cetak::create([
                     Cetak::field_date() => date('Y-m-d'),
                     Cetak::field_name() => $code,
@@ -164,7 +170,7 @@ class DeliveryController extends MasterController
                 ]);
             }
 
-            $data = $total->mapToGroups(function($item){
+            $data = $total->mapToGroups(function ($item) {
                 $parse = [
                     'id' => $item->view_linen_id,
                     'nama' => $item->view_linen_nama,
@@ -174,7 +180,7 @@ class DeliveryController extends MasterController
                 return [$item['view_linen_id'].'#'.$item['view_ruangan_id'] => $parse];
             });
 
-            foreach($data as $item){
+            foreach ($data as $item) {
                 $return[] = [
                     'id' => $item[0]['id'],
                     'nama' => $item[0]['nama'],

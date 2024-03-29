@@ -3,27 +3,28 @@
 namespace App\Dao\Models;
 
 use App\Dao\Builder\DataBuilder;
-use App\Dao\Entities\RoutesEntity;
 use App\Dao\Entities\SystemMenuEntity;
-use App\Dao\Enums\BooleanType;
 use App\Dao\Enums\MenuType;
 use App\Dao\Traits\ActiveTrait;
 use App\Dao\Traits\DataTableTrait;
 use App\Dao\Traits\OptionTrait;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 use Kyslik\ColumnSortable\Sortable;
 use Mehradsadeghi\FilterQueryString\FilterQueryString as FilterQueryString;
 use Plugins\Core;
 use Touhidurabir\ModelSanitize\Sanitizable as Sanitizable;
-use Illuminate\Support\Str;
 
 class SystemMenu extends Model
 {
-    use Sortable, FilterQueryString, Sanitizable, DataTableTrait, SystemMenuEntity, ActiveTrait, ActiveTrait, OptionTrait;
+    use ActiveTrait, ActiveTrait, DataTableTrait, FilterQueryString, OptionTrait, Sanitizable, Sortable, SystemMenuEntity;
 
     protected $table = 'system_menu';
+
     protected $primaryKey = 'system_menu_code';
+
     protected $with = ['has_link'];
+
     protected $keyType = 'string';
 
     protected $fillable = [
@@ -49,7 +50,7 @@ class SystemMenu extends Model
 
     protected $casts = [
         'system_menu_enable' => 'integer',
-        'system_menu_can_delete' => 'integer'
+        'system_menu_can_delete' => 'integer',
     ];
 
     protected $filters = [
@@ -57,9 +58,11 @@ class SystemMenu extends Model
     ];
 
     public $timestamps = false;
+
     public $incrementing = false;
 
-    public function fieldSearching(){
+    public function fieldSearching()
+    {
         return $this->field_name();
     }
 
@@ -83,24 +86,23 @@ class SystemMenu extends Model
     public static function boot()
     {
         parent::creating(function ($model) {
-            if(empty($model->{SystemMenu::field_action()}) && ($model->{SystemMenu::field_type()} == MenuType::Menu)){
+            if (empty($model->{SystemMenu::field_action()}) && ($model->{SystemMenu::field_type()} == MenuType::Menu)) {
                 $act = '.getTable';
-                if(str_contains($model->{SystemMenu::field_name()}, 'report')){
+                if (str_contains($model->{SystemMenu::field_name()}, 'report')) {
                     $act = '.getCreate';
                 }
                 $model->{SystemMenu::field_action()} = Core::getControllerName($model->{SystemMenu::field_controller()}).$act;
             }
         });
 
-        parent::saving(function($model){
-            if($model->{SystemMenu::field_type()} == MenuType::Menu){
+        parent::saving(function ($model) {
+            if ($model->{SystemMenu::field_type()} == MenuType::Menu) {
 
                 $model->{SystemMenu::field_primary()} = Core::getControllerName($model->{SystemMenu::field_controller()});
-                if(empty($model->{SystemMenu::field_url()})){
+                if (empty($model->{SystemMenu::field_url()})) {
                     $model->{SystemMenu::field_url()} = Core::getControllerName($model->{SystemMenu::field_controller()});
                 }
-            }
-            else{
+            } else {
                 $model->{SystemMenu::field_primary()} = Str::snake($model->{SystemMenu::field_name()});
             }
         });

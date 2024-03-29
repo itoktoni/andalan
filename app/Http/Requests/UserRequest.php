@@ -5,8 +5,6 @@ namespace App\Http\Requests;
 use App\Dao\Traits\ValidationTrait;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Contracts\Validation\Validator;
-use Illuminate\Http\Exceptions\HttpResponseException;
 
 class UserRequest extends FormRequest
 {
@@ -27,13 +25,12 @@ class UserRequest extends FormRequest
             $this->merge([
                 'password' => Hash::make($this->password),
             ]);
-        }
-        else {
+        } else {
             $this->offsetUnset('password');
         }
 
         $this->merge([
-            'active' => 1
+            'active' => 1,
         ]);
     }
 }

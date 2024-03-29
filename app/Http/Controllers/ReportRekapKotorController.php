@@ -4,12 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Dao\Enums\TransactionType;
 use App\Dao\Models\Rs;
-use App\Dao\Models\Transaksi;
 use App\Dao\Models\User;
 use App\Dao\Repositories\TransaksiRepository;
 use App\Http\Requests\RekapReportRequest;
 use Illuminate\Support\Carbon;
-use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\DB;
 
 class ReportRekapKotorController extends MinimalController

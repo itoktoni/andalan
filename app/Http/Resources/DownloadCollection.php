@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use App\Dao\Enums\OpnameType;
 use App\Dao\Enums\ProcessType;
-use App\Dao\Models\Jenis;
+use App\Dao\Models\JenisLinen;
 use App\Dao\Models\Opname;
 use App\Dao\Models\OpnameDetail;
 use App\Dao\Models\Rs;
@@ -30,8 +30,8 @@ class DownloadCollection extends ResourceCollection
             [Rs::field_primary(), Rs::field_name()]
         )->first();
 
-        $jenis = Jenis::where(Jenis::field_rs_id(), $rsid)
-            ->addSelect([Jenis::field_primary(), Jenis::field_name()])
+        $jenis = JenisLinen::where(JenisLinen::field_rs_id(), $rsid)
+            ->addSelect([JenisLinen::field_primary(), JenisLinen::field_name()])
             ->get();
 
         $ruangan = Ruangan::addSelect([DB::raw('ruangan.ruangan_id, ruangan.ruangan_nama')])
@@ -39,7 +39,7 @@ class DownloadCollection extends ResourceCollection
             ->where('rs_id', $rsid)
             ->get();
 
-        $opname = Opname::with(['has_detail' => function($query){
+        $opname = Opname::with(['has_detail' => function ($query) {
             $query->where(OpnameDetail::field_ketemu(), 1);
         }])
             ->where(Opname::field_rs_id(), $rsid)
@@ -47,14 +47,14 @@ class DownloadCollection extends ResourceCollection
             ->first();
 
         $sendOpname = [];
-        if(!empty($opname)){
-            if($opname->has_detail){
+        if (! empty($opname)) {
+            if ($opname->has_detail) {
                 $sendOpname = $opname->has_detail->pluck(OpnameDetail::field_rfid());
             }
         }
 
         $status = [];
-        foreach(ProcessType::getInstances() as $value => $key){
+        foreach (ProcessType::getInstances() as $value => $key) {
             $status[] = [
                 'status_id' => $key,
                 'status_nama' => formatWorld($value),
@@ -69,7 +69,7 @@ class DownloadCollection extends ResourceCollection
             ->get()->pluck(Transaksi::field_rfid(), Transaksi::field_rfid())
             ->toArray() ?? [];
 
-        $data = $this->collection->map(function($item) use ($check){
+        $data = $this->collection->map(function ($item) use ($check) {
             $tanggal = $item->field_tanggal_update->format('Y-m-d H:i:s');
             $status = $item->field_status_process;
 

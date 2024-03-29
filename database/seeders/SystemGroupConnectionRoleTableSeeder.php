@@ -6,7 +6,6 @@ use Illuminate\Database\Seeder;
 
 class SystemGroupConnectionRoleTableSeeder extends Seeder
 {
-
     /**
      * Auto generated seed file
      *
@@ -14,28 +13,23 @@ class SystemGroupConnectionRoleTableSeeder extends Seeder
      */
     public function run()
     {
-        
 
         \DB::table('system_group_connection_role')->delete();
-        
-        \DB::table('system_group_connection_role')->insert(array (
-            0 => 
-            array (
+
+        \DB::table('system_group_connection_role')->insert([
+            0 => [
                 'system_role_code' => 'admin',
                 'system_group_code' => 'aplikasi',
-            ),
-            1 => 
-            array (
+            ],
+            1 => [
                 'system_role_code' => 'admin',
                 'system_group_code' => 'master',
-            ),
-            2 => 
-            array (
+            ],
+            2 => [
                 'system_role_code' => 'admin',
                 'system_group_code' => 'setting',
-            ),
-        ));
-        
-        
+            ],
+        ]);
+
     }
 }

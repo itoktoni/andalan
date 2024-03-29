@@ -46,24 +46,24 @@ class CreateTicketListener
             $description = '';
             if ($event->data->has_type) {
                 $tipe = $event->data->has_type->field_name ?? '';
-                $description = $description . 'Type : ' . $tipe . PHP_EOL;
+                $description = $description.'Type : '.$tipe.PHP_EOL;
             }
 
             if ($report_from) {
                 $pelapor = $data->field_reported_name ?? $report_from->field_name ?? '';
-                $description = $description . 'Pelapor : ' . $pelapor . PHP_EOL;
+                $description = $description.'Pelapor : '.$pelapor.PHP_EOL;
             }
 
             if ($event->data->has_location) {
                 $location = $event->data->has_location->field_name ?? '';
-                $description = $description . 'Lokasi : ' . $location . PHP_EOL;
+                $description = $description.'Lokasi : '.$location.PHP_EOL;
             }
 
-            $description = $description . 'Deskripsi : ' . $event->data->field_description . PHP_EOL;
+            $description = $description.'Deskripsi : '.$event->data->field_description.PHP_EOL;
 
             if ($product = $data->has_product) {
                 $product_name = $product->field_name ?? '';
-                $description = $description . 'Alat : ' . $product_name . PHP_EOL;
+                $description = $description.'Alat : '.$product_name.PHP_EOL;
 
                 $saveWorksheet = [
                     WorkSheet::field_description() => $data->field_description,
@@ -88,16 +88,16 @@ class CreateTicketListener
 
                         $link = WorkSheet::create($saveWorksheet);
 
-                        $description_vendor = $description . 'Link : ' . route(env('WORK_ROUTE') . '.getUpdate', ['code' => $link->field_primary]);
+                        $description_vendor = $description.'Link : '.route(env('WORK_ROUTE').'.getUpdate', ['code' => $link->field_primary]);
                         $this->saveNotification($vendor->field_name, $description_vendor, $vendor_phone, $data->field_category_id, $data->field_picture);
                     }
                 } else {
                     $data_teknisi = json_decode($product->field_teknisi_data);
-                    if (!empty($data_teknisi)) {
+                    if (! empty($data_teknisi)) {
                         $get_teknisi = User::whereIn(User::field_primary(), array_values($data_teknisi))
                             ->whereNotNull(User::field_phone())->get();
 
-                        if (!empty($get_teknisi)) {
+                        if (! empty($get_teknisi)) {
                             $saveWorksheet = array_merge($saveWorksheet, [
                                 WorkSheet::field_implementor() => json_encode($data_teknisi),
                             ]);
@@ -105,7 +105,7 @@ class CreateTicketListener
                             $link = WorkSheet::create($saveWorksheet);
 
                             foreach ($get_teknisi as $teknisi) {
-                                $description_teknisi = $description . 'Link : ' . route(env('WORK_ROUTE') . '.getUpdate', ['code' => $link->field_primary]);
+                                $description_teknisi = $description.'Link : '.route(env('WORK_ROUTE').'.getUpdate', ['code' => $link->field_primary]);
                                 $this->saveNotification($teknisi->field_name, $description_teknisi, $teknisi->field_phone, $data->field_category_id, $data->field_picture);
                             }
                         }
@@ -113,7 +113,7 @@ class CreateTicketListener
                 }
             }
 
-            $description = $description . 'Link : ' . route(env('TICKET_ROUTE') . '.getUpdate', ['code' => $event->data->field_primary]);
+            $description = $description.'Link : '.route(env('TICKET_ROUTE').'.getUpdate', ['code' => $event->data->field_primary]);
 
             $this->saveNotification($pelapor, $description, $receive_handphone, $data->field_category_id, $data->field_picture);
 
@@ -134,7 +134,7 @@ class CreateTicketListener
             ModelsNotification::field_phone() => $phone,
             ModelsNotification::field_eta() => Carbon::today(),
             ModelsNotification::field_type() => $type,
-            ModelsNotification::field_image() => $picture ? asset('storage/ticket/' . $picture) : null,
+            ModelsNotification::field_image() => $picture ? asset('storage/ticket/'.$picture) : null,
         ]);
     }
 }

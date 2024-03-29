@@ -3,8 +3,6 @@
 namespace App\Dao\Entities;
 
 use App\Dao\Enums\ProcessType;
-use App\Dao\Enums\StatusType;
-use App\Dao\Enums\TransactionType;
 
 trait HistoryEntity
 {

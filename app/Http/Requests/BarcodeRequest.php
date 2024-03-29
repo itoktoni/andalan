@@ -8,8 +8,8 @@ use App\Dao\Models\Rs;
 use App\Dao\Models\Ruangan;
 use App\Dao\Models\Transaksi;
 use Illuminate\Foundation\Http\FormRequest;
-use Plugins\Query;
 use Illuminate\Support\Str;
+use Plugins\Query;
 
 class BarcodeRequest extends FormRequest
 {
@@ -36,22 +36,22 @@ class BarcodeRequest extends FormRequest
         */
         if ($this->status_transaksi == TransactionType::BersihKotor) {
             $where = TransactionType::Kotor;
-        } else if($this->status_transaksi == TransactionType::BersihRetur) {
+        } elseif ($this->status_transaksi == TransactionType::BersihRetur) {
             $where = TransactionType::Retur;
-        } else if($this->status_transaksi == TransactionType::BersihRewash) {
+        } elseif ($this->status_transaksi == TransactionType::BersihRewash) {
             $where = TransactionType::Rewash;
         } elseif ($this->status_transaksi == TransactionType::Kotor) {
             $where = TransactionType::Kotor;
-        } else if($this->status_transaksi == TransactionType::Retur) {
+        } elseif ($this->status_transaksi == TransactionType::Retur) {
             $where = TransactionType::Retur;
-        } else if($this->status_transaksi == TransactionType::Rewash) {
+        } elseif ($this->status_transaksi == TransactionType::Rewash) {
             $where = TransactionType::Rewash;
         }
 
         $rfid = Detail::whereIn(Detail::field_primary(), $this->rfid)
-                ->where(Detail::field_status_transaction(), $where)
-                ->where(Detail::field_rs_id(), $this->rs_id)
-                ->where(Detail::field_ruangan_id(), $this->ruangan_id);
+            ->where(Detail::field_status_transaction(), $where)
+            ->where(Detail::field_rs_id(), $this->rs_id)
+            ->where(Detail::field_ruangan_id(), $this->ruangan_id);
 
         $total_rfid_original = $rfid->count();
 
@@ -72,7 +72,7 @@ class BarcodeRequest extends FormRequest
         $validator->after(function ($validator) use ($total) {
             $maksimal = env('TRANSACTION_BARCODE_MAXIMAL', 10);
             if ($total > $maksimal) {
-                $validator->errors()->add('rfid', 'RFID maksimal ' . $maksimal);
+                $validator->errors()->add('rfid', 'RFID maksimal '.$maksimal);
             }
         });
     }
@@ -113,12 +113,11 @@ class BarcodeRequest extends FormRequest
 
         $code = $code.$code_rs.$code_ruangan.date('ymd');
 
-        $autoNumber = Query::autoNumber(Transaksi::getTableName(), Transaksi::field_barcode(), $code , 22);
+        $autoNumber = Query::autoNumber(Transaksi::getTableName(), Transaksi::field_barcode(), $code, 22);
 
         $this->merge([
             'code' => $autoNumber,
             'uuid' => Str::uuid(),
         ]);
     }
-
 }

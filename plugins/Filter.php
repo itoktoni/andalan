@@ -19,17 +19,18 @@ class Filter
             // Cache::put('filter', $filter, 3000);
         }
 
-        if (!empty($filter)) {
+        if (! empty($filter)) {
             $data = $filter
                 ->where('module', str_replace('_api', '', Route::currentRouteName()))
                 ->where('table', $table)
                 ->all();
 
-                Cache::put('filter', $data);
-            if (!empty($data)) {
+            Cache::put('filter', $data);
+            if (! empty($data)) {
                 return $data;
             }
         }
+
         return false;
     }
 
@@ -50,7 +51,7 @@ class Filter
                                 }
                                 break;
                             case 0:
-                                if (!request()->ajax() && request()->wantsJson()) {
+                                if (! request()->ajax() && request()->wantsJson()) {
                                     $auth = User::where('api_token', request()->bearerToken())->first();
                                 } else {
                                     $auth = Auth::user();
@@ -68,6 +69,7 @@ class Filter
             });
 
         }
+
         return $data;
     }
 }

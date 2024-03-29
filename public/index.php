@@ -3,7 +3,6 @@
 /**
  * Laravel - A PHP Framework For Web Artisans
  *
- * @package  Laravel
  * @author   Taylor Otwell <taylor@laravel.com>
  */
 // phpinfo();
@@ -70,5 +69,3 @@ $kernel->terminate($request, $response);
 // {
 //     // Do nothing
 // }
-
-?>

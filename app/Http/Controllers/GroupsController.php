@@ -21,16 +21,19 @@ class GroupsController extends MasterController
     public function postCreate(GroupsRequest $request, CreateService $service)
     {
         $data = $service->save(self::$repository, $request);
+
         return Response::redirectBack($data);
     }
 
     public function postUpdate($code, GroupsRequest $request, UpdateGroupService $service)
     {
         $data = $service->update(self::$repository, $request, $code);
+
         return Response::redirectBack($data);
     }
 
-    protected function beforeForm(){
+    protected function beforeForm()
+    {
 
         $menu = SystemMenu::getOptions();
 

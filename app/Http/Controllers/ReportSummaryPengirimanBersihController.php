@@ -7,8 +7,6 @@ use App\Dao\Models\Transaksi;
 use App\Dao\Models\User;
 use App\Dao\Repositories\TransaksiRepository;
 use App\Http\Requests\DeliveryReportRequest;
-use App\Http\Requests\TransactionReportRequest;
-use Dietercoopman\Showsql\ShowSql;
 use Illuminate\Support\Facades\DB;
 
 class ReportSummaryPengirimanBersihController extends MinimalController
@@ -20,7 +18,8 @@ class ReportSummaryPengirimanBersihController extends MinimalController
         self::$repository = self::$repository ?? $repository;
     }
 
-    protected function beforeForm(){
+    protected function beforeForm()
+    {
 
         $rs = Rs::getOptions();
         $user = User::getOptions();
@@ -31,8 +30,9 @@ class ReportSummaryPengirimanBersihController extends MinimalController
         ];
     }
 
-    private function getQuery($request){
-        $query =  self::$repository->getDetailBersih()
+    private function getQuery($request)
+    {
+        $query = self::$repository->getDetailBersih()
             ->select([
                 'transaksi_delivery',
                 'view_rs_nama',
@@ -53,14 +53,15 @@ class ReportSummaryPengirimanBersihController extends MinimalController
 
         $query = $query->get();
 
-        if($query->sum('total_rfid') > 0){
+        if ($query->sum('total_rfid') > 0) {
             return $query;
         }
 
         return [];
     }
 
-    public function getPrint(DeliveryReportRequest $request){
+    public function getPrint(DeliveryReportRequest $request)
+    {
         set_time_limit(0);
         $rs = Rs::find(request()->get(Rs::field_primary()));
 
@@ -68,7 +69,7 @@ class ReportSummaryPengirimanBersihController extends MinimalController
 
         return moduleView(modulePathPrint(), $this->share([
             'data' => $this->data,
-            'rs' => $rs
+            'rs' => $rs,
         ]));
     }
 }

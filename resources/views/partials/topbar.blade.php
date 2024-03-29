@@ -5,9 +5,9 @@
             <div class="navbar-brand-box">
                 <a href="{{ url('/') }}" class="logo">
                     <span class="logo-sm">
-                        <img src="{{ env('APP_LOGO') ? url('storage/'.env('APP_LOGO')) : url('assets/media/image/logo.png') }}" alt="" height="24" />
+                        <img src="{{ env('APP_LOGO') ? url(env('APP_LOGO')) : url('default.png') }}" alt="" height="24" />
                     </span>
-                    <span class="logo-lg"> <img src="{{ env('APP_LOGO') ? url('storage/'.env('APP_LOGO')) : url('assets/media/image/logo.png') }}" alt="" height="24" /> <span class="logo-txt">{{ env('APP_NAME', 'SYSTEM') }}</span> </span>
+                    <span class="logo-lg"> <img src="{{ env('APP_LOGO') ? url(env('APP_LOGO')) : url('default.png') }}" alt="" height="24" /> <span class="logo-txt">{{ env('APP_NAME', 'SYSTEM') }}</span> </span>
                 </a>
             </div>
 
@@ -19,7 +19,7 @@
             <form class="app-search d-none d-lg-block">
                 <div class="position-relative">
                     <input type="text" class="form-control" placeholder="Search..." />
-                    <button class="btn btn-primary" type="button"><i class="bx bx-search-alt align-middle"></i></button>
+                    <button class="btn btn-primary" type="button"><i class="dripicons-search"></i></button>
                 </div>
             </form>
         </div>
@@ -41,16 +41,9 @@
                 </div>
             </div>
 
-            <div class="dropdown d-none d-sm-inline-block">
-                <button type="button" class="btn header-item" id="mode-setting-btn">
-                    <i data-feather="moon" class="icon-lg layout-mode-dark"></i>
-                    <i data-feather="sun" class="icon-lg layout-mode-light"></i>
-                </button>
-            </div>
-
             <div class="dropdown d-none d-lg-inline-block ms-1">
                 <button type="button" class="btn header-item" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i data-feather="grid" class="icon-lg"></i>
+                    <i class="dripicons-view-thumb"></i>
                 </button>
                 <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
                     <div class="p-2">
@@ -101,7 +94,7 @@
 
             <div class="dropdown d-inline-block">
                 <button type="button" class="btn header-item noti-icon position-relative" id="page-header-notifications-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i data-feather="bell" class="icon-lg"></i>
+                    <i class="dripicons-bell"></i>
                     <span class="badge bg-danger rounded-pill">5</span>
                 </button>
                 <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0" aria-labelledby="page-header-notifications-dropdown">
@@ -204,10 +197,20 @@
             <div class="dropdown d-inline-block">
                 <a href="{{ url('env-editor') }}">
                     <button type="button" class="btn header-item ">
-                        <i data-feather="settings" class="icon-lg"></i>
+                        <i class="dripicons-toggles"></i>
                     </button>
                 </a>
+
+                @if (env('TELESCOPE_ENABLED'))
+                <a href="{{ url('telescope') }}">
+                    <button type="button" class="btn header-item ">
+                        <i class="dripicons-swap"></i>
+                    </button>
+                </a>
+                @endif
+
             </div>
+
             @endif
             @endauth
 
@@ -215,17 +218,15 @@
                 <button type="button" class="btn header-item bg-soft-light border-start border-end" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <img class="rounded-circle header-profile-user" src="{{ url('assets/images/users/avatar-1.jpg') }}" alt="Header Avatar" />
                     <span class="d-none d-xl-inline-block ms-1 fw-medium">{{ auth()->user()->name }}</span>
-                    <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
                 </button>
                 <div class="dropdown-menu dropdown-menu-end">
                     <!-- item-->
-                    <a class="dropdown-item" href="#"><i class="mdi mdi-face-profile font-size-16 align-middle me-1"></i> Profile</a>
-                    <a class="dropdown-item" href="#"><i class="mdi mdi-credit-card-outline font-size-16 align-middle me-1"></i> Billing</a>
-                    <a class="dropdown-item" href="#"><i class="mdi mdi-account-settings font-size-16 align-middle me-1"></i> Settings</a>
-                    <a class="dropdown-item" href="#"><i class="mdi mdi-lock font-size-16 align-middle me-1"></i> Lock screen</a>
+                    <a class="dropdown-item" href="#"><i class="dripicons-user"></i>Profile</a>
+                    <a class="dropdown-item" href="#"><i class="dripicons-card"></i> Billing</a>
+                    <a class="dropdown-item" href="{{ route('create-settings') }}"><i class="dripicons-gear"></i> Settings</a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="{{ route('signout') }}">
-                        <i class="mdi mdi-logout font-size-16 align-middle me-1"></i>
+                        <i class="dripicons-enter"></i>
                         Logout
                     </a>
                 </div>

@@ -38,12 +38,14 @@ class TransaksiController extends MasterController
     public function postCreate(GeneralRequest $request, CreateService $service)
     {
         $data = $service->save(self::$repository, $request);
+
         return Response::redirectBack($data);
     }
 
     public function postUpdate($code, GeneralRequest $request, UpdateService $service)
     {
         $data = $service->update(self::$repository, $request, $code);
+
         return Response::redirectBack($data);
     }
 
@@ -65,7 +67,7 @@ class TransaksiController extends MasterController
     public function getUpdate($code)
     {
         $transaksi = $this->getTransaksi($code);
-        if (!$transaksi) {
+        if (! $transaksi) {
             return Response::redirectTo(moduleRoute('getTable'));
         }
 
@@ -85,12 +87,13 @@ class TransaksiController extends MasterController
                 Detail::field_status_transaction() => TransactionType::BersihKotor,
             ]);
 
-            PluginsHistory::log($transaksi->field_rfid, ProcessType::DeleteTransaksi, 'Data di delete dari transaksi ' . $transaksi->field_primary);
+            PluginsHistory::log($transaksi->field_rfid, ProcessType::DeleteTransaksi, 'Data di delete dari transaksi '.$transaksi->field_primary);
             Notes::delete($transaksi->get()->toArray());
             Alert::delete();
 
             $transaksi->delete();
         }
+
         return Response::redirectBack();
     }
 
@@ -121,6 +124,7 @@ class TransaksiController extends MasterController
     {
         $request[STATUS_TRANSAKSI] = TransactionType::Kotor;
         $request[STATUS_PROCESS] = ProcessType::Kotor;
+
         return $this->transaction($request, $service);
     }
 
@@ -128,6 +132,7 @@ class TransaksiController extends MasterController
     {
         $request[STATUS_TRANSAKSI] = TransactionType::Retur;
         $request[STATUS_PROCESS] = ProcessType::Kotor;
+
         return $this->transaction($request, $service);
     }
 
@@ -135,12 +140,13 @@ class TransaksiController extends MasterController
     {
         $request[STATUS_TRANSAKSI] = TransactionType::Rewash;
         $request[STATUS_PROCESS] = ProcessType::Kotor;
+
         return $this->transaction($request, $service);
     }
 
     private function checkValidation($form_transaksi, $status_transaksi, $date)
     {
-        if (!in_array($status_transaksi, array_merge(BERSIH, [TransactionType::Register]))) {
+        if (! in_array($status_transaksi, array_merge(BERSIH, [TransactionType::Register]))) {
             return false;
         }
 
@@ -199,7 +205,7 @@ class TransaksiController extends MasterController
 
     private function transaction($request, $service)
     {
-        if (!$this->checkRsAktif()) {
+        if (! $this->checkRsAktif()) {
             return Notes::error('Rs belum di registrasi');
         }
 
@@ -210,8 +216,8 @@ class TransaksiController extends MasterController
             $rfid = $request->rfid;
             $data = Detail::whereIn(Detail::field_primary(), $rfid)
                 ->get()->mapWithKeys(function ($item) {
-                return [$item[Detail::field_primary()] => $item];
-            });
+                    return [$item[Detail::field_primary()] => $item];
+                });
 
             $query_transaksi = Transaksi::select(Transaksi::field_rfid())
                 ->whereIn(Transaksi::field_rfid(), $rfid)
@@ -238,7 +244,7 @@ class TransaksiController extends MasterController
 
                 if (isset($data[$item])) {
                     $detail = $data[$item];
-                    if (!in_array($item, $query_transaksi) and $this->checkValidation($status_transaksi, $detail->field_status_transaction, $detail->field_updated_at)) {
+                    if (! in_array($item, $query_transaksi) and $this->checkValidation($status_transaksi, $detail->field_status_transaction, $detail->field_updated_at)) {
                         $status_sync = SyncType::Yes;
 
                         $beda_rs = $request->rs_id == $detail->field_rs_id ? BooleanType::No : BooleanType::Yes;
@@ -291,7 +297,7 @@ class TransaksiController extends MasterController
                     }
                 } else {
 
-                    if (!in_array($item, $query_transaksi) and !empty($item)) {
+                    if (! in_array($item, $query_transaksi) and ! empty($item)) {
                         $transaksi[] = [
                             Transaksi::field_key() => $request->key,
                             Transaksi::field_rfid() => $item,
@@ -323,13 +329,13 @@ class TransaksiController extends MasterController
             */
             $transaksi = collect($transaksi)->unique('transaksi_rfid')->values()->all();
 
-            if (!empty($transaksi)) {
+            if (! empty($transaksi)) {
                 foreach (array_chunk($transaksi, env('TRANSACTION_CHUNK')) as $save_transaksi) {
                     Transaksi::insert($save_transaksi);
                 }
             }
 
-            if (!empty($linen)) {
+            if (! empty($linen)) {
                 foreach (array_chunk($linen, env('TRANSACTION_CHUNK')) as $save_detail) {
                     Detail::whereIn(Detail::field_primary(), $save_detail)
                         ->update([
@@ -341,7 +347,7 @@ class TransaksiController extends MasterController
                 }
             }
 
-            if (!empty($log)) {
+            if (! empty($log)) {
                 foreach (array_chunk($log, env('TRANSACTION_CHUNK')) as $save_log) {
                     History::insert($save_log);
                 }
@@ -351,6 +357,7 @@ class TransaksiController extends MasterController
 
         } catch (\Throwable $th) {
             DB::rollBack();
+
             return Notes::error($th->getMessage());
         }
 
@@ -362,11 +369,12 @@ class TransaksiController extends MasterController
         */
 
         $preventif = collect($return);
-        if($preventif->where('status_sync', '!=', 0)->count() == 0){
+        if ($preventif->where('status_sync', '!=', 0)->count() == 0) {
             return Notes::error('Data sudah ada di server !');
         }
 
         $return = $preventif->unique(RFID)->values()->all();
+
         return Notes::create($return);
     }
 }

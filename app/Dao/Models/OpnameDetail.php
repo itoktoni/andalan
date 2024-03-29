@@ -3,7 +3,6 @@
 namespace App\Dao\Models;
 
 use App\Dao\Builder\DataBuilder;
-use App\Dao\Entities\KategoriEntity;
 use App\Dao\Entities\OpnameDetailEntity;
 use App\Dao\Traits\ActiveTrait;
 use App\Dao\Traits\ApiTrait;
@@ -12,21 +11,24 @@ use App\Dao\Traits\OptionTrait;
 use App\Http\Resources\GeneralResource;
 use Illuminate\Database\Eloquent\Model;
 use Kirschbaum\PowerJoins\PowerJoins;
-use Kyslik\ColumnSortable\Sortable;
 use Mehradsadeghi\FilterQueryString\FilterQueryString as FilterQueryString;
 use Touhidurabir\ModelSanitize\Sanitizable as Sanitizable;
 use Wildside\Userstamps\Userstamps;
 
 class OpnameDetail extends Model
 {
-    use FilterQueryString, Sanitizable, DataTableTrait, OpnameDetailEntity, ActiveTrait, OptionTrait, PowerJoins, ApiTrait, Userstamps;
+    use ActiveTrait, ApiTrait, DataTableTrait, FilterQueryString, OpnameDetailEntity, OptionTrait, PowerJoins, Sanitizable, Userstamps;
 
     protected $table = 'opname_detail';
+
     protected $primaryKey = 'opname_detail_id';
 
     const CREATED_AT = 'opname_detail_created_at';
+
     const UPDATED_AT = 'opname_detail_updated_at';
+
     const CREATED_BY = 'opname_detail_created_by';
+
     const UPDATED_BY = 'opname_detail_updated_by';
 
     protected $fillable = [
@@ -65,9 +67,11 @@ class OpnameDetail extends Model
     ];
 
     public $timestamps = true;
+
     public $incrementing = true;
 
-    public function fieldSearching(){
+    public function fieldSearching()
+    {
         return $this->field_name();
     }
 

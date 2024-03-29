@@ -10,6 +10,7 @@ class ViewTransaksiRewash extends Model
     use ViewTransaksiRewashEntity;
 
     protected $table = 'view_transaksi_rewash';
+
     protected $primaryKey = 'view_transaksi_rewash_id';
 
     protected $casts = [

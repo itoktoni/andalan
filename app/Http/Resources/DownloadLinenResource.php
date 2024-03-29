@@ -2,12 +2,6 @@
 
 namespace App\Http\Resources;
 
-use App\Dao\Enums\ProcessType;
-use App\Dao\Enums\StockType;
-use App\Dao\Enums\TransactionType;
-use App\Dao\Models\Lokasi;
-use App\Dao\Models\Transaksi;
-use App\Dao\Models\ViewDetailLinen;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class DownloadLinenResource extends JsonResource
@@ -18,7 +12,6 @@ class DownloadLinenResource extends JsonResource
      * @param  \Illuminate\Http\Request  $request
      * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
      */
-
     public static $model;
 
     public function toArray($request)

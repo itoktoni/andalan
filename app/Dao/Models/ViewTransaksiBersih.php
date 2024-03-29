@@ -10,6 +10,7 @@ class ViewTransaksiBersih extends Model
     use ViewTransaksiBersihEntity;
 
     protected $table = 'view_transaksi_bersih';
+
     protected $primaryKey = 'view_transaksi_bersih_id';
 
     protected $casts = [

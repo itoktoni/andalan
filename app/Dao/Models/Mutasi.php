@@ -3,7 +3,6 @@
 namespace App\Dao\Models;
 
 use App\Dao\Builder\DataBuilder;
-use App\Dao\Entities\KategoriEntity;
 use App\Dao\Entities\MutasiEntity;
 use App\Dao\Traits\ActiveTrait;
 use App\Dao\Traits\ApiTrait;
@@ -18,9 +17,10 @@ use Touhidurabir\ModelSanitize\Sanitizable as Sanitizable;
 
 class Mutasi extends Model
 {
-    use Sortable, FilterQueryString, Sanitizable, DataTableTrait, MutasiEntity, ActiveTrait, OptionTrait, PowerJoins, ApiTrait;
+    use ActiveTrait, ApiTrait, DataTableTrait, FilterQueryString, MutasiEntity, OptionTrait, PowerJoins, Sanitizable, Sortable;
 
     protected $table = 'mutasi';
+
     protected $primaryKey = 'mutasi_id';
 
     protected $fillable = [
@@ -47,7 +47,7 @@ class Mutasi extends Model
     ];
 
     protected $casts = [
-        'mutasi_id' => 'integer'
+        'mutasi_id' => 'integer',
     ];
 
     protected $filters = [
@@ -57,9 +57,11 @@ class Mutasi extends Model
     ];
 
     public $timestamps = false;
+
     public $incrementing = true;
 
-    public function fieldSearching(){
+    public function fieldSearching()
+    {
         return $this->field_name();
     }
 

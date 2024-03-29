@@ -19,37 +19,37 @@ class DetailRepository extends MasterRepository implements CrudInterface
     {
         $query = $this->model
             ->select('*')
-            ->leftJoinRelationship('has_cuci')
-            ->leftJoinRelationship('has_return')
-            ->leftJoinRelationship('has_rewash')
             ->leftJoinRelationship('has_view')
             ->sortable()->filter();
 
-            if(request()->hasHeader('authorization')){
-                if($paging = request()->get('paginate')){
-                    return $query->paginate($paging);
-                }
-
-                if(method_exists($this->model, 'getApiCollection')){
-                    return $this->model->getApiCollection($query->get());
-                }
-
-                return Notes::data($query->get());
+        if (request()->hasHeader('authorization')) {
+            if ($paging = request()->get('paginate')) {
+                return $query->paginate($paging);
             }
+
+            if (method_exists($this->model, 'getApiCollection')) {
+                return $this->model->getApiCollection($query->get());
+            }
+
+            return Notes::data($query->get());
+        }
 
         return $query;
     }
 
-    public function getPrint(){
+    public function getPrint()
+    {
         $sql = ViewDetailLinen::query()->filter();
+
         return $sql;
     }
 
-    public function getPrintDataMaster(){
+    public function getPrintDataMaster()
+    {
         $sql = ViewDetailLinen::query()
-        ->addSelect([DB::raw('view_detail_linen.*')])
-        ->leftJoinRelationship('has_category')
-        ->filter();
+            ->addSelect([DB::raw('view_detail_linen.*')])
+            ->leftJoinRelationship('has_category')
+            ->filter();
 
         return $sql;
     }

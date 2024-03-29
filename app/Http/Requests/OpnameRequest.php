@@ -12,7 +12,7 @@ class OpnameRequest extends FormRequest
 {
     use ValidationTrait;
 
-    public function validation() : array
+    public function validation(): array
     {
         return [
             Opname::field_rs_id() => 'required',
@@ -26,20 +26,20 @@ class OpnameRequest extends FormRequest
         $nama = $this->{Opname::field_name()};
         $status = $this->{Opname::field_status()};
 
-        if(empty($nama)){
+        if (empty($nama)) {
             $rs = Rs::find($this->{Opname::field_rs_id()});
-            if($rs){
+            if ($rs) {
                 $nama = $rs->field_name.PHP_EOL.$this->{Opname::field_start()}.' - '.$this->{Opname::field_end()};
             }
         }
 
-        if(empty($status)){
+        if (empty($status)) {
             $status = OpnameType::Proses;
         }
 
         $this->merge([
             Opname::field_name() => $nama,
-            Opname::field_status() => $status
+            Opname::field_status() => $status,
         ]);
     }
 
@@ -59,5 +59,4 @@ class OpnameRequest extends FormRequest
             }
         });
     }
-
 }

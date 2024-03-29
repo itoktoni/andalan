@@ -22,7 +22,7 @@ class EventServiceProvider extends ServiceProvider
         ],
         CountingLinen::class => [
             CountingCuci::class,
-        ]
+        ],
     ];
 
     /**

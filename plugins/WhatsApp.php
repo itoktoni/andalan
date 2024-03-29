@@ -32,25 +32,26 @@ class WhatsApp
                 'pesan' => $pesan,
             ];
 
-            if($image){
+            if ($image) {
                 $data_post = array_merge($data_post, [
                     'tipe' => $tipe,
                     'link' => $image,
-                    ]);
-                }
+                ]);
+            }
 
             curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data_post));
             curl_setopt($curl, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
             $response = curl_exec($curl);
             curl_close($curl);
+
             return $response;
         } catch (\Throwable $th) {
             $error = [
                 'kode' => 500,
                 'status' => false,
                 'message' => [
-                    $th->getMessage()
-                ]
+                    $th->getMessage(),
+                ],
             ];
 
             return $error;

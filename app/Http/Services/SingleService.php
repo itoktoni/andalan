@@ -3,16 +3,17 @@
 namespace App\Http\Services;
 
 use App\Dao\Interfaces\CrudInterface;
-use Plugins\Notes;
 use Plugins\Alert;
+use Plugins\Notes;
 
 class SingleService
 {
     public function get(CrudInterface $repository, $code, $relation = false)
     {
-        if(request()->wantsJson()){
+        if (request()->wantsJson()) {
             return Notes::single($repository->singleRepository($code, $relation));
         }
+
         return $repository->singleRepository($code, $relation);
     }
 
@@ -39,7 +40,7 @@ class SingleService
     {
         $check = false;
         $model = $repository->model ?? false;
-        if($data && $model){
+        if ($data && $model) {
             foreach ($data as $key => $value) {
                 $check = $model::find($key)->update([$model->field_sort() => $value]);
             }

@@ -39,10 +39,11 @@ class CreateWorkSheetListener
         // }
     }
 
-    private function saveNotification($pelapor, $description, $phone, $type, $picture = null){
+    private function saveNotification($pelapor, $description, $phone, $type, $picture = null)
+    {
 
         Notification::create([
-            Notification::field_name() =>  $pelapor,
+            Notification::field_name() => $pelapor,
             Notification::field_description() => $description,
             Notification::field_status() => NotificationStatus::Create,
             Notification::field_phone() => $phone,

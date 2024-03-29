@@ -17,9 +17,10 @@ use Touhidurabir\ModelSanitize\Sanitizable as Sanitizable;
 
 class History extends Model
 {
-    use Sortable, FilterQueryString, Sanitizable, DataTableTrait, HistoryEntity, ActiveTrait, OptionTrait, PowerJoins, ApiTrait;
+    use ActiveTrait, ApiTrait, DataTableTrait, FilterQueryString, HistoryEntity, OptionTrait, PowerJoins, Sanitizable, Sortable;
 
     protected $table = 'history';
+
     protected $primaryKey = 'history_id';
 
     protected $fillable = [
@@ -36,7 +37,7 @@ class History extends Model
     ];
 
     protected $casts = [
-        'history_rfid' => 'string'
+        'history_rfid' => 'string',
     ];
 
     protected $filters = [
@@ -45,9 +46,11 @@ class History extends Model
     ];
 
     public $timestamps = false;
+
     public $incrementing = true;
 
-    public function fieldSearching(){
+    public function fieldSearching()
+    {
         return $this->field_name();
     }
 

@@ -4,13 +4,12 @@ namespace App\Http\Requests;
 
 use App\Dao\Traits\ValidationTrait;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Str;
 
 class InvoiceReportRequest extends FormRequest
 {
     use ValidationTrait;
 
-    public function validation() : array
+    public function validation(): array
     {
         return [
             'start_rekap' => 'required',
@@ -18,5 +17,4 @@ class InvoiceReportRequest extends FormRequest
             'rs_id' => 'required',
         ];
     }
-
 }

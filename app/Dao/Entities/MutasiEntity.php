@@ -153,5 +153,4 @@ trait MutasiEntity
     {
         return $this->{$this->field_saldo_akhir()};
     }
-
 }

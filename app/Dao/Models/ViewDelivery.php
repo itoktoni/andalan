@@ -7,6 +7,7 @@ use App\Dao\Builder\DataBuilder;
 class ViewDelivery extends ViewTransaksi
 {
     protected $table = 'view_delivery';
+
     protected $primaryKey = 'transaksi_id';
 
     public function fieldDatatable(): array
