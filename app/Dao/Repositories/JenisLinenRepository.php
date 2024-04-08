@@ -23,8 +23,6 @@ class JenisLinenRepository extends MasterRepository implements CrudInterface
             ->addSelect(ViewTotalJenis::field_total())
             ->leftJoinRelationship('has_category')
             ->leftJoinRelationship('has_rs')
-            // ->leftJoinRelationship('has_supplier')
-            // ->leftJoinRelationship('has_bahan')
             ->leftJoinRelationship('has_total')
             ->sortable()->filter()
             ->orderBy('rs_nama', 'ASC')

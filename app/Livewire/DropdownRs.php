@@ -7,7 +7,7 @@ use App\Dao\Models\Rs;
 use App\Dao\Models\Ruangan;
 use Livewire\Component;
 
-class Dropdown extends Component
+class DropdownRs extends Component
 {
     public $id_rs;
 
@@ -33,7 +33,7 @@ class Dropdown extends Component
     public function render()
     {
         if ($this->id_rs) {
-            $rs_parse = Rs::with(['has_ruangan', 'has_jenis'])->find($this->id_rs);
+            $rs_parse = Rs::with([HAS_RUANGAN, HAS_JENIS])->find($this->id_rs);
 
             $this->data_ruangan = $rs_parse->has_ruangan->pluck(Ruangan::field_name(), Ruangan::field_primary()) ?? [];
             $this->data_jenis = $rs_parse->has_jenis->pluck(JenisLinen::field_name(), JenisLinen::field_primary()) ?? [];
@@ -51,9 +51,7 @@ class Dropdown extends Component
             $this->id_jenis = $jenis_id;
         }
 
-        // $this->id_jenis = $this->id_ruangan = null;
-
-        return view('livewire.dropdown')->with([
+        return view('livewire.dropdown-rs')->with([
             'id_ruangan' => $this->id_ruangan,
             'id_jenis' => $this->id_jenis,
             'rs_id' => $this->id_rs,

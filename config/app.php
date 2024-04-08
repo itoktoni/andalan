@@ -9,6 +9,7 @@ use App\Dao\Enums\LinenType;
 use App\Dao\Enums\MenuType;
 use App\Dao\Enums\ObsesimanType;
 use App\Dao\Enums\ProcessType;
+use App\Dao\Enums\RoleType;
 use App\Dao\Enums\TransactionType;
 use App\Dao\Enums\UserLevel;
 use App\Dao\Models\Transaksi;
@@ -195,6 +196,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        App\Providers\VoltServiceProvider::class,
         App\Providers\TelescopeServiceProvider::class,
         BenSampo\Enum\EnumServiceProvider::class,
         Kyslik\ColumnSortable\ColumnSortableServiceProvider::class,
@@ -268,6 +270,7 @@ return [
         'MenuType' => MenuType::class,
         'LinenType' => LinenType::class,
         'UserLevel' => UserLevel::class,
+        'RoleType' => RoleType::class,
         // 'SharedData' => SharedData::class,
         'SharedData' => SharedData::class,
         'Query' => Query::class,

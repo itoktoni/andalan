@@ -10,18 +10,9 @@ class CuciType extends Enum implements LocalizedEnum
 {
     use StatusTrait;
 
-    const Unknown = 0;
+    const UNKNOWN = null;
 
-    const Cuci = 1;
+    const CUCI = 'CUCI';
 
-    const Sewa = 2;
-
-    public static function getDescription($value): string
-    {
-        if ($value === self::Sewa) {
-            return 'Rental';
-        }
-
-        return parent::getDescription($value);
-    }
+    const RENTAL = 'RENTAL';
 }

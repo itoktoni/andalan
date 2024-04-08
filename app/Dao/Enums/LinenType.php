@@ -12,7 +12,7 @@ class LinenType extends Enum implements LocalizedEnum
 
     const UNKNOWN = null;
 
-    const BEBAS = 'BEBAS';
+    const FREE = 'FREE';
 
     const DEDICATED = 'DEDICATED';
 }

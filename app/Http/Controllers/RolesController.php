@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Dao\Enums\UserLevel;
+use App\Dao\Models\Rs;
 use App\Dao\Models\SystemGroup;
 use App\Dao\Repositories\RolesRepository;
 use App\Http\Requests\RoleRequest;
@@ -24,10 +25,11 @@ class RolesController extends MasterController
 
         $group = SystemGroup::getOptions();
         $level = UserLevel::getOptions();
+        $rs = Rs::getOptions();
 
         self::$share = [
             'group' => $group,
-            'level' => $level,
+            'rs' => $rs,
         ];
     }
 

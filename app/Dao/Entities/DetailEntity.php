@@ -244,39 +244,19 @@ trait DetailEntity
         return $this->{$this->field_hilang_updated_at()};
     }
 
-    public static function field_total_kotor()
-    {
-        return 'detail_total_kotor';
-    }
-
-    public function getFieldTotalKotorAttribute()
-    {
-        return $this->{$this->field_total_kotor()};
-    }
-
-    public static function field_total_retur()
-    {
-        return 'detail_total_retur';
-    }
-
-    public function getFieldTotalReturAttribute()
-    {
-        return $this->{$this->field_total_retur()};
-    }
-
-    public static function field_total_rewash()
-    {
-        return 'detail_total_rewash';
-    }
-
-    public function getFieldTotalRewashAttribute()
-    {
-        return $this->{$this->field_total_rewash()};
-    }
-
     public static function field_total_bersih_kotor()
     {
         return 'detail_total_bersih_kotor';
+    }
+
+    public function getFieldCuciAttribute()
+    {
+        return $this->{$this->field_total_bersih_kotor()};
+    }
+
+    public function getFieldTotalAttribute()
+    {
+        return $this->{$this->field_total_bersih_kotor()};
     }
 
     public function getFieldTotalBersihKotorAttribute()
@@ -302,16 +282,6 @@ trait DetailEntity
     public function getFieldTotalBersihReturAttribute()
     {
         return $this->{$this->field_total_bersih_retur()};
-    }
-
-    public static function field_total_cuci()
-    {
-        return 'detail_total_cuci';
-    }
-
-    public function getFieldTotalCuciAttribute()
-    {
-        return $this->{$this->field_total_cuci()};
     }
 
     public static function field_cek()

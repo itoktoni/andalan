@@ -4,7 +4,7 @@
 
         <x-form method="GET" action="{{ moduleRoute('getTable') }}">
 
-                @livewire('dropdown', ['label' => false])
+                @livewire('dropdown-rs', ['label' => false])
 
                 <div class="container">
                     <div class="row">

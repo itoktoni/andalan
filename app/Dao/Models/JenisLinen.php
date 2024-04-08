@@ -27,8 +27,6 @@ class JenisLinen extends Model
         'jenis_id',
         'jenis_id_rs',
         'jenis_id_kategori',
-        // 'jenis_id_jenis_bahan',
-        // 'jenis_id_supplier',
         'jenis_nama',
         'jenis_deskripsi',
         'jenis_gambar',

@@ -26,6 +26,7 @@
         "laravel/ui": "^4.5",
         "league/flysystem-webdav": "^3.21",
         "livewire/livewire": "^3.0",
+        "livewire/volt": "^1.6",
         "mehradsadeghi/laravel-filter-querystring": "^1.1",
         "opcodesio/log-viewer": "^3.1",
         "sabre/dav": "^4.6",

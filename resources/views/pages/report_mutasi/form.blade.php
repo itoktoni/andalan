@@ -3,7 +3,7 @@
         <x-form :model="$model" :spa="false" target="_blank"  method="GET" action="{{ moduleRoute('getPrint') }}" :upload="true">
             <x-action form="print" />
                 <input type="hidden" name="report_name" value="Laporan Mutasi">
-                @livewire('dropdown', ['hide' => 'ruangan'])
+                @livewire('dropdown-rs', ['hide' => 'ruangan'])
                 <x-form-input col="6" type="date" label="Tanggal Awal" name="start_date" />
                 <x-form-input col="6" type="date" label="Tanggal Akhir" name="end_date" />
             @endbind

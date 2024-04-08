@@ -21,21 +21,21 @@ class JenisBahan extends Model
 
     protected $table = 'jenis_bahan';
 
-    protected $primaryKey = 'jenis_bahan_id';
+    protected $primaryKey = 'bahan_id';
 
     protected $fillable = [
-        'jenis_bahan_id',
-        'jenis_bahan_nama',
-        'jenis_bahan_deskripsi',
+        'bahan_id',
+        'bahan_nama',
+        'bahan_deskripsi',
     ];
 
     public $sortable = [
-        'jenis_bahan_nama',
-        'jenis_bahan_deskripsi',
+        'bahan_nama',
+        'bahan_deskripsi',
     ];
 
     protected $casts = [
-        'jenis_bahan_id' => 'integer',
+        'bahan_id' => 'integer',
     ];
 
     protected $filters = [

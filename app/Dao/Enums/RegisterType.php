@@ -10,9 +10,9 @@ class RegisterType extends Enum implements LocalizedEnum
 {
     use StatusTrait;
 
-    const Unknow = 0;
+    const UNKNOWN = null;
 
-    const Register = 1;
+    const REGISTER = 'REGISTER';
 
-    const GantiChip = 2;
+    const GANTI_CHIP = 'GANTI_CHIP';
 }

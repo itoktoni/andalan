@@ -6,7 +6,7 @@ trait JenisBahanEntity
 {
     public static function field_primary()
     {
-        return 'jenis_bahan_id';
+        return 'bahan_id';
     }
 
     public function getFieldPrimaryAttribute()
@@ -16,7 +16,7 @@ trait JenisBahanEntity
 
     public static function field_name()
     {
-        return 'jenis_bahan_nama';
+        return 'bahan_nama';
     }
 
     public function getFieldNameAttribute()
@@ -26,7 +26,7 @@ trait JenisBahanEntity
 
     public static function field_description()
     {
-        return 'jenis_bahan_deskripsi';
+        return 'bahan_deskripsi';
     }
 
     public function getFieldDescriptionAttribute()

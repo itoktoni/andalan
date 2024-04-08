@@ -23,9 +23,9 @@ class Detail extends Model
 {
     use ActiveTrait, ApiTrait, DataTableTrait, DetailEntity, FilterQueryString, OptionTrait, PowerJoins, Sanitizable, Sortable, Userstamps;
 
-    protected $table = 'detail';
+    protected $table = 'detail_linen';
 
-    protected $primaryKey = 'detail_id';
+    protected $primaryKey = 'detail_rfid';
 
     protected $fillable = [
         'detail_id',
@@ -102,8 +102,8 @@ class Detail extends Model
 
     public $timestamps = true;
 
-    public $incrementing = true;
-    // protected $keyType = 'string';
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     public function fieldSearching()
     {
