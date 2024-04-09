@@ -5,9 +5,9 @@
             <div class="navbar-brand-box">
                 <a href="{{ url('/') }}" class="logo">
                     <span class="logo-sm">
-                        <img src="{{ env('APP_LOGO') ? url(env('APP_LOGO')) : url('default.png') }}" alt="" height="24" />
+                        <img src="{{ env('APP_LOGO') ? url(env('APP_LOGO')) : url('default.png') }}" alt="" height="55" />
                     </span>
-                    <span class="logo-lg"> <img src="{{ env('APP_LOGO') ? url(env('APP_LOGO')) : url('default.png') }}" alt="" height="24" /> <span class="logo-txt">{{ env('APP_NAME', 'SYSTEM') }}</span> </span>
+                    <span class="logo-lg"> <img class="mt-1" src="{{ env('APP_LOGO') ? url(env('APP_LOGO')) : url('default.png') }}" alt="" height="55" /></span>
                 </a>
             </div>
 

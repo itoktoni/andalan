@@ -31,9 +31,8 @@ class CreateSettingService
                 $file_logo = $data->file('logo');
                 $extension = $file_logo->extension();
                 $name = 'logo.'.$extension;
-                // $name = time().'.'.$name;
 
-                $file_logo->storeAs('/public/', $name);
+                $file_logo->storeAs('', $name, ['disk' => 'logo']);
                 EnvEditor::editKey('APP_LOGO', $name);
             }
 
