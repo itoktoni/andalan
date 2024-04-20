@@ -12,7 +12,7 @@
             </div>
 
             <button type="button" class="btn btn-sm px-3 font-size-16 header-item" id="vertical-menu-btn">
-                <i class="fa fa-fw fa-bars"></i>
+                <i class="dripicons-menu"></i>
             </button>
 
             <!-- App Search-->
