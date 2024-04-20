@@ -7,12 +7,15 @@ use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\RegisterType;
 use App\Dao\Enums\TransactionType;
 use App\Dao\Models\Cetak;
+use App\Dao\Models\ConfigLinen;
 use App\Dao\Models\Detail;
 use App\Dao\Models\History as ModelsHistory;
+use App\Dao\Models\JenisBahan;
 use App\Dao\Models\Opname;
 use App\Dao\Models\Outstanding;
 use App\Dao\Models\Register;
 use App\Dao\Models\Rs;
+use App\Dao\Models\Supplier;
 use App\Dao\Models\Transaksi;
 use App\Dao\Models\ViewDetailLinen;
 use App\Http\Controllers\BarcodeController;
@@ -161,11 +164,32 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
             $rs = Rs::with([HAS_RUANGAN, HAS_JENIS])->get();
             $collection = RsResource::collection($rs);
+
+            $data_supplier = [];
+            $supplier = Supplier::get();
+            foreach($supplier as $vendor){
+                $data_supplier[] = [
+                'supplier_id' => $vendor->field_primary,
+                'supplier_name' => $vendor->field_name,
+                ];
+            }
+
+            $data_bahan = [];
+            $bahan = JenisBahan::get();
+            foreach($bahan as $vendor){
+                $data_bahan[] = [
+                'bahan_id' => $vendor->field_primary,
+                'bahan_name' => $vendor->field_name,
+                ];
+            }
+
             $add = [
                 'status_transaksi' => $status_transaksi,
                 'status_proses' => $status_proses,
                 'status_cuci' => $status_cuci,
                 'status_register' => $status_register,
+                'bahan' => $data_bahan,
+                'supplier' => $data_supplier,
             ];
 
             $data = Notes::data($collection, $add);
@@ -213,6 +237,24 @@ Route::middleware(['auth:sanctum'])->group(function () {
             ];
         }
 
+        $data_supplier = [];
+        $supplier = Supplier::get();
+        foreach($supplier as $vendor){
+            $data_supplier[] = [
+              'supplier_id' => $vendor->field_primary,
+              'supplier_name' => $vendor->field_name,
+            ];
+        }
+
+        $data_bahan = [];
+        $bahan = JenisBahan::get();
+        foreach($bahan as $vendor){
+            $data_bahan[] = [
+              'bahan_id' => $vendor->field_primary,
+              'bahan_name' => $vendor->field_name,
+            ];
+        }
+
         try {
 
             $rs = Rs::with([HAS_RUANGAN, HAS_JENIS])->findOrFail($rsid);
@@ -220,7 +262,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
             $add['status_transaksi'] = $status_transaksi;
             $add['status_proses'] = $status_proses;
             $add['status_cuci'] = $status_cuci;
-            $add['status_register'] = $status_register;
+            $add['bahan'] = $data_bahan;
+            $add['supplier'] = $data_supplier;
 
             return Notes::data($collection, $add);
 
@@ -238,9 +281,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
         try {
 
             $code = env('CODE_BERSIH', 'BSH');
-            $autoNumber = Query::autoNumber(Transaksi::getTableName(), Transaksi::field_delivery(), $code.date('ymd'), env('AUTO_NUMBER', 15));
+            // $autoNumber = Query::autoNumber(Transaksi::getTableName(), Transaksi::field_delivery(), $code.date('ymd'), env('AUTO_NUMBER', 15));
 
-            if ($request->status_register == RegisterType::GantiChip) {
+            if ($request->status_register == RegisterType::GANTI_CHIP) {
                 $transaksi_status = TransactionType::Kotor;
                 $proses_status = ProcessType::Kotor;
             } else {
@@ -259,35 +302,22 @@ Route::middleware(['auth:sanctum'])->group(function () {
                         Detail::field_ruangan_id() => $request->ruangan_id,
                         Detail::field_jenis_id() => $request->jenis_id,
                         Detail::field_status_cuci() => $request->status_cuci,
-                        Detail::field_status_transaction() => $transaksi_status,
                         Detail::field_status_register() => $request->status_register ? $request->status_register : RegisterType::Register,
-                        Detail::field_status_process() => $proses_status,
                         Detail::field_created_at() => date('Y-m-d H:i:s'),
                         Detail::field_updated_at() => date('Y-m-d H:i:s'),
                         Detail::field_created_by() => auth()->user()->id,
                         Detail::field_updated_by() => auth()->user()->id,
                     ];
 
-                    $register[] = [
-                        Register::field_name() => $item,
-                        Register::field_rs_id() => $request->rs_id,
-                        Register::field_ruangan_id() => $request->ruangan_id,
-                        Register::field_jenis_id() => $request->jenis_id,
-                        Register::field_status_cuci() => $request->status_cuci,
-                        Register::field_status_transaction() => $transaksi_status,
-                        Register::field_status_register() => $request->status_register ? $request->status_register : RegisterType::Register,
-                        Register::field_status_process() => $proses_status,
-                        Register::field_created_at() => date('Y-m-d H:i:s'),
-                        Register::field_updated_at() => date('Y-m-d H:i:s'),
-                        Register::field_created_by() => auth()->user()->id,
-                        Register::field_updated_by() => auth()->user()->id,
+                    $config[] = [
+                        ConfigLinen::field_name() => $item,
+                        ConfigLinen::field_rs_id() => $request->rs_id,
                     ];
 
                     $outstanding[] = [
                         Outstanding::field_primary() => $item,
                         Outstanding::field_rs_id() => $request->rs_id,
                         Outstanding::field_ruangan_id() => $request->ruangan_id,
-                        Outstanding::field_jenis_id() => $request->jenis_id,
                         Outstanding::field_status_transaction() => $transaksi_status,
                         Outstanding::field_status_process() => $proses_status,
                         Outstanding::field_created_at() => date('Y-m-d H:i:s'),
@@ -298,8 +328,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 }
 
                 Detail::insert($detail);
-                Register::insert($register);
-                // Outstanding::insert($outstanding);
+                ConfigLinen::insert($config);
+                Outstanding::insert($outstanding);
 
                 $history = collect($request->rfid)->map(function ($item) {
 
@@ -326,37 +356,25 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     Detail::field_primary() => $request->rfid,
                     Detail::field_rs_id() => $request->rs_id,
                     Detail::field_ruangan_id() => $request->ruangan_id,
-                    Detail::field_jenis_id() => $request->jenis_id,
+                    Detail::field_bahan_id() => $request->bahan_id,
+                    Detail::field_supplier_id() => $request->supplier_id,
                     Detail::field_status_cuci() => $request->status_cuci,
                     Detail::field_status_register() => $request->status_register ? $request->status_register : RegisterType::Register,
-                    Detail::field_status_transaction() => $transaksi_status,
-                    Detail::field_status_process() => $proses_status,
                     Detail::field_created_at() => date('Y-m-d H:i:s'),
                     Detail::field_updated_at() => date('Y-m-d H:i:s'),
                     Detail::field_created_by() => auth()->user()->id,
                     Detail::field_updated_by() => auth()->user()->id,
                 ]);
 
-                $register = Register::create([
-                    Register::field_name() => $request->rfid,
-                    Register::field_rs_id() => $request->rs_id,
-                    Register::field_ruangan_id() => $request->ruangan_id,
-                    Register::field_jenis_id() => $request->jenis_id,
-                    Register::field_status_cuci() => $request->status_cuci,
-                    Register::field_status_register() => $request->status_register ? $request->status_register : RegisterType::Register,
-                    Register::field_status_transaction() => $transaksi_status,
-                    Register::field_status_process() => $proses_status,
-                    Register::field_created_at() => date('Y-m-d H:i:s'),
-                    Register::field_updated_at() => date('Y-m-d H:i:s'),
-                    Register::field_created_by() => auth()->user()->id,
-                    Register::field_updated_by() => auth()->user()->id,
+                $register = ConfigLinen::create([
+                    ConfigLinen::field_primary() => $request->rfid,
+                    ConfigLinen::field_rs_id() => $request->rs_id,
                 ]);
 
                 $outstanding = Outstanding::create([
                     Outstanding::field_primary() => $request->rfid,
                     Outstanding::field_rs_id() => $request->rs_id,
                     Outstanding::field_ruangan_id() => $request->ruangan_id,
-                    Outstanding::field_jenis_id() => $request->jenis_id,
                     Outstanding::field_status_cuci() => $request->status_cuci,
                     Outstanding::field_status_register() => $request->status_register ? $request->status_register : RegisterType::Register,
                     Outstanding::field_status_transaction() => $transaksi_status,

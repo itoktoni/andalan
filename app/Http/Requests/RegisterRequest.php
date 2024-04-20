@@ -16,8 +16,10 @@ class RegisterRequest extends FormRequest
             RFID => 'required',
             RS_ID => 'required',
             RUANGAN_ID => 'required',
+            SUPPLIER_ID => 'required',
+            BAHAN_ID => 'required',
             JENIS_ID => 'required',
-            STATUS_CUCI => 'required|in:0,1,2',
+            STATUS_CUCI => 'required|in:"RENTAL","CUCI"',
         ];
     }
 

@@ -37,6 +37,8 @@ define('UPLOAD', 'upload');
 define('KEY', 'key');
 define('RFID', 'rfid');
 define('RS_ID', 'rs_id');
+define('BAHAN_ID', 'bahan_id');
+define('SUPPLIER_ID', 'supplier_id');
 define('RUANGAN_ID', 'ruangan_id');
 define('JENIS_ID', 'jenis_id');
 define('STATUS_CUCI', 'status_cuci');

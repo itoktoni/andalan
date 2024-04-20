@@ -3,6 +3,8 @@
 namespace App\Dao\Models;
 
 use App\Dao\Builder\DataBuilder;
+use App\Dao\Entities\ConfigEntity;
+use App\Dao\Entities\ConfigLinenEntity;
 use App\Dao\Entities\RegisterEntity;
 use App\Dao\Enums\UserLevel;
 use App\Dao\Traits\ActiveTrait;
@@ -16,40 +18,26 @@ use Kyslik\ColumnSortable\Sortable;
 use Mehradsadeghi\FilterQueryString\FilterQueryString as FilterQueryString;
 use Touhidurabir\ModelSanitize\Sanitizable as Sanitizable;
 
-class Register extends Model
+class ConfigLinen extends Model
 {
-    use ActiveTrait, ApiTrait, DataTableTrait, FilterQueryString, OptionTrait, PowerJoins, RegisterEntity, Sanitizable, Sortable;
+    use ActiveTrait, ApiTrait, DataTableTrait, FilterQueryString, OptionTrait, PowerJoins, ConfigLinenEntity, Sanitizable, Sortable;
 
-    protected $table = 'register';
+    protected $table = 'config_linen';
 
-    protected $primaryKey = 'register_id';
+    protected $primaryKey = 'detail_rfid';
 
     protected $fillable = [
-        'register_id',
-        'register_rfid',
-        'register_id_rs',
-        'register_id_ruangan',
-        'register_id_jenis',
-        'register_status_cuci',
-        'register_status_register',
-        'register_status_transaksi',
-        'register_status_proses',
-        'register_created_by',
-        'register_updated_by',
-        'register_deleted_by',
-        'register_deskripsi',
-        'register_created_at',
-        'register_updated_at',
+        'rs_id',
+        'detail_rfid',
     ];
 
     public $sortable = [
-        'outstanding_rfid',
-        'outstanding_key',
+
     ];
 
     protected $casts = [
-        'outstanding_rs_ori' => 'integer',
-        'outstanding_rs_scan' => 'integer',
+        'rs_id' => 'integer',
+        'detail_rfid' => 'string',
     ];
 
     protected $filters = [
