@@ -6,7 +6,7 @@
 
                 @livewire('dropdown-rs', ['label' => false])
 
-                <div class="container">
+                <div class="container-fluid">
                     <div class="row">
                         <x-form-select prepend="Scan RS" col="4" :label=false name="rs_id" :options="$rs" />
                         <x-form-select prepend="Status" col="4" :label=false name="status" :options="$status" />
@@ -31,7 +31,7 @@
 
             <x-action/>
 
-            <div class="container">
+            <div class="container-fluid">
                 <div class="table-responsive mb-3" id="table_data">
                     <table class="table table-bordered table-striped overflow max-content">
                         <thead>

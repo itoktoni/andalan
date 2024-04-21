@@ -6,7 +6,7 @@
 
             @livewire('dropdown-rs', ['label' => false])
 
-            <div class="container">
+            <div class="container-fluid">
                 <div class="row">
                     <x-form-input prepend="No. RFID" :label=false col="4" name="detail_rfid" />
                     <x-form-input type="date" prepend="Tanggal Awal" :label=false col="4" name="start_date" />
@@ -25,7 +25,7 @@
 
             <x-action/>
 
-            <div class="container">
+            <div class="container-fluid">
                 <div class="table-responsive" id="table_data">
                     <table class="table table-bordered table-striped overflow max-content">
                         <thead>
