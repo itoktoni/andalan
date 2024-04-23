@@ -19,8 +19,8 @@ class ViewDetailLinen extends Model
         'view_linen_rfid' => 'string',
         'view_linen_id' => 'integer',
         'view_pemakaian' => 'integer',
-        'view_status_cuci' => 'integer',
-        'view_status_register' => 'integer',
+        'view_status_cuci' => 'string',
+        'view_status_register' => 'string',
     ];
 
     protected $filters = [
@@ -34,6 +34,8 @@ class ViewDetailLinen extends Model
         'view_status_cuci',
         'view_status_register',
     ];
+
+    protected $keyType = 'string';
 
     protected $dates = [
         'view_tanggal_create',

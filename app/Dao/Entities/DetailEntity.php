@@ -293,4 +293,14 @@ trait DetailEntity
     {
         return $this->{$this->field_cek()};
     }
+
+    public static function field_dedicated()
+    {
+        return 'detail_status_linen';
+    }
+
+    public function getFieldDedicatedAttribute()
+    {
+        return $this->{$this->field_dedicated()};
+    }
 }

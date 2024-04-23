@@ -28,34 +28,27 @@ class Detail extends Model
     protected $primaryKey = 'detail_rfid';
 
     protected $fillable = [
-        'detail_id',
         'detail_rfid',
         'detail_id_rs',
         'detail_id_ruangan',
         'detail_id_jenis',
         'detail_id_bahan',
         'detail_id_supplier',
-        'detail_status_cuci',
-        'detail_status_transaksi',
-        'detail_status_proses',
-        'detail_status_register',
         'detail_deskripsi',
-        'detail_total_bersih_rewash',
-        'detail_total_bersih_retur',
-        'detail_total_bersih_kotor',
-        'detail_total_kotor',
-        'detail_total_retur',
-        'detail_total_rewash',
-        'detail_total_cuci',
-        'detail_noted',
-        'detail_tanggal_cek',
-
-        'detail_created_at',
-        'detail_updated_at',
-        'detail_deleted_at',
         'detail_created_by',
         'detail_updated_by',
         'detail_deleted_by',
+        'detail_created_at',
+        'detail_updated_at',
+        'detail_deleted_at',
+        'detail_status_cuci',
+        'detail_status_register',
+        'detail_status_linen',
+        'detail_status_edar',
+        'detail_total_bersih_rewash',
+        'detail_total_bersih_retur',
+        'detail_total_bersih_kotor',
+        'detail_tgl_cek',
     ];
 
     public $sortable = [
@@ -65,14 +58,12 @@ class Detail extends Model
 
     protected $casts = [
         'detail_rfid' => 'string',
-        'detail_status_transaksi' => 'integer',
     ];
 
     protected $filters = [
         'filter',
+        'detail_status_cuci',
         'detail_status_register',
-        'detail_status_transaksi',
-        'detail_status_proses',
         'view_rs_id',
         'view_ruangan_id',
         'view_linen_id',

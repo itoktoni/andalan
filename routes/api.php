@@ -359,6 +359,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     Detail::field_bahan_id() => $request->bahan_id,
                     Detail::field_supplier_id() => $request->supplier_id,
                     Detail::field_status_cuci() => $request->status_cuci,
+                    Detail::field_dedicated() => LinenType::DEDICATED,
                     Detail::field_status_register() => $request->status_register ? $request->status_register : RegisterType::REGISTER,
                     Detail::field_created_at() => date('Y-m-d H:i:s'),
                     Detail::field_updated_at() => date('Y-m-d H:i:s'),
@@ -375,8 +376,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     Outstanding::field_primary() => $request->rfid,
                     Outstanding::field_rs_id() => $request->rs_id,
                     Outstanding::field_ruangan_id() => $request->ruangan_id,
-                    Outstanding::field_status_cuci() => $request->status_cuci,
-                    Outstanding::field_status_register() => $request->status_register ? $request->status_register : RegisterType::REGISTER,
                     Outstanding::field_status_transaction() => $transaksi_status,
                     Outstanding::field_status_process() => $proses_status,
                     Outstanding::field_created_at() => date('Y-m-d H:i:s'),
@@ -388,6 +387,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 History::log($request->rfid, ProcessType::Register, $request->rfid);
 
                 $view = ViewDetailLinen::findOrFail($request->rfid);
+
                 $collection = new DetailResource($view);
                 DB::commit();
 
