@@ -25,10 +25,10 @@ class JenisLinen extends Model
 
     protected $fillable = [
         'jenis_id',
-        'jenis_id_rs',
         'jenis_id_kategori',
         'jenis_nama',
         'jenis_deskripsi',
+        'jenis_id_rs',
         'jenis_gambar',
         'jenis_parstok',
         'jenis_berat',
@@ -36,22 +36,20 @@ class JenisLinen extends Model
 
     public $sortable = [
         'jenis_nama',
+        'jenis_berat',
         'jenis_deskripsi',
     ];
 
     protected $casts = [
         'jenis_id' => 'integer',
-        'jenis_id_rs' => 'integer',
         'jenis_id_kategori' => 'integer',
     ];
 
     protected $filters = [
         'filter',
-        'jenis_parstok',
-        'jenis_nama',
-        'jenis_id',
-        'jenis_id_rs',
         'jenis_id_kategori',
+        'jenis_id',
+        'jenis_nama',
     ];
 
     protected $with = ['has_category'];
@@ -69,11 +67,9 @@ class JenisLinen extends Model
     {
         return [
             DataBuilder::build($this->field_primary())->name('ID')->show(false)->width(20)->sort(),
-            DataBuilder::build(Rs::field_name())->name('Rumah Sakit')->show()->sort(),
             DataBuilder::build(Kategori::field_name())->name('Kategori')->width('100px')->show()->sort(),
-            DataBuilder::build($this->field_name())->name('Nama Linen')->width('200px')->show()->sort(),
+            DataBuilder::build($this->field_name())->name('Nama Linen')->show()->sort(),
             DataBuilder::build($this->field_weight())->name('Berat')->show()->sort(),
-            DataBuilder::build($this->field_parstock())->name('Parstok')->show()->sort(),
         ];
     }
 

@@ -15,11 +15,11 @@
                     <table class="table table-bordered table-striped">
                         <thead>
                             <tr>
-                                <th width="9" class="center">
+                                <th width="9" class="center" style="width: 1%">
                                     <input class="btn-check-d" type="checkbox">
                                 </th>
-                                <th class="text-center column-action">{{ __('Action') }}</th>
-                                <th class="text-center column-checkbox">{{ __('No.') }}</th>
+                                <th class="text-center column-action" style="width: 10%">{{ __('Action') }}</th>
+                                <th class="text-center column-checkbox" style="width: 5%">{{ __('No.') }}</th>
                                 @foreach($fields as $value)
                                     <th {{ Template::extractColumn($value) }}>
                                         @if($value->sort)
@@ -29,8 +29,6 @@
                                             @endif
                                     </th>
                                 @endforeach
-                                <th>{{ __('Total Linen') }}</th>
-                                <th>{{ __('Kurang Linen') }}</th>
 
                             </tr>
                         </thead>
@@ -45,13 +43,9 @@
                                         <x-crud :model="$table" />
                                     </td>
                                     <td>{{ iteration($data, $key) }}</td>
-                                    <td>{{ $table->field_rs_name ?? '' }}</td>
                                     <td>{{ $table->field_category_name ?? '' }}</td>
                                     <td>{{ $table->field_name }}</td>
                                     <td>{{ $table->field_weight }}</td>
-                                    <td>{{ $table->field_parstock }}</td>
-                                    <td>{{ $table->field_total ?? 0 }}</td>
-                                    <td>{{ $table->field_parstock - $table->field_total ?? 0 }}</td>
                                 </tr>
                             @empty
                             @endforelse

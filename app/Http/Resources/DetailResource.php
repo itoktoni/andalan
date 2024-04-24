@@ -19,7 +19,7 @@ class DetailResource extends JsonResource
         $data = [
             'linen_id' => $this->field_primary,
             'linen_nama' => $this->field_name ?? '',
-            'rs_id' => $this->field_rs_id,
+            'rs_id' => $this->field_rs_id ?? '',
             'rs_nama' => $this->field_rs_name ?? '',
             'ruangan_id' => $this->field_ruangan_id,
             'ruangan_nama' => $this->field_ruangan_name ?? '',

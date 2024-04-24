@@ -1,6 +1,12 @@
-<div class="form-group {{ $col }} {{ $errors->has($name) ? 'has-danger' : '' }}">
-    <x-form-label :label="$label" :for="$attributes->get('id') ?: $id()" />
+@php
+$code = $name;
+if(str_contains($code, '[]')){
+    $code = str_replace('[]', '', $code);
+}
+@endphp
 
+<div class="form-group {{ $col }} {{ $errors->has($code) ? 'has-danger' : '' }}">
+    <x-form-label :label="$label" :for="$attributes->get('id') ?: $id()" />
     @if((!empty($prepend) or !empty($append)))
     <div class="input-group">
     @endif

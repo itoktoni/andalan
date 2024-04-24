@@ -14,6 +14,8 @@ class CreateRsService
             $check = $repository->saveRepository($data);
             if (isset($check['status']) && $check['status']) {
                 $check['data']->has_ruangan()->sync($data['ruangan']);
+                $check['data']->has_jenis()->sync($data['jenis']);
+
                 if (request()->wantsJson()) {
                     return response()->json($check)->getData();
                 }

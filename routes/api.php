@@ -3,6 +3,7 @@
 use App\Dao\Enums\BooleanType;
 use App\Dao\Enums\CetakType;
 use App\Dao\Enums\CuciType;
+use App\Dao\Enums\LinenType;
 use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\RegisterType;
 use App\Dao\Enums\TransactionType;
@@ -11,6 +12,7 @@ use App\Dao\Models\ConfigLinen;
 use App\Dao\Models\Detail;
 use App\Dao\Models\History as ModelsHistory;
 use App\Dao\Models\JenisBahan;
+use App\Dao\Models\JenisLinen;
 use App\Dao\Models\Opname;
 use App\Dao\Models\Outstanding;
 use App\Dao\Models\Register;
@@ -255,6 +257,15 @@ Route::middleware(['auth:sanctum'])->group(function () {
             ];
         }
 
+        $data_jenis = [];
+        $jenis = JenisLinen::get();
+        foreach($jenis as $item){
+            $data_jenis[] = [
+              'jenis_id' => $item->field_primary,
+              'jenis_name' => $item->field_name,
+            ];
+        }
+
         try {
 
             $rs = Rs::with([HAS_RUANGAN, HAS_JENIS])->findOrFail($rsid);
@@ -263,6 +274,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
             $add['status_proses'] = $status_proses;
             $add['status_cuci'] = $status_cuci;
             $add['bahan'] = $data_bahan;
+            $add['jenis'] = $data_jenis;
             $add['supplier'] = $data_supplier;
 
             return Notes::data($collection, $add);
@@ -298,9 +310,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 foreach ($request->rfid as $item) {
                     $detail[] = [
                         Detail::field_primary() => $item,
-                        Detail::field_rs_id() => $request->rs_id,
                         Detail::field_ruangan_id() => $request->ruangan_id,
                         Detail::field_jenis_id() => $request->jenis_id,
+                        Detail::field_bahan_id() => $request->bahan_id,
+                        Detail::field_supplier_id() => $request->supplier_id,
+                        Detail::field_dedicated() => LinenType::FREE,
                         Detail::field_status_cuci() => $request->status_cuci,
                         Detail::field_status_register() => $request->status_register ? $request->status_register : RegisterType::Register,
                         Detail::field_created_at() => date('Y-m-d H:i:s'),
@@ -309,14 +323,15 @@ Route::middleware(['auth:sanctum'])->group(function () {
                         Detail::field_updated_by() => auth()->user()->id,
                     ];
 
-                    $config[] = [
-                        ConfigLinen::field_name() => $item,
-                        ConfigLinen::field_rs_id() => $request->rs_id,
-                    ];
+                    foreach($request->rs_id as $id_rs){
+                        $config[] = [
+                            ConfigLinen::field_name() => $item,
+                            ConfigLinen::field_rs_id() => $id_rs,
+                        ];
+                    }
 
                     $outstanding[] = [
                         Outstanding::field_primary() => $item,
-                        Outstanding::field_rs_id() => $request->rs_id,
                         Outstanding::field_ruangan_id() => $request->ruangan_id,
                         Outstanding::field_status_transaction() => $transaksi_status,
                         Outstanding::field_status_process() => $proses_status,
@@ -455,12 +470,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 $collection[] = [
                     'linen_id' => $data->detail_rfid,
                     'linen_nama' => $data->jenis_nama ?? '',
-                    'rs_id' => $data->detail_id_rs,
+                    'rs_id' => $data->detail_id_rs ?? '',
                     'rs_nama' => $data->rs_nama ?? '',
                     'ruangan_id' => $data->detail_id_ruangan,
                     'ruangan_nama' => $data->ruangan_nama ?? '',
                     'status_register' => RegisterType::getDescription($data->detail_status_register),
-                    'status_cuci' => CuciType::getDescription($data->detail_status_cuci),
+                    'status_cuci' => $data->detail_status_cuci,
                     'status_transaksi' => TransactionType::getDescription($data->detail_status_transaksi),
                     'status_proses' => ProcessType::getDescription($data->detail_status_proses),
                     'tanggal_create' => $data->detail_created_at ? $data->detail_created_at->format('Y-m-d') : null,
@@ -473,7 +488,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
             return Notes::data($collection);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
-            return Notes::error('data RFID tidak ditemukan');
+            return Notes::error($th->getMessage());
         } catch (\Throwable $th) {
             return Notes::error($th->getMessage());
         }

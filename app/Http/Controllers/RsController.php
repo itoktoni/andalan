@@ -3,13 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Dao\Enums\LinenType;
+use App\Dao\Models\JenisLinen;
 use App\Dao\Models\Rs;
 use App\Dao\Models\Ruangan;
 use App\Dao\Repositories\RsRepository;
 use App\Http\Requests\RsRequest;
 use App\Http\Services\CreateRsService;
 use App\Http\Services\SingleService;
+use App\Http\Services\UpdateJenisService;
 use App\Http\Services\UpdateRsService;
+use Illuminate\Http\Request;
 use Plugins\Response;
 
 class RsController extends MasterController
@@ -24,10 +27,12 @@ class RsController extends MasterController
     {
 
         $ruangan = Ruangan::getOptions();
+        $jenis = JenisLinen::getOptions();
         $status = LinenType::getOptions();
 
         self::$share = [
             'ruangan' => $ruangan,
+            'jenis' => $jenis,
             'status' => $status,
         ];
     }
@@ -46,17 +51,38 @@ class RsController extends MasterController
         return Response::redirectBack($data);
     }
 
+    public function postJenis($code, Request $request, UpdateJenisService $service){
+        $data = $service->update(self::$repository, $request->all(), $code);
+
+        return Response::redirectBack($data);
+    }
+
+    public function getJenis($code){
+        $data = $this->get($code, [Rs::field_has_ruangan(), 'has_jenis']);
+        $jenis = $data->has_jenis ?? [];
+
+        $this->beforeForm();
+        $this->beforeUpdate($code);
+
+        return moduleView(modulePathForm('jenis'), $this->share([
+            'model' => $data,
+            'jenis' => $jenis,
+        ]));
+    }
+
     public function getUpdate($code)
     {
         $data = $this->get($code, [Rs::field_has_ruangan()]);
-        $selected = $data->has_ruangan->pluck(Ruangan::field_primary()) ?? [];
+        $selected_ruangan = $data->has_ruangan->pluck(Ruangan::field_primary()) ?? [];
+        $selected_jenis = $data->has_jenis->pluck(JenisLinen::field_primary()) ?? [];
 
         $this->beforeForm();
         $this->beforeUpdate($code);
 
         return moduleView(modulePathForm(), $this->share([
             'model' => $data,
-            'selected' => $selected,
+            'selected_jenis' => $selected_jenis,
+            'selected_ruangan' => $selected_ruangan,
         ]));
     }
 }

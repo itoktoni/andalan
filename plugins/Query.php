@@ -214,9 +214,8 @@ class Query
     public static function getDetail($select = ['*'])
     {
         $query = Detail::addSelect($select)
-            ->joinRelationship(HAS_RS)
+            ->leftJoinRelationship(HAS_RS)
             ->joinRelationship(HAS_RUANGAN)
-            ->joinRelationship(HAS_JENIS)
             ->joinRelationship(HAS_USER);
 
         return $query;

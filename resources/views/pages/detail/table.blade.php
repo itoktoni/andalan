@@ -74,7 +74,8 @@
                                     <td>{{ $table->field_primary }}</td>
                                     <td>{{ $table->view_rs_nama }}</td>
                                     <td>{{ $table->view_kategori_nama }}</td>
-                                    <td>{{ $table->view_kategori_nama }}</td>
+                                    <td>{{ $table->view_bahan_nama }}</td>
+                                    <td>{{ $table->view_supplier_nama }}</td>
                                     <td>{{ $table->view_linen_nama }}</td>
                                     <td>{{ $table->view_linen_berat }}</td>
                                     <td>{{ $table->view_ruangan_nama }}</td>

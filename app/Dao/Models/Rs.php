@@ -89,13 +89,13 @@ class Rs extends Model
         return $this->belongsToMany(Ruangan::class, 'rs_dan_ruangan', Rs::field_primary(), Ruangan::field_primary());
     }
 
+    public function has_jenis()
+    {
+        return $this->belongsToMany(JenisLinen::class, 'rs_dan_jenis', Rs::field_primary(), JenisLinen::field_primary())->withPivot(['parstock']);
+    }
+
     public function has_rfid()
     {
         return $this->hasMany(Detail::class, Detail::field_rs_id(), $this->field_primary());
-    }
-
-    public function has_jenis()
-    {
-        return $this->hasMany(JenisLinen::class, JenisLinen::field_rs_id(), $this->field_primary());
     }
 }
