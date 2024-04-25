@@ -13,7 +13,7 @@ class RegisterRequest extends FormRequest
     public function validation(): array
     {
         return [
-            RFID => 'required',
+            RFID => 'required|array',
             RS_ID => 'required',
             SUPPLIER_ID => 'required',
             BAHAN_ID => 'required',

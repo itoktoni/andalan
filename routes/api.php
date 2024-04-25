@@ -117,28 +117,28 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
             $data_supplier = [];
             $supplier = Supplier::get();
-            foreach($supplier as $vendor){
+            foreach ($supplier as $vendor) {
                 $data_supplier[] = [
-                'supplier_id' => $vendor->field_primary,
-                'supplier_name' => $vendor->field_name,
+                    'supplier_id' => $vendor->field_primary,
+                    'supplier_name' => $vendor->field_name,
                 ];
             }
 
             $data_bahan = [];
             $bahan = JenisBahan::get();
-            foreach($bahan as $vendor){
+            foreach ($bahan as $vendor) {
                 $data_bahan[] = [
-                'bahan_id' => $vendor->field_primary,
-                'bahan_name' => $vendor->field_name,
+                    'bahan_id' => $vendor->field_primary,
+                    'bahan_name' => $vendor->field_name,
                 ];
             }
 
             $data_jenis = [];
             $jenis = JenisLinen::get();
-            foreach($jenis as $item){
+            foreach ($jenis as $item) {
                 $data_jenis[] = [
-                  'jenis_id' => $item->field_primary,
-                  'jenis_name' => $item->field_name,
+                    'jenis_id' => $item->field_primary,
+                    'jenis_name' => $item->field_name,
                 ];
             }
 
@@ -199,28 +199,28 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
         $data_supplier = [];
         $supplier = Supplier::get();
-        foreach($supplier as $vendor){
+        foreach ($supplier as $vendor) {
             $data_supplier[] = [
-              'supplier_id' => $vendor->field_primary,
-              'supplier_name' => $vendor->field_name,
+                'supplier_id' => $vendor->field_primary,
+                'supplier_name' => $vendor->field_name,
             ];
         }
 
         $data_bahan = [];
         $bahan = JenisBahan::get();
-        foreach($bahan as $vendor){
+        foreach ($bahan as $vendor) {
             $data_bahan[] = [
-              'bahan_id' => $vendor->field_primary,
-              'bahan_name' => $vendor->field_name,
+                'bahan_id' => $vendor->field_primary,
+                'bahan_name' => $vendor->field_name,
             ];
         }
 
         $data_jenis = [];
         $jenis = JenisLinen::get();
-        foreach($jenis as $item){
+        foreach ($jenis as $item) {
             $data_jenis[] = [
-              'jenis_id' => $item->field_primary,
-              'jenis_name' => $item->field_name,
+                'jenis_id' => $item->field_primary,
+                'jenis_name' => $item->field_name,
             ];
         }
 
@@ -250,8 +250,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
         try {
 
-            $code = env('CODE_BERSIH', 'BSH');
-            // $autoNumber = Query::autoNumber(Transaksi::getTableName(), Transaksi::field_delivery(), $code.date('ymd'), env('AUTO_NUMBER', 15));
+            $code = env('CODE_BERSIH', 'REG');
+            $autoNumber = Query::autoNumber(Outstanding::getTableName(), Outstanding::field_key(), $code.date('ymd'), env('AUTO_NUMBER', 15));
 
             if ($request->status_register == RegisterType::GANTI_CHIP) {
                 $transaksi_status = TransactionType::KOTOR;
@@ -261,110 +261,90 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 $proses_status = ProcessType::Register;
             }
 
-            if (is_array($request->rfid)) {
+            $config = [];
 
-                DB::beginTransaction();
+            DB::beginTransaction();
 
-                foreach ($request->rfid as $item) {
-                    $detail[] = [
-                        Detail::field_primary() => $item,
-                        Detail::field_jenis_id() => $request->jenis_id,
-                        Detail::field_bahan_id() => $request->bahan_id,
-                        Detail::field_supplier_id() => $request->supplier_id,
-                        Detail::field_dedicated() => LinenType::FREE,
-                        Detail::field_status_cuci() => $request->status_cuci,
-                        Detail::field_status_register() => $request->status_register ? $request->status_register : RegisterType::REGISTER,
-                        Detail::field_created_at() => date('Y-m-d H:i:s'),
-                        Detail::field_updated_at() => date('Y-m-d H:i:s'),
-                        Detail::field_created_by() => auth()->user()->id,
-                        Detail::field_updated_by() => auth()->user()->id,
-                    ];
-
-                    foreach($request->rs_id as $id_rs){
-                        $config[] = [
-                            ConfigLinen::field_name() => $item,
-                            ConfigLinen::field_rs_id() => $id_rs,
-                        ];
-                    }
-
-                    $outstanding[] = [
-                        Outstanding::field_primary() => $item,
-                        Outstanding::field_status_transaction() => $transaksi_status,
-                        Outstanding::field_status_process() => $proses_status,
-                        Outstanding::field_created_at() => date('Y-m-d H:i:s'),
-                        Outstanding::field_updated_at() => date('Y-m-d H:i:s'),
-                        Outstanding::field_created_by() => auth()->user()->id,
-                        Outstanding::field_updated_by() => auth()->user()->id,
-                    ];
-                }
-
-                Detail::insert($detail);
-                ConfigLinen::insert($config);
-                Outstanding::insert($outstanding);
-
-                $history = collect($request->rfid)->map(function ($item) {
-
-                    return [
-                        ModelsHistory::field_name() => $item,
-                        ModelsHistory::field_status() => ProcessType::Register,
-                        ModelsHistory::field_created_by() => auth()->user()->name,
-                        ModelsHistory::field_created_at() => date('Y-m-d H:i:s'),
-                        ModelsHistory::field_description() => json_encode([ModelsHistory::field_name() => $item]),
-                    ];
-                });
-
-                ModelsHistory::insert($history->toArray());
-                DB::commit();
-
-                $return = ViewDetailLinen::whereIn(ViewDetailLinen::field_primary(), $request->rfid)->get();
-
-                return Notes::data(DetailResource::collection($return));
-
-            } else {
-                DB::beginTransaction();
-
-                $detail = Detail::create([
-                    Detail::field_primary() => $request->rfid,
-                    Detail::field_rs_id() => $request->rs_id,
-                    Detail::field_ruangan_id() => $request->ruangan_id,
+            foreach ($request->rfid as $item) {
+                $merge = [
+                    Detail::field_primary() => $item,
+                    Detail::field_jenis_id() => $request->jenis_id,
                     Detail::field_bahan_id() => $request->bahan_id,
                     Detail::field_supplier_id() => $request->supplier_id,
+                    Detail::field_dedicated() => LinenType::FREE,
                     Detail::field_status_cuci() => $request->status_cuci,
-                    Detail::field_dedicated() => LinenType::DEDICATED,
                     Detail::field_status_register() => $request->status_register ? $request->status_register : RegisterType::REGISTER,
                     Detail::field_created_at() => date('Y-m-d H:i:s'),
                     Detail::field_updated_at() => date('Y-m-d H:i:s'),
                     Detail::field_created_by() => auth()->user()->id,
                     Detail::field_updated_by() => auth()->user()->id,
-                ]);
+                ];
 
-                $register = ConfigLinen::create([
-                    ConfigLinen::field_primary() => $request->rfid,
-                    ConfigLinen::field_rs_id() => $request->rs_id,
-                ]);
-
-                $outstanding = Outstanding::create([
-                    Outstanding::field_primary() => $request->rfid,
-                    Outstanding::field_rs_id() => $request->rs_id,
-                    Outstanding::field_ruangan_id() => $request->ruangan_id,
+                $outstanding = [
+                    Outstanding::field_key() => $autoNumber,
+                    Outstanding::field_primary() => $item,
                     Outstanding::field_status_transaction() => $transaksi_status,
                     Outstanding::field_status_process() => $proses_status,
                     Outstanding::field_created_at() => date('Y-m-d H:i:s'),
                     Outstanding::field_updated_at() => date('Y-m-d H:i:s'),
                     Outstanding::field_created_by() => auth()->user()->id,
                     Outstanding::field_updated_by() => auth()->user()->id,
-                ]);
+                ];
 
-                History::log($request->rfid, ProcessType::Register, $request->rfid);
+                if ($request->has('ruangan_id')) {
+                    $merge = array_merge($merge, [
+                        Detail::field_dedicated() => LinenType::DEDICATED,
+                        Detail::field_ruangan_id() => $request->ruangan_id,
+                        Detail::field_rs_id() => $request->rs_id,
+                    ]);
 
-                $view = ViewDetailLinen::findOrFail($request->rfid);
+                    $outstanding = array_merge($outstanding, [
+                        Outstanding::field_rs_ori() => $request->rs_id,
+                        Outstanding::field_rs_scan() => $request->rs_id,
+                        Outstanding::field_ruangan_id() => $request->ruangan_id,
+                    ]);
 
-                $collection = new DetailResource($view);
-                DB::commit();
+                    ConfigLinen::create([
+                        ConfigLinen::field_primary() => $item,
+                        ConfigLinen::field_rs_id() => $request->rs_id,
+                    ]);
 
-                return Notes::data($collection);
+                } else {
+                    foreach ($request->rs_id as $id_rs) {
+                        $config[] = [
+                            ConfigLinen::field_name() => $item,
+                            ConfigLinen::field_rs_id() => $id_rs,
+                        ];
+                    }
+                }
 
+                $detail[] = $merge;
+                $transaksi[] = $outstanding;
             }
+
+            Detail::insert($detail);
+            Outstanding::insert($transaksi);
+            if(!empty($config)){
+                ConfigLinen::insert($config);
+            }
+
+            $history = collect($request->rfid)->map(function ($item) {
+                return [
+                    ModelsHistory::field_name() => $item,
+                    ModelsHistory::field_status() => ProcessType::Register,
+                    ModelsHistory::field_created_by() => auth()->user()->name,
+                    ModelsHistory::field_created_at() => date('Y-m-d H:i:s'),
+                    ModelsHistory::field_description() => json_encode([ModelsHistory::field_name() => $item]),
+                ];
+            });
+
+            ModelsHistory::insert($history->toArray());
+
+            DB::commit();
+
+            $return = ViewDetailLinen::whereIn(ViewDetailLinen::field_primary(), $request->rfid)->get();
+
+            return Notes::data(DetailResource::collection($return));
 
         } catch (\Illuminate\Database\QueryException $th) {
             DB::rollBack();
@@ -390,13 +370,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
             return Notes::data($collection);
 
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
-            return Notes::error($rfid, 'RFID '.$rfid.' tidak ditemukan');
+            return Notes::error($rfid, 'RFID ' . $rfid . ' tidak ditemukan');
         } catch (\Throwable $th) {
             return Notes::error($rfid, $th->getMessage());
         }
     });
 
-    Route::match(['POST', 'GET'], 'detail', function (Request $request) {
+    Route::match (['POST', 'GET'], 'detail', function (Request $request) {
         try {
             $query = ViewDetailLinen::query();
             $data = $query->filter()->paginate(env('PAGINATION_NUMBER', 10));
@@ -549,8 +529,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 TransactionType::REGISTER,
             ]))) {
 
-                $startDate = Carbon::createFromFormat('Y-m-d H:i', date('Y-m-d').' 00:00');
-                $endDate = Carbon::createFromFormat('Y-m-d H:i', date('Y-m-d').' 05:59');
+                $startDate = Carbon::createFromFormat('Y-m-d H:i', date('Y-m-d') . ' 00:00');
+                $endDate = Carbon::createFromFormat('Y-m-d H:i', date('Y-m-d') . ' 05:59');
 
                 $check_date = Carbon::now()->between($startDate, $endDate);
 
@@ -559,7 +539,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 }
 
                 $data_transaksi[] = [
-                    Transaksi::field_key() => Query::autoNumber((new Transaksi())->getTable(), Transaksi::field_key(), 'GROUP'.date('ymd').$code_rs, 20),
+                    Transaksi::field_key() => Query::autoNumber((new Transaksi())->getTable(), Transaksi::field_key(), 'GROUP' . date('ymd') . $code_rs, 20),
                     Transaksi::field_rfid() => $rfid,
                     Transaksi::field_status_transaction() => $status_baru,
                     Transaksi::field_rs_id() => $rs_id,
@@ -625,7 +605,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
             return $service->save($status_baru, $status_grouping, $data_transaksi, $linen, $log, $collection);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
-            return Notes::error($rfid, 'RFID '.$rfid.' tidak ditemukan');
+            return Notes::error($rfid, 'RFID ' . $rfid . ' tidak ditemukan');
         } catch (\Throwable $th) {
             return Notes::error($rfid, $th->getMessage());
         }

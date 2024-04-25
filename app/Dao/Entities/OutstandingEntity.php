@@ -27,6 +27,16 @@ trait OutstandingEntity
         return 'outstanding_id_jenis';
     }
 
+    public static function field_key()
+    {
+        return 'outstanding_key';
+    }
+
+    public function getFieldKeyAttribute()
+    {
+        return $this->{$this->field_key()};
+    }
+
     public static function field_name()
     {
         return self::field_primary();
@@ -67,14 +77,24 @@ trait OutstandingEntity
         return $this->{Ruangan::field_name()};
     }
 
-    public static function field_rs_id()
+    public static function field_rs_ori()
     {
-        return 'outstanding_id_rs';
+        return 'outstanding_rs_ori';
     }
 
-    public function getFieldRsIdAttribute()
+    public function getFieldRsOriAttribute()
     {
         return $this->{$this->field_rs_id()};
+    }
+
+    public static function field_rs_scan()
+    {
+        return 'outstanding_rs_scan';
+    }
+
+    public function getFieldRsScanAttribute()
+    {
+        return $this->{$this->field_rs_scan()};
     }
 
     public function getFieldRsNameAttribute()

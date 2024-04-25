@@ -52,7 +52,7 @@ class JenisLinen extends Model
         'jenis_nama',
     ];
 
-    protected $with = ['has_category'];
+    // protected $with = ['has_category'];
 
     public $timestamps = false;
 

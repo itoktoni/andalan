@@ -21,7 +21,7 @@ class RsResource extends JsonResource
             'rs_nama' => $this->field_name,
             'deskripsi' => $this->field_description,
             'ruangan' => RuanganResource::collection($this->has_ruangan),
-            'linen' => JenisResource::collection($this->has_jenis),
+            'jenis' => JenisResource::collection($this->has_jenis),
         ];
         // return parent::toArray($request);
     }

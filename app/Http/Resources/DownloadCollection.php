@@ -28,13 +28,11 @@ class DownloadCollection extends ResourceCollection
     {
         $rsid = $request->rsid;
 
-        $rs = Rs::find($rsid)->addSelect(
-            [Rs::field_primary(), Rs::field_name()]
-        )->first();
-
-        $jenis = JenisLinen::where(JenisLinen::field_rs_id(), $rsid)
-            ->addSelect([JenisLinen::field_primary(), JenisLinen::field_name()])
-            ->get();
+        $rs = Rs::find($rsid);
+        $data_rs = [
+            Rs::field_primary() => $rs->field_primary,
+            Rs::field_name() => $rs->field_name,
+        ];
 
         $jenis = JenisLinen::addSelect([DB::raw('jenis_linen.jenis_id, jenis_linen.jenis_nama')])
             ->join('rs_dan_jenis', 'rs_dan_jenis.jenis_id', 'jenis_linen.jenis_id')
@@ -68,14 +66,6 @@ class DownloadCollection extends ResourceCollection
             ];
         }
 
-        // $check = Transaksi::addSelect(Transaksi::field_rfid())
-        //     ->joinRelationship(HAS_DETAIL)
-        //     ->whereNull(Transaksi::field_delivery())
-        //     ->where(ViewDetailLinen::field_rs_id(), $request->rsid)
-        //     ->whereDate(ViewDetailLinen::field_tanggal_update(), '<', date('Y-m-d'))
-        //     ->get()->pluck(Transaksi::field_rfid(), Transaksi::field_rfid())
-        //     ->toArray() ?? [];
-
         $rfid = $this->collection->pluck('view_linen_rfid')->toArray();
         $outstanding = Outstanding::whereIn(Outstanding::field_primary(), $rfid)->get();
 
@@ -106,11 +96,11 @@ class DownloadCollection extends ResourceCollection
             'name' => 'List',
             'message' => 'Data berhasil diambil',
             'data' => $data,
-            'rs' => $rs,
+            'rs' => $data_rs,
             'ruangan' => $ruangan,
-            'jenis_linen' => $jenis,
-            'status_proses' => $status,
+            'jenis' => $jenis,
             'opname' => $sendOpname,
+            'status_proses' => $status,
         ];
         // return parent::toArray($request);
     }
