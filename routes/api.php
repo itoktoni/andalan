@@ -185,6 +185,15 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 ];
             }
 
+            $data_jenis = [];
+            $jenis = JenisLinen::get();
+            foreach($jenis as $item){
+                $data_jenis[] = [
+                  'jenis_id' => $item->field_primary,
+                  'jenis_name' => $item->field_name,
+                ];
+            }
+
             $add = [
                 'status_transaksi' => $status_transaksi,
                 'status_proses' => $status_proses,
@@ -192,6 +201,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 'status_register' => $status_register,
                 'bahan' => $data_bahan,
                 'supplier' => $data_supplier,
+                'jenis' => $data_jenis,
             ];
 
             $data = Notes::data($collection, $add);
