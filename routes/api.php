@@ -325,7 +325,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                         Detail::field_supplier_id() => $request->supplier_id,
                         Detail::field_dedicated() => LinenType::FREE,
                         Detail::field_status_cuci() => $request->status_cuci,
-                        Detail::field_status_register() => $request->status_register ? $request->status_register : RegisterType::Register,
+                        Detail::field_status_register() => $request->status_register ? $request->status_register : RegisterType::REGISTER,
                         Detail::field_created_at() => date('Y-m-d H:i:s'),
                         Detail::field_updated_at() => date('Y-m-d H:i:s'),
                         Detail::field_created_by() => auth()->user()->id,
@@ -591,7 +591,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 $status_baru = TransactionType::Rewash;
             } elseif ($status_transaksi == TransactionType::Register) {
                 $status_baru = TransactionType::Register;
-                if ($status_register == RegisterType::GantiChip) {
+                if ($status_register == RegisterType::GANTI_CHIP) {
                     $status_baru = TransactionType::Kotor;
                 }
 
