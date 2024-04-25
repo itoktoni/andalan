@@ -4,9 +4,11 @@ namespace App\Http\Resources;
 
 use App\Dao\Enums\OpnameType;
 use App\Dao\Enums\ProcessType;
+use App\Dao\Enums\TransactionType;
 use App\Dao\Models\JenisLinen;
 use App\Dao\Models\Opname;
 use App\Dao\Models\OpnameDetail;
+use App\Dao\Models\Outstanding;
 use App\Dao\Models\Rs;
 use App\Dao\Models\Ruangan;
 use App\Dao\Models\Transaksi;
@@ -32,6 +34,11 @@ class DownloadCollection extends ResourceCollection
 
         $jenis = JenisLinen::where(JenisLinen::field_rs_id(), $rsid)
             ->addSelect([JenisLinen::field_primary(), JenisLinen::field_name()])
+            ->get();
+
+        $jenis = JenisLinen::addSelect([DB::raw('jenis_linen.jenis_id, jenis_linen.jenis_nama')])
+            ->join('rs_dan_jenis', 'rs_dan_jenis.jenis_id', 'jenis_linen.jenis_id')
+            ->where('rs_id', $rsid)
             ->get();
 
         $ruangan = Ruangan::addSelect([DB::raw('ruangan.ruangan_id, ruangan.ruangan_nama')])
@@ -61,21 +68,26 @@ class DownloadCollection extends ResourceCollection
             ];
         }
 
-        $check = Transaksi::addSelect(Transaksi::field_rfid())
-            ->joinRelationship(HAS_DETAIL)
-            ->whereNull(Transaksi::field_delivery())
-            ->where(ViewDetailLinen::field_rs_id(), $request->rsid)
-            ->whereDate(ViewDetailLinen::field_tanggal_update(), '<', date('Y-m-d'))
-            ->get()->pluck(Transaksi::field_rfid(), Transaksi::field_rfid())
-            ->toArray() ?? [];
+        // $check = Transaksi::addSelect(Transaksi::field_rfid())
+        //     ->joinRelationship(HAS_DETAIL)
+        //     ->whereNull(Transaksi::field_delivery())
+        //     ->where(ViewDetailLinen::field_rs_id(), $request->rsid)
+        //     ->whereDate(ViewDetailLinen::field_tanggal_update(), '<', date('Y-m-d'))
+        //     ->get()->pluck(Transaksi::field_rfid(), Transaksi::field_rfid())
+        //     ->toArray() ?? [];
 
-        $data = $this->collection->map(function ($item) use ($check) {
-            $tanggal = $item->field_tanggal_update->format('Y-m-d H:i:s');
-            $status = $item->field_status_process;
+        $rfid = $this->collection->pluck('view_linen_rfid')->toArray();
+        $outstanding = Outstanding::whereIn(Outstanding::field_primary(), $rfid)->get();
 
-            if (in_array($item->field_primary, $check)) {
+        $check = [];
+
+        $data = $this->collection->map(function ($item) use ($outstanding) {
+            $tanggal = $item->view_tanggal_update;
+            $status = TransactionType::BERSIH;
+
+            if($outstanding->where('outstanding_rfid', $item)->count() > 0) {
                 $tanggal = date('Y-m-d H:i:s');
-                $status = ProcessType::Kotor;
+                $status = $item->view_status_transaction;
             }
 
             return [

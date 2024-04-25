@@ -15,4 +15,17 @@ class CuciType extends Enum implements LocalizedEnum
     const CUCI = 'CUCI';
 
     const RENTAL = 'RENTAL';
+
+    public static function getDescription($value): string
+    {
+        if ($value === self::CUCI) {
+            return 'Cuci';
+        }
+
+        if ($value === self::RENTAL) {
+            return 'Rental';
+        }
+
+        return parent::getDescription($value);
+    }
 }

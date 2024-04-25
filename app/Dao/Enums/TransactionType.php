@@ -12,23 +12,15 @@ class TransactionType extends Enum implements LocalizedEnum
 
     const NotSet = null;
 
-    const Unknown = 0;
+    const KOTOR = 'KOTOR';
 
-    const Kotor = 1;
+    const RETUR = 'RETUR';
 
-    const Retur = 2;
+    const REWASH = 'REWASH';
 
-    const Rewash = 3;
+    const BERSIH = 'BERSIH';
 
-    const BersihKotor = 4;
-
-    const BersihRetur = 5;
-
-    const BersihRewash = 6;
-
-    const Register = 7;
-
-    const Exist = 10;
+    const REGISTER = 'REGISTER';
 
     public static function getDescription($value): string
     {

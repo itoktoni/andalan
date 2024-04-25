@@ -48,8 +48,8 @@ define('STATUS_PROCESS', 'status_process');
 define('STATUS_SYNC', 'status_sync');
 define('TANGGAL_UPDATE', 'tanggal_update');
 
-define('KOTOR', [TransactionType::Kotor, TransactionType::Retur, TransactionType::Rewash]);
-define('BERSIH', [TransactionType::BersihKotor, TransactionType::BersihRetur, TransactionType::BersihRewash]);
+define('KOTOR', [TransactionType::KOTOR, TransactionType::RETUR, TransactionType::REWASH]);
+define('BERSIH', [TransactionType::BERSIH]);
 
 function module($module = null)
 {
@@ -156,6 +156,13 @@ function formatWorld($value)
 {
     if (! empty($value)) {
         return Str::title(str_replace('_', ' ', Str::snake($value))) ?? 'Unknow';
+    }
+}
+
+function formatCapitilizeSentance($value)
+{
+    if (! empty($value)) {
+        return str_replace('_', ' ', $value) ?? 'Unknow';
     }
 }
 

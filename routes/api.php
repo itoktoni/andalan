@@ -62,58 +62,6 @@ Route::post('login', [UserController::class, 'postLoginApi'])->name('postLoginAp
 
 Route::middleware(['auth:sanctum'])->group(function () {
 
-    Route::get('status_register', function () {
-
-        $data = [];
-        foreach (RegisterType::getInstances() as $value => $key) {
-            $data[] = [
-                'status_id' => $key,
-                'status_nama' => formatWorld($value),
-            ];
-        }
-
-        return Notes::data($data);
-    });
-
-    Route::get('status_cuci', function () {
-
-        $data = [];
-        foreach (CuciType::getInstances() as $value => $key) {
-            $data[] = [
-                'status_id' => $key,
-                'status_nama' => formatWorld($value),
-            ];
-        }
-
-        return Notes::data($data);
-    });
-
-    Route::get('status_proses', function () {
-
-        $data = [];
-        foreach (ProcessType::getInstances() as $value => $key) {
-            $data[] = [
-                'status_id' => $key,
-                'status_nama' => formatWorld($value),
-            ];
-        }
-
-        return Notes::data($data);
-    });
-
-    Route::get('status_transaksi', function () {
-
-        $data = [];
-        foreach (TransactionType::getInstances() as $value => $key) {
-            $data[] = [
-                'status_id' => $key,
-                'status_nama' => formatWorld($value),
-            ];
-        }
-
-        return Notes::data($data);
-    });
-
     Route::get('download/{rsid}', function ($rsid, Request $request) {
         set_time_limit(0);
         $data = ViewDetailLinen::where(ViewDetailLinen::field_rs_id(), $rsid)->get();
@@ -134,7 +82,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         foreach (RegisterType::getInstances() as $value => $key) {
             $status_register[] = [
                 'status_id' => $key,
-                'status_nama' => formatWorld($value),
+                'status_nama' => formatCapitilizeSentance($value),
             ];
         }
 
@@ -142,7 +90,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         foreach (CuciType::getInstances() as $value => $key) {
             $status_cuci[] = [
                 'status_id' => $key,
-                'status_nama' => formatWorld($value),
+                'status_nama' => formatCapitilizeSentance($value),
             ];
         }
 
@@ -221,7 +169,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         foreach (RegisterType::getInstances() as $value => $key) {
             $status_register[] = [
                 'status_id' => $key,
-                'status_nama' => formatWorld($value),
+                'status_nama' => formatCapitilizeSentance($value),
             ];
         }
 
@@ -229,7 +177,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         foreach (CuciType::getInstances() as $value => $key) {
             $status_cuci[] = [
                 'status_id' => $key,
-                'status_nama' => formatWorld($value),
+                'status_nama' => formatCapitilizeSentance($value),
             ];
         }
 
@@ -306,10 +254,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
             // $autoNumber = Query::autoNumber(Transaksi::getTableName(), Transaksi::field_delivery(), $code.date('ymd'), env('AUTO_NUMBER', 15));
 
             if ($request->status_register == RegisterType::GANTI_CHIP) {
-                $transaksi_status = TransactionType::Kotor;
+                $transaksi_status = TransactionType::KOTOR;
                 $proses_status = ProcessType::Kotor;
             } else {
-                $transaksi_status = TransactionType::Register;
+                $transaksi_status = TransactionType::REGISTER;
                 $proses_status = ProcessType::Register;
             }
 
@@ -502,19 +450,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
         }
     });
 
-    Route::post('linen_detail', function (DetailDataRequest $request) {
-        try {
-            $data = ViewDetailLinen::whereIn(ViewDetailLinen::field_primary(), $request->rfid)->get();
-            $collection = DetailResource::collection($data);
-
-            return Notes::data($collection);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
-            return Notes::error('data RFID tidak ditemukan');
-        } catch (\Throwable $th) {
-            return Notes::error($th->getMessage());
-        }
-    });
-
     Route::post('detail/{rfid}', function ($rfid, DetailUpdateRequest $request) {
         try {
 
@@ -580,40 +515,38 @@ Route::middleware(['auth:sanctum'])->group(function () {
             $status_transaksi = $data->field_status_transaction;
             $status_register = $data->field_status_register;
 
-            $status_baru = TransactionType::Kotor;
-            if (in_array($status_transaksi, [TransactionType::BersihKotor, TransactionType::BersihRetur, TransactionType::BersihRewash])) {
-                $status_baru = TransactionType::Kotor;
-            } elseif ($status_transaksi == TransactionType::Kotor) {
-                $status_baru = TransactionType::Kotor;
-            } elseif ($status_transaksi == TransactionType::Retur) {
-                $status_baru = TransactionType::Retur;
-            } elseif ($status_transaksi == TransactionType::Rewash) {
-                $status_baru = TransactionType::Rewash;
-            } elseif ($status_transaksi == TransactionType::Register) {
-                $status_baru = TransactionType::Register;
-                if ($status_register == RegisterType::GANTI_CHIP) {
-                    $status_baru = TransactionType::Kotor;
-                }
+            $status_baru = TransactionType::KOTOR;
+            // if (in_array($status_transaksi, [TransactionType::BersihKotor, TransactionType::BersihRetur, TransactionType::BersihRewash])) {
+            //     $status_baru = TransactionType::Kotor;
+            // } elseif ($status_transaksi == TransactionType::Kotor) {
+            //     $status_baru = TransactionType::Kotor;
+            // } elseif ($status_transaksi == TransactionType::Retur) {
+            //     $status_baru = TransactionType::Retur;
+            // } elseif ($status_transaksi == TransactionType::Rewash) {
+            //     $status_baru = TransactionType::Rewash;
+            // } elseif ($status_transaksi == TransactionType::Register) {
+            //     $status_baru = TransactionType::Register;
+            //     if ($status_register == RegisterType::GANTI_CHIP) {
+            //         $status_baru = TransactionType::Kotor;
+            //     }
 
-                $save->update([
-                    Transaksi::field_status_transaction() => $status_baru,
-                    Transaksi::field_rs_id() => $rs_id,
-                    Transaksi::field_rs_ori() => $rs_id,
-                ]);
-            }
+            //     $save->update([
+            //         Transaksi::field_status_transaction() => $status_baru,
+            //         Transaksi::field_rs_id() => $rs_id,
+            //         Transaksi::field_rs_ori() => $rs_id,
+            //     ]);
+            // }
 
             $check_transaksi = Transaksi::where(Transaksi::field_rfid(), $rfid)
                 ->whereNull(Transaksi::field_delivery())
                 ->count();
 
             if ($check_transaksi == 0 and (in_array($status_transaksi, [
-                TransactionType::BersihKotor,
-                TransactionType::BersihRetur,
-                TransactionType::BersihRewash,
-                TransactionType::Kotor,
-                TransactionType::Retur,
-                TransactionType::Rewash,
-                TransactionType::Register,
+                TransactionType::BERSIH,
+                TransactionType::KOTOR,
+                TransactionType::RETUR,
+                TransactionType::REWASH,
+                TransactionType::REGISTER,
             ]))) {
 
                 $startDate = Carbon::createFromFormat('Y-m-d H:i', date('Y-m-d').' 00:00');
@@ -738,15 +671,15 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::get('total/delivery/{rsid}/{transaksi}', function ($rsid, $transaksi) {
 
-        if ($transaksi == TransactionType::BersihKotor) {
-            $transaksi = TransactionType::Kotor;
-        } elseif ($transaksi == TransactionType::BersihRetur) {
-            $transaksi = TransactionType::Retur;
-        } elseif ($transaksi == TransactionType::BersihRewash) {
-            $transaksi = TransactionType::Rewash;
-        } elseif ($transaksi == TransactionType::Unknown) {
-            $transaksi = TransactionType::Register;
-        }
+        // if ($transaksi == TransactionType::BersihKotor) {
+        //     $transaksi = TransactionType::Kotor;
+        // } elseif ($transaksi == TransactionType::BersihRetur) {
+        //     $transaksi = TransactionType::Retur;
+        // } elseif ($transaksi == TransactionType::BersihRewash) {
+        //     $transaksi = TransactionType::Rewash;
+        // } elseif ($transaksi == TransactionType::Unknown) {
+        //     $transaksi = TransactionType::Register;
+        // }
 
         $data = Transaksi::whereNull(Transaksi::field_delivery())
             ->whereNotNull(Transaksi::field_barcode())

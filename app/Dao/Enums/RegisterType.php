@@ -15,4 +15,17 @@ class RegisterType extends Enum implements LocalizedEnum
     const REGISTER = 'REGISTER';
 
     const GANTI_CHIP = 'GANTI_CHIP';
+
+    public static function getDescription($value): string
+    {
+        if ($value === self::REGISTER) {
+            return 'Register';
+        }
+
+        if ($value === self::GANTI_CHIP) {
+            return 'Ganti Chip';
+        }
+
+        return parent::getDescription($value);
+    }
 }
