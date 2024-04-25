@@ -15,7 +15,6 @@ class RegisterRequest extends FormRequest
         return [
             RFID => 'required',
             RS_ID => 'required',
-            RUANGAN_ID => 'required',
             SUPPLIER_ID => 'required',
             BAHAN_ID => 'required',
             JENIS_ID => 'required',
@@ -27,7 +26,7 @@ class RegisterRequest extends FormRequest
     {
         $this->merge([
             Detail::field_rs_id() => $this->rs_id,
-            Detail::field_ruangan_id() => $this->ruangan_id,
+            Detail::field_ruangan_id() => $this->ruangan_id ?? null,
             Detail::field_jenis_id() => $this->jenis_id,
             Detail::field_status_cuci() => $this->status_cuci,
         ]);

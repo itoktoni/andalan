@@ -320,7 +320,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 foreach ($request->rfid as $item) {
                     $detail[] = [
                         Detail::field_primary() => $item,
-                        Detail::field_ruangan_id() => $request->ruangan_id,
                         Detail::field_jenis_id() => $request->jenis_id,
                         Detail::field_bahan_id() => $request->bahan_id,
                         Detail::field_supplier_id() => $request->supplier_id,
@@ -342,7 +341,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
                     $outstanding[] = [
                         Outstanding::field_primary() => $item,
-                        Outstanding::field_ruangan_id() => $request->ruangan_id,
                         Outstanding::field_status_transaction() => $transaksi_status,
                         Outstanding::field_status_process() => $proses_status,
                         Outstanding::field_created_at() => date('Y-m-d H:i:s'),
