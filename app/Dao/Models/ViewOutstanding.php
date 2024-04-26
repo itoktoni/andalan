@@ -9,4 +9,13 @@ class ViewOutstanding extends Outstanding
     protected $table = 'view_outstanding';
 
     protected $primaryKey = 'outstanding_rfid';
+
+    protected $casts = [
+        'outstanding_rs_ori' => 'integer',
+        'outstanding_rs_scan' => 'integer',
+        'outstanding_created_at' => 'datetime',
+        'outstanding_updated_at' => 'datetime',
+        'outstanding_pending_at' => 'datetime',
+        'outstanding_hilang_at' => 'datetime',
+    ];
 }

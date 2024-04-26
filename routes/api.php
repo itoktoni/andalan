@@ -21,6 +21,7 @@ use App\Dao\Models\Rs;
 use App\Dao\Models\Supplier;
 use App\Dao\Models\Transaksi;
 use App\Dao\Models\ViewDetailLinen;
+use App\Dao\Models\ViewOutstanding;
 use App\Http\Controllers\BarcodeController;
 use App\Http\Controllers\DeliveryController;
 use App\Http\Controllers\TransaksiController;
@@ -423,135 +424,25 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::get('grouping/{rfid}', function ($rfid, SaveTransaksiService $service) {
         try {
-            $data = Detail::with([HAS_RS, HAS_RUANGAN, HAS_JENIS])->findOrFail($rfid);
-            $save = Transaksi::where(Transaksi::field_rfid(), $rfid)
-                ->whereNull(Transaksi::field_barcode());
-
-            $jenis = $data->has_jenis;
-            $rs = $data->has_rs;
-            $ruangan = $data->has_ruangan;
-
-            $data_transaksi = [];
-            $linen[] = $rfid;
-
-            $rs_id = $data->detail_id_rs;
-
-            $date = date('Y-m-d H:i:s');
-            $user = auth()->user()->id;
-            $code_rs = $rs->rs_code ?? 'XXX';
-
-            $status_transaksi = $data->field_status_transaction;
-            $status_register = $data->field_status_register;
-
-            $status_baru = TransactionType::KOTOR;
-            // if (in_array($status_transaksi, [TransactionType::BersihKotor, TransactionType::BersihRetur, TransactionType::BersihRewash])) {
-            //     $status_baru = TransactionType::Kotor;
-            // } elseif ($status_transaksi == TransactionType::Kotor) {
-            //     $status_baru = TransactionType::Kotor;
-            // } elseif ($status_transaksi == TransactionType::Retur) {
-            //     $status_baru = TransactionType::Retur;
-            // } elseif ($status_transaksi == TransactionType::Rewash) {
-            //     $status_baru = TransactionType::Rewash;
-            // } elseif ($status_transaksi == TransactionType::Register) {
-            //     $status_baru = TransactionType::Register;
-            //     if ($status_register == RegisterType::GANTI_CHIP) {
-            //         $status_baru = TransactionType::Kotor;
-            //     }
-
-            //     $save->update([
-            //         Transaksi::field_status_transaction() => $status_baru,
-            //         Transaksi::field_rs_id() => $rs_id,
-            //         Transaksi::field_rs_ori() => $rs_id,
-            //     ]);
-            // }
-
-            $check_transaksi = Transaksi::where(Transaksi::field_rfid(), $rfid)
-                ->whereNull(Transaksi::field_delivery())
-                ->count();
-
-            if ($check_transaksi == 0 and (in_array($status_transaksi, [
-                TransactionType::BERSIH,
-                TransactionType::KOTOR,
-                TransactionType::RETUR,
-                TransactionType::REWASH,
-                TransactionType::REGISTER,
-            ]))) {
-
-                $startDate = Carbon::createFromFormat('Y-m-d H:i', date('Y-m-d') . ' 00:00');
-                $endDate = Carbon::createFromFormat('Y-m-d H:i', date('Y-m-d') . ' 05:59');
-
-                $check_date = Carbon::now()->between($startDate, $endDate);
-
-                if ($check_date) {
-                    $date = Carbon::now()->addDay(-1);
-                }
-
-                $data_transaksi[] = [
-                    Transaksi::field_key() => Query::autoNumber((new Transaksi())->getTable(), Transaksi::field_key(), 'GROUP' . date('ymd') . $code_rs, 20),
-                    Transaksi::field_rfid() => $rfid,
-                    Transaksi::field_status_transaction() => $status_baru,
-                    Transaksi::field_rs_id() => $rs_id,
-                    Transaksi::field_rs_ori() => $rs_id,
-                    Transaksi::field_beda_rs() => BooleanType::NO,
-                    Transaksi::field_created_at() => $date,
-                    Transaksi::field_created_by() => $user,
-                    Transaksi::field_updated_at() => $date,
-                    Transaksi::field_updated_by() => $user,
-                ];
-
-                $log[] = [
-                    ModelsHistory::field_name() => $rfid,
-                    ModelsHistory::field_status() => $status_baru,
-                    ModelsHistory::field_created_by() => auth()->user()->name,
-                    ModelsHistory::field_created_at() => $date,
-                    ModelsHistory::field_description() => json_encode($data_transaksi),
-                ];
-            } else {
-                $log[] = [
-                    ModelsHistory::field_name() => $rfid,
-                    ModelsHistory::field_status() => ProcessType::QC,
-                    ModelsHistory::field_created_by() => auth()->user()->name,
-                    ModelsHistory::field_created_at() => $date,
-                    ModelsHistory::field_description() => json_encode($linen),
-                ];
-            }
-
-            $data->update([
-                Detail::field_updated_at() => date('Y-m-d H:i:s'),
-                Detail::field_updated_by() => auth()->user()->id,
-                Detail::field_pending_created_at() => null,
-                Detail::field_pending_updated_at() => null,
-                Detail::field_hilang_created_at() => null,
-                Detail::field_hilang_updated_at() => null,
-            ]);
-
-            // $update = ViewDetailLinen::with([HAS_CUCI])->findOrFail($rfid);
-            // $collection = new DetailResource($update);
+            $data = ViewOutstanding::findOrFail($rfid);
 
             $collection = [
-                'linen_id' => $data->detail_id_jenis,
-                'linen_nama' => $jenis->field_name ?? '',
-                'rs_id' => $data->detail_id_rs,
-                'rs_nama' => $rs->field_name ?? '',
-                'ruangan_id' => $data->detail_id_ruangan,
-                'ruangan_nama' => $ruangan->field_name ?? '',
-                'status_register' => RegisterType::getDescription($data->detail_status_register),
-                'status_cuci' => CuciType::getDescription($data->detail_status_cuci),
-                'status_transaksi' => TransactionType::getDescription($data->detail_status_transaksi),
-                'status_proses' => ProcessType::getDescription($data->detail_status_proses),
-                'tanggal_create' => $data->detail_created_at ? $data->detail_created_at->format('Y-m-d') : null,
-                'tanggal_update' => $data->detail_updated_at ? $data->detail_updated_at->format('Y-m-d') : null,
-                'tanggal_delete' => $data->detail_deleted_at ? $data->detail_deleted_at->format('Y-m-d') : null,
+                'linen_id' => $data->jenis_id,
+                'linen_nama' => $data->jenis_nama ?? '',
+                'rs_id' => $data->view_rs_ori_id,
+                'rs_nama' => $data->view_rs_ori_name ?? '',
+                'ruangan_id' => $data->ruangan_id,
+                'ruangan_nama' => $data->ruangan_nama ?? '',
+                'status_transaksi' => $data->detail_status_transaksi,
+                'status_proses' => $data->detail_status_proses,
+                'tanggal_create' => $data->outstanding_created_at ? $data->outstanding_created_at->format('Y-m-d') : null,
+                'tanggal_update' => $data->outstanding_updated_at ? $data->outstanding_updated_at->format('Y-m-d') : null,
                 'pemakaian' => 0,
-                'user_nama' => auth()->user()->name ?? null,
+                'user_nama' => $data->view_operator ?? null,
             ];
 
-            $status_grouping = ProcessType::QC;
-            if (in_array($data->field_status_process, [ProcessType::PACKING])) {
-                $status_grouping = $data->field_status_process;
-            }
+            return $collection;
 
-            return $service->save($status_baru, $status_grouping, $data_transaksi, $linen, $log, $collection);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
             return Notes::error($rfid, 'RFID ' . $rfid . ' tidak ditemukan');
         } catch (\Throwable $th) {
