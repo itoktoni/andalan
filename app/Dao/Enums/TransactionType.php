@@ -10,7 +10,7 @@ class TransactionType extends Enum implements LocalizedEnum
 {
     use StatusTrait;
 
-    const NotSet = null;
+    const UNKNOWN = null;
 
     const KOTOR = 'KOTOR';
 
@@ -24,7 +24,7 @@ class TransactionType extends Enum implements LocalizedEnum
 
     public static function getDescription($value): string
     {
-        if ($value === self::NotSet) {
+        if ($value === self::UNKNOWN) {
             return '';
         }
 

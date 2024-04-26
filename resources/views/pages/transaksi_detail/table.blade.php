@@ -49,12 +49,7 @@
                                 <th>RUANGAN</th>
                                 <th>LOKASI SCAN RUMAH SAKIT</th>
                                 <th>STATUS KOTOR</th>
-                                <th>PENDING</th>
-                                <th>HILANG</th>
                                 <th>OPERATOR</th>
-                                <th>No. BARCODE</th>
-                                <th>No. DELIVERY</th>
-                                <th>STATUS BERSIH</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -84,12 +79,7 @@
                                     <td>{{ $table->view_ruangan_nama }}</td>
                                     <td>{{ $table->rs_nama }}</td>
                                     <td>{{ TransactionType::getDescription($table->transaksi_status) }}</td>
-                                    <td>{{ formatDate($table->view_pending_create) }}</td>
-                                    <td>{{ formatDate($table->view_hilang_create) }}</td>
                                     <td>{{ $table->name }}</td>
-                                    <td>{{ $table->transaksi_barcode }}</td>
-                                    <td>{{ $table->transaksi_delivery }}</td>
-                                    <td>{{ TransactionType::getDescription($table->transaksi_bersih) }}</td>
                                 </tr>
                             @empty
                             @endforelse

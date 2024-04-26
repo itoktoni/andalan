@@ -39,7 +39,7 @@
                         <td>{{ $table->has_detail->field_rs_name ?? '' }}</td>
                         <td class="col-md-2 text-center column-action">
                             <div>
-                                <x-button module="getDeleteTransaksi" key="{{ $table->field_primary }}" color="danger" icon="trash3"  onclick="return confirm('Apakah anda yakin ingin menghapus ?')" class="button-delete" />
+                                <x-button module="getDeleteTransaksi" key="{{ $table->field_primary }}" color="danger" icon="trash"  onclick="return confirm('Apakah anda yakin ingin menghapus ?')" class="button-delete" />
                             </div>
                         </td>
                     </tr>

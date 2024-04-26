@@ -4,6 +4,7 @@ use App\Dao\Enums\BooleanType;
 use App\Dao\Enums\CetakType;
 use App\Dao\Enums\CuciType;
 use App\Dao\Enums\LinenType;
+use App\Dao\Enums\LogType;
 use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\RegisterType;
 use App\Dao\Enums\TransactionType;
@@ -255,10 +256,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
             if ($request->status_register == RegisterType::GANTI_CHIP) {
                 $transaksi_status = TransactionType::KOTOR;
-                $proses_status = ProcessType::Kotor;
+                $proses_status = ProcessType::KOTOR;
             } else {
                 $transaksi_status = TransactionType::REGISTER;
-                $proses_status = ProcessType::Register;
+                $proses_status = ProcessType::REGISTER;
             }
 
             $config = [];
@@ -331,7 +332,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
             $history = collect($request->rfid)->map(function ($item) {
                 return [
                     ModelsHistory::field_name() => $item,
-                    ModelsHistory::field_status() => ProcessType::Register,
+                    ModelsHistory::field_status() => LogType::REGISTER,
                     ModelsHistory::field_created_by() => auth()->user()->name,
                     ModelsHistory::field_created_at() => date('Y-m-d H:i:s'),
                     ModelsHistory::field_description() => json_encode([ModelsHistory::field_name() => $item]),
@@ -350,7 +351,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
             DB::rollBack();
 
             if ($th->getCode() == 23000) {
-                return Notes::error($request->all(), 'data RFID yang dikirim sudah ada di database');
+                return Notes::error($request->all(), 'data RFID sudah ada di database');
             }
 
             return Notes::error($request->all(), $th->getMessage());
@@ -360,20 +361,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
             return Notes::error($request->all(), $th->getMessage());
         }
 
-    });
-
-    Route::get('detail/{rfid}', function ($rfid) {
-        try {
-            $data = ViewDetailLinen::findOrFail($rfid);
-            $collection = new DetailResource($data);
-
-            return Notes::data($collection);
-
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
-            return Notes::error($rfid, 'RFID ' . $rfid . ' tidak ditemukan');
-        } catch (\Throwable $th) {
-            return Notes::error($rfid, $th->getMessage());
-        }
     });
 
     Route::match (['POST', 'GET'], 'detail', function (Request $request) {
@@ -427,45 +414,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
             return Notes::error($th->getMessage());
         } catch (\Throwable $th) {
             return Notes::error($th->getMessage());
-        }
-    });
-
-    Route::post('detail/{rfid}', function ($rfid, DetailUpdateRequest $request) {
-        try {
-
-            $data = Detail::with(HAS_VIEW)->findOrFail($rfid);
-
-            if ($data) {
-
-                $lama = clone $data;
-                $data->{Detail::field_rs_id()} = $request->rs_id;
-                $data->{Detail::field_ruangan_id()} = $request->ruangan_id;
-                $data->{Detail::field_jenis_id()} = $request->jenis_id;
-
-                $data->{Detail::field_updated_at()} = date('Y-m-d H:i:s');
-                $data->{Detail::field_updated_by()} = auth()->user()->id;
-
-                if ($request->status_cuci) {
-                    $data->{Detail::field_status_cuci()} = $request->status_cuci;
-                }
-                if ($request->status_register) {
-                    $data->{Detail::field_status_register()} = $request->status_register;
-                }
-
-                $data->save();
-
-                History::log($rfid, ProcessType::UpdateChip, [
-                    'lama' => $lama->toArray(),
-                    'baru' => $data->toArray(),
-                ]);
-            }
-
-            $view = ViewDetailLinen::findOrFail($rfid);
-
-            return Notes::data(new DetailResource($view));
-
-        } catch (\Throwable $th) {
-            return Notes::error($rfid, $th->getMessage());
         }
     });
 
@@ -544,7 +492,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     Transaksi::field_status_transaction() => $status_baru,
                     Transaksi::field_rs_id() => $rs_id,
                     Transaksi::field_rs_ori() => $rs_id,
-                    Transaksi::field_beda_rs() => BooleanType::No,
+                    Transaksi::field_beda_rs() => BooleanType::NO,
                     Transaksi::field_created_at() => $date,
                     Transaksi::field_created_by() => $user,
                     Transaksi::field_updated_at() => $date,
@@ -561,7 +509,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
             } else {
                 $log[] = [
                     ModelsHistory::field_name() => $rfid,
-                    ModelsHistory::field_status() => ProcessType::Grouping,
+                    ModelsHistory::field_status() => ProcessType::QC,
                     ModelsHistory::field_created_by() => auth()->user()->name,
                     ModelsHistory::field_created_at() => $date,
                     ModelsHistory::field_description() => json_encode($linen),
@@ -598,8 +546,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 'user_nama' => auth()->user()->name ?? null,
             ];
 
-            $status_grouping = ProcessType::Grouping;
-            if (in_array($data->field_status_process, [ProcessType::Barcode, ProcessType::Delivery])) {
+            $status_grouping = ProcessType::QC;
+            if (in_array($data->field_status_process, [ProcessType::PACKING])) {
                 $status_grouping = $data->field_status_process;
             }
 

@@ -10,7 +10,7 @@ class BooleanType extends Enum implements LocalizedEnum
 {
     use StatusTrait;
 
-    const Yes = 1;
+    const YES = 'YA';
 
-    const No = 0;
+    const NO = 'TIDAK';
 }

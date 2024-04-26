@@ -31,7 +31,6 @@ class TransaksiDetailController extends MasterController
         $query = self::$repository->getQueryReportTransaksi()
             ->leftJoinRelationship(HAS_RS)
             ->orderBy('transaksi_created_at', 'DESC');
-        //  ->showSql()
 
         if ($status = request()->get('status')) {
             if ($status == DetailType::Register) {

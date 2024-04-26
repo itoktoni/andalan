@@ -102,14 +102,14 @@ trait OutstandingEntity
         return $this->{Rs::field_name()};
     }
 
-    public static function field_status_cuci()
+    public static function field_status_beda_rs()
     {
-        return 'outstanding_status_cuci';
+        return 'outstanding_status_beda_rs';
     }
 
-    public function getFieldStatusCuciAttribute()
+    public function getFieldStatusBedaRsAttribute()
     {
-        return $this->{$this->field_status_cuci()};
+        return $this->{$this->field_status_beda_rs()};
     }
 
     public function getFieldStatusCuciNameAttribute()
@@ -204,17 +204,17 @@ trait OutstandingEntity
 
     public static function field_pending_updated_at()
     {
-        return 'outstanding_pending_updated_at';
+        return 'outstanding_pending_at';
     }
 
-    public function getFieldPendingUpdateAtAttribute()
+    public function getFieldPendingAtAttribute()
     {
         return $this->{$this->field_pending_updated_at()};
     }
 
     public static function field_hilang_created_at()
     {
-        return 'outstanding_hilang_created_at';
+        return 'outstanding_hilang_at';
     }
 
     public function getFieldHilangCreatedAtAttribute()
@@ -227,7 +227,7 @@ trait OutstandingEntity
         return 'outstanding_hilang_updated_at';
     }
 
-    public function getFieldHilangUpdateAtAttribute()
+    public function getFieldHilangAtAttribute()
     {
         return $this->{$this->field_hilang_updated_at()};
     }
@@ -302,13 +302,48 @@ trait OutstandingEntity
         return $this->{$this->field_total_cuci()};
     }
 
-    public static function field_cek()
+    public static function field_linen_id()
     {
-        return 'outstanding_tanggal_cek';
+        return JenisLinen::field_primary();
     }
 
-    public function getFieldCekAttribute()
+    public function getFieldLinenIdAttribute()
     {
-        return $this->{$this->field_cek()};
+        return $this->{$this->field_linen_name()};
+    }
+
+    public static function field_linen_name()
+    {
+        return JenisLinen::field_name();
+    }
+
+    public function getFieldLinenNameAttribute()
+    {
+        return $this->{$this->field_linen_name()};
+    }
+
+    public static function field_location_name()
+    {
+        return Ruangan::field_name();
+    }
+
+    public function getFieldLocationNameAttribute()
+    {
+        return $this->{$this->field_location_name()};
+    }
+
+    public function getFieldRsOriNameAttribute()
+    {
+        return $this->view_rs_ori_nama;
+    }
+
+    public function getFieldRsScanNameAttribute()
+    {
+        return $this->view_rs_scan_nama;
+    }
+
+    public function getFieldOperatorAttribute()
+    {
+        return $this->view_operator;
     }
 }

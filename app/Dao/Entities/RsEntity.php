@@ -69,16 +69,6 @@ trait RsEntity
         return $this->{$this->field_harga_sewa()};
     }
 
-    public static function field_active()
-    {
-        return 'rs_aktif';
-    }
-
-    public function getFieldActiveAttribute()
-    {
-        return $this->{$this->field_active()};
-    }
-
     public static function field_code()
     {
         return 'rs_code';

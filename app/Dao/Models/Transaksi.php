@@ -58,7 +58,7 @@ class Transaksi extends Model
 
     protected $casts = [
         'transaksi_rfid' => 'string',
-        'transaksi_status' => 'integer',
+        'transaksi_status' => 'string',
     ];
 
     protected $filters = [
@@ -154,7 +154,7 @@ class Transaksi extends Model
 
     public function has_rs()
     {
-        return $this->hasOne(Rs::class, Rs::field_primary(), self::field_rs_id());
+        return $this->hasOne(Rs::class, Rs::field_primary(), self::field_rs_ori());
     }
 
     public function has_rs_delivery()

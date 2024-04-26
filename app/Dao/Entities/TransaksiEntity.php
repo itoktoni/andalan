@@ -59,16 +59,6 @@ trait TransaksiEntity
         return BedaRsType::getDescription($this->{$this->field_description()});
     }
 
-    public static function field_rs_id()
-    {
-        return 'transaksi_id_rs';
-    }
-
-    public function getFieldRsIdAttribute()
-    {
-        return $this->{$this->field_rs_id()};
-    }
-
     public static function field_ruangan_id()
     {
         return 'transaksi_id_ruangan';
@@ -272,6 +262,16 @@ trait TransaksiEntity
     public function getFieldRsOriAttribute()
     {
         return $this->{$this->field_rs_ori()};
+    }
+
+    public static function field_rs_scan()
+    {
+        return 'transaksi_rs_scan';
+    }
+
+    public function getFieldRsScanAttribute()
+    {
+        return $this->{$this->field_rs_scan()};
     }
 
     public static function field_uuid_barcode()

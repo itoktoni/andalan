@@ -35,6 +35,8 @@ class Outstanding extends Model
         'outstanding_status_proses',
         'outstanding_created_at',
         'outstanding_updated_at',
+        'outstanding_pending_at',
+        'outstanding_hilang_at',
         'outstanding_created_by',
         'outstanding_updated_by',
     ];
@@ -68,18 +70,7 @@ class Outstanding extends Model
     {
         $data = [
             DataBuilder::build($this->field_primary())->name('ID')->width(20)->sort(),
-            DataBuilder::build($this->field_code())->name('Kode RS')->show()->sort(),
-            DataBuilder::build($this->field_name())->name('Nama Rumah Sakit')->show()->sort(),
-            DataBuilder::build($this->field_alamat())->name('Alamat')->show()->sort(),
-            DataBuilder::build($this->field_description())->name('Deskripsi')->show()->sort(),
         ];
-
-        if (level(UserLevel::Finance)) {
-            $data = array_merge($data, [
-                DataBuilder::build($this->field_harga_cuci())->name('Harga Cuci')->show()->sort(),
-                DataBuilder::build($this->field_harga_sewa())->name('Harga Rental')->show()->sort(),
-            ]);
-        }
 
         return $data;
     }

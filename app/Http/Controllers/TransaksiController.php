@@ -4,14 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Dao\Enums\BedaRsType;
 use App\Dao\Enums\BooleanType;
+use App\Dao\Enums\LogType;
 use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\SyncType;
 use App\Dao\Enums\TransactionType;
 use App\Dao\Models\Detail;
 use App\Dao\Models\History;
-use App\Dao\Models\Opname;
-use App\Dao\Models\OpnameDetail;
-use App\Dao\Models\Rs;
+use App\Dao\Models\Outstanding;
 use App\Dao\Models\Transaksi;
 use App\Dao\Models\ViewTransaksi;
 use App\Dao\Repositories\TransaksiRepository;
@@ -82,12 +81,7 @@ class TransaksiController extends MasterController
         $transaksi = Transaksi::with([HAS_DETAIL])->findOrFail($code);
         if ($transaksi) {
 
-            Detail::find($transaksi->field_rfid)->update([
-                Detail::field_status_process() => ProcessType::Bersih,
-                Detail::field_status_transaction() => TransactionType::BersihKotor,
-            ]);
-
-            PluginsHistory::log($transaksi->field_rfid, ProcessType::DeleteTransaksi, 'Data di delete dari transaksi '.$transaksi->field_primary);
+            PluginsHistory::log($transaksi->field_rfid, LogType::DELETE_TRANSAKSI, 'Data di delete dari transaksi '.$transaksi->field_primary);
             Notes::delete($transaksi->get()->toArray());
             Alert::delete();
 
@@ -105,13 +99,8 @@ class TransaksiController extends MasterController
         if ($transaksi) {
             $rfid = $transaksi->pluck(Transaksi::field_rfid());
 
-            Detail::whereIn(Detail::field_primary(), $rfid)->update([
-                Detail::field_status_process() => ProcessType::Bersih,
-                Detail::field_status_transaction() => TransactionType::BersihKotor,
-            ]);
-
             $bulk = $transaksi->get()->toArray();
-            PluginsHistory::bulk($rfid, ProcessType::DeleteTransaksi, $bulk);
+            PluginsHistory::bulk($rfid, LogType::DELETE_TRANSAKSI, $bulk);
             Notes::delete($bulk);
             Alert::delete();
             $transaksi->delete();
@@ -122,93 +111,39 @@ class TransaksiController extends MasterController
 
     public function kotor(TransactionRequest $request, SaveTransaksiService $service)
     {
-        $request[STATUS_TRANSAKSI] = TransactionType::Kotor;
-        $request[STATUS_PROCESS] = ProcessType::Kotor;
+        $request[STATUS_TRANSAKSI] = TransactionType::KOTOR;
+        $request[STATUS_PROCESS] = ProcessType::SCAN;
 
         return $this->transaction($request, $service);
     }
 
     public function retur(TransactionRequest $request, SaveTransaksiService $service)
     {
-        $request[STATUS_TRANSAKSI] = TransactionType::Retur;
-        $request[STATUS_PROCESS] = ProcessType::Kotor;
+        $request[STATUS_TRANSAKSI] = TransactionType::RETUR;
+        $request[STATUS_PROCESS] = ProcessType::SCAN;
 
         return $this->transaction($request, $service);
     }
 
     public function rewash(TransactionRequest $request, SaveTransaksiService $service)
     {
-        $request[STATUS_TRANSAKSI] = TransactionType::Rewash;
-        $request[STATUS_PROCESS] = ProcessType::Kotor;
+        $request[STATUS_TRANSAKSI] = TransactionType::RETUR;
+        $request[STATUS_PROCESS] = ProcessType::SCAN;
 
         return $this->transaction($request, $service);
     }
 
     private function checkValidation($form_transaksi, $status_transaksi, $date)
     {
-        if (! in_array($status_transaksi, array_merge(BERSIH, [TransactionType::Register]))) {
-            return false;
-        }
-
-        if (in_array($form_transaksi, [TransactionType::Retur, TransactionType::Rewash])) {
-            return true;
-        }
-
-        if ($form_transaksi == TransactionType::Register) {
-            return true;
-        }
-
-        if (($form_transaksi == TransactionType::Kotor) && now()->diffInHours($date) >= env('TRANSACTION_DAY_ALLOWED', 15)) {
+        if (($form_transaksi == TransactionType::KOTOR) && now()->diffInHours($date) >= env('TRANSACTION_DAY_ALLOWED', 15)) {
             return true;
         }
 
         return false;
     }
 
-    private function checkOpname($status_transaksi, $status_proses, $rfid)
-    {
-        try {
-            $today = date('Y-m-d');
-            $waktu = date('Y-m-d H:i:s');
-            OpnameDetail::leftJoinRelationship('has_master')
-                ->where(Opname::field_start(), '<=', $today)
-                ->where(Opname::field_end(), '>=', $today)
-                ->whereIn(OpnameDetail::field_rfid(), $rfid)
-                ->where(OpnameDetail::field_ketemu(), BooleanType::No)
-                ->update([
-                    OpnameDetail::field_ketemu() => BooleanType::Yes,
-                    OpnameDetail::field_waktu() => $waktu,
-                    OpnameDetail::field_transaksi() => $status_transaksi,
-                    OpnameDetail::field_proses() => $status_proses,
-                ]);
-
-            PluginsHistory::bulk($rfid, $status_proses, 'Ketemu di kotor');
-
-        } catch (\Throwable $th) {
-            //throw $th;
-        }
-    }
-
-    private function checkRsAktif()
-    {
-        if (env('TRANSACTION_ACTIVE_RS_ONLY', 0)) {
-            return true;
-        }
-
-        $rs = Rs::find(request()->rs_id);
-        if (empty($rs)) {
-            return true;
-        }
-
-        return $rs->field_active;
-    }
-
     private function transaction($request, $service)
     {
-        if (! $this->checkRsAktif()) {
-            return Notes::error('Rs belum di registrasi');
-        }
-
         try {
 
             DB::beginTransaction();
@@ -219,11 +154,10 @@ class TransaksiController extends MasterController
                     return [$item[Detail::field_primary()] => $item];
                 });
 
-            $query_transaksi = Transaksi::select(Transaksi::field_rfid())
-                ->whereIn(Transaksi::field_rfid(), $rfid)
-                ->whereNull(Transaksi::field_delivery())
-                // ->whereDate(Transaksi::field_created_at(), date('Y-m-d'))
-                ->get()->pluck(Transaksi::field_rfid(), Transaksi::field_rfid())
+            $query_transaksi = Outstanding::select(Outstanding::field_primary())
+                ->whereIn(Outstanding::field_primary(), $rfid)
+                ->where(Outstanding::field_rs_ori(), $request->rs_id)
+                ->get()->pluck(Outstanding::field_primary(), Outstanding::field_primary())
                 ->toArray();
 
             $status_transaksi = $request->{STATUS_TRANSAKSI};
@@ -247,14 +181,15 @@ class TransaksiController extends MasterController
                     if (! in_array($item, $query_transaksi) and $this->checkValidation($status_transaksi, $detail->field_status_transaction, $detail->field_updated_at)) {
                         $status_sync = SyncType::Yes;
 
-                        $beda_rs = $request->rs_id == $detail->field_rs_id ? BooleanType::No : BooleanType::Yes;
+                        $beda_rs = $request->rs_id == $detail->field_rs_id ? BooleanType::NO : BooleanType::YES;
 
                         $data_transaksi = [
                             Transaksi::field_key() => $request->key,
                             Transaksi::field_rfid() => $item,
                             Transaksi::field_status_transaction() => $status_transaksi,
                             Transaksi::field_rs_ori() => $detail->field_rs_id,
-                            Transaksi::field_rs_id() => $request->rs_id,
+                            Transaksi::field_rs_scan() => $request->rs_id,
+                            Transaksi::field_ruangan_id() => $request->ruangan_id,
                             Transaksi::field_beda_rs() => $beda_rs,
                             Transaksi::field_created_at() => $date,
                             Transaksi::field_created_by() => $user,
@@ -262,12 +197,27 @@ class TransaksiController extends MasterController
                             Transaksi::field_updated_by() => $user,
                         ];
 
+                        $outstanding[] = [
+                            Outstanding::field_key() => $request->key,
+                            Outstanding::field_primary() => $item,
+                            Outstanding::field_rs_ori() => $detail->field_rs_id,
+                            Outstanding::field_rs_scan() => $request->rs_id,
+                            Outstanding::field_status_beda_rs() => $beda_rs,
+                            Outstanding::field_ruangan_id() => $request->ruangan_id,
+                            Outstanding::field_status_transaction() => $status_transaksi,
+                            Outstanding::field_status_process() => $status_process,
+                            Outstanding::field_created_at() => date('Y-m-d H:i:s'),
+                            Outstanding::field_updated_at() => date('Y-m-d H:i:s'),
+                            Outstanding::field_created_by() => auth()->user()->id,
+                            Outstanding::field_updated_by() => auth()->user()->id,
+                        ];
+
                         $transaksi[] = $data_transaksi;
                         $linen[] = (string) $item;
 
                         $log[] = [
                             History::field_name() => $item,
-                            History::field_status() => ProcessType::Kotor,
+                            History::field_status() => LogType::SCAN,
                             History::field_created_by() => auth()->user()->name,
                             History::field_created_at() => $date,
                             History::field_description() => json_encode($data_transaksi),
@@ -304,19 +254,33 @@ class TransaksiController extends MasterController
                             Transaksi::field_status_transaction() => $status_transaksi,
                             Transaksi::field_rs_ori() => null,
                             Transaksi::field_rs_id() => $request->rs_id,
-                            Transaksi::field_beda_rs() => BedaRsType::BelumRegister,
+                            Transaksi::field_beda_rs() => BedaRsType::NOT_REGISTERED,
                             Transaksi::field_created_at() => $date,
                             Transaksi::field_created_by() => $user,
                             Transaksi::field_updated_at() => $date,
                             Transaksi::field_updated_by() => $user,
+                        ];
+
+                        $outstanding[] = [
+                            Outstanding::field_key() => $request->key,
+                            Outstanding::field_primary() => $item,
+                            Outstanding::field_rs_scan() => $request->rs_id,
+                            Outstanding::field_status_beda_rs() => BedaRsType::NOT_REGISTERED,
+                            Outstanding::field_ruangan_id() => $request->ruangan_id,
+                            Outstanding::field_status_transaction() => $status_transaksi,
+                            Outstanding::field_status_process() => $status_process,
+                            Outstanding::field_created_at() => date('Y-m-d H:i:s'),
+                            Outstanding::field_updated_at() => date('Y-m-d H:i:s'),
+                            Outstanding::field_created_by() => auth()->user()->id,
+                            Outstanding::field_updated_by() => auth()->user()->id,
                         ];
                     }
 
                     $return[] = [
                         KEY => $request->key,
                         STATUS_SYNC => SyncType::Unknown,
-                        STATUS_TRANSAKSI => TransactionType::Unknown,
-                        STATUS_PROCESS => ProcessType::Unknown,
+                        STATUS_TRANSAKSI => TransactionType::UNKNOWN,
+                        STATUS_PROCESS => ProcessType::UNKNOWN,
                         RFID => $item,
                         TANGGAL_UPDATE => $date,
                     ];
@@ -335,15 +299,9 @@ class TransaksiController extends MasterController
                 }
             }
 
-            if (! empty($linen)) {
-                foreach (array_chunk($linen, env('TRANSACTION_CHUNK')) as $save_detail) {
-                    Detail::whereIn(Detail::field_primary(), $save_detail)
-                        ->update([
-                            Detail::field_status_transaction() => $status_transaksi,
-                            Detail::field_status_process() => $status_process,
-                            Detail::field_updated_at() => date('Y-m-d H:i:s'),
-                            Detail::field_updated_by() => auth()->user()->id,
-                        ]);
+            if (! empty($outstanding)) {
+                foreach (array_chunk($outstanding, env('TRANSACTION_CHUNK')) as $save_transaksi) {
+                    Outstanding::insert($save_transaksi);
                 }
             }
 

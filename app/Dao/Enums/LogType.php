@@ -6,7 +6,7 @@ use App\Dao\Traits\StatusTrait;
 use BenSampo\Enum\Contracts\LocalizedEnum;
 use BenSampo\Enum\Enum as Enum;
 
-class ProcessType extends Enum implements LocalizedEnum
+class LogType extends Enum implements LocalizedEnum
 {
     use StatusTrait;
 
@@ -26,12 +26,5 @@ class ProcessType extends Enum implements LocalizedEnum
 
     const HILANG = 'HILANG';
 
-    public static function getDescription($value): string
-    {
-        if ($value === self::QC) {
-            return 'Quality Control';
-        }
-
-        return parent::getDescription($value);
-    }
+    const DELETE_TRANSAKSI = 'DELETE_TRANSAKSI';
 }

@@ -42,7 +42,7 @@
                                         <x-crud :model="$table" />
                                     </td>
                                     <td>{{ iteration($data, $key) }}</td>
-                                    <td>{{ $table->field_status_transaction_name }}</td>
+                                    <td>{{ $table->field_status_transaction }}</td>
                                     <td>{{ $table->field_key }}</td>
                                     <td>{{ $table->field_total }}</td>
                                     <td>{{ $table->field_rs_name }}</td>

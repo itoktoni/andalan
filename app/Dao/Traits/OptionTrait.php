@@ -60,7 +60,7 @@ trait OptionTrait
             $query = $query
                 ->select($field_id, $field_name);
             if (method_exists(self::$option_model, 'field_active')) {
-                $query = self::$option_model->where(self::$option_model->field_active(), BooleanType::Yes);
+                $query = self::$option_model->where(self::$option_model->field_active(), BooleanType::YES);
             }
 
             self::$option_model = $query->get()->pluck($field_name, $field_id)
@@ -70,7 +70,7 @@ trait OptionTrait
             $query = $query
                 ->select(self::$option_model->fieldSearching(), self::$option_model->getKeyName());
             if (method_exists(self::$option_model, 'field_active')) {
-                $query = self::$option_model->where(self::$option_model->field_active(), BooleanType::Yes);
+                $query = self::$option_model->where(self::$option_model->field_active(), BooleanType::YES);
             }
 
             self::$option_model = $query->get()->pluck(self::$option_model->fieldSearching(), self::$option_model->getKeyName())

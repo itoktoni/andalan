@@ -63,34 +63,6 @@ class DetailController extends MasterController
     {
         $query = self::$repository->dataRepository();
 
-        if ($status = request()->get('status')) {
-            if ($status == DetailType::Register) {
-                $query = $query->where(Transaksi::field_status_transaction(), TransactionType::Register);
-            } elseif ($status == DetailType::LinenBaru) {
-                $query = $query->where(Transaksi::field_status_bersih(), TransactionType::Register);
-            } elseif ($status == DetailType::Kotor) {
-                $query = $query->where(Transaksi::field_status_transaction(), TransactionType::Kotor);
-            } elseif ($status == DetailType::Retur) {
-                $query = $query->where(Transaksi::field_status_transaction(), TransactionType::Retur);
-            } elseif ($status == DetailType::Rewash) {
-                $query = $query->where(Transaksi::field_status_transaction(), TransactionType::Rewash);
-            } elseif ($status == DetailType::BersihKotor) {
-                $query = $query->where(Transaksi::field_status_bersih(), TransactionType::BersihKotor);
-            } elseif ($status == DetailType::BersihRetur) {
-                $query = $query->where(Transaksi::field_status_bersih(), TransactionType::BersihRetur);
-            } elseif ($status == DetailType::BersihRewash) {
-                $query = $query->where(Transaksi::field_status_bersih(), TransactionType::BersihRewash);
-            } elseif ($status == DetailType::Pending) {
-                $query = $query->where(ViewDetailLinen::field_status_process(), ProcessType::Pending)
-                    ->whereNULL(Transaksi::field_status_bersih())
-                    ->groupBy(ViewDetailLinen::field_primary());
-            } elseif ($status == DetailType::Hilang) {
-                $query = $query->where(ViewDetailLinen::field_status_process(), ProcessType::Hilang)
-                    ->whereNULL(Transaksi::field_status_bersih())
-                    ->groupBy(ViewDetailLinen::field_primary());
-            }
-        }
-
         if ($start = request()->get('start_date')) {
             $query = $query->whereDate(Detail::field_created_at(), '>=', $start);
         }

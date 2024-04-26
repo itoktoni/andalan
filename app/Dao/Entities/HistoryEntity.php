@@ -43,7 +43,7 @@ trait HistoryEntity
 
     public function getFieldStatusAttribute()
     {
-        return ProcessType::getDescription($this->{$this->field_status()});
+        return $this->{$this->field_status()};
     }
 
     public static function field_created_at()

@@ -46,7 +46,7 @@ class ViewTransaksi extends Model
 
     protected $casts = [
         'transaksi_key' => 'string',
-        'transaksi_status' => 'integer',
+        'transaksi_status' => 'string',
     ];
 
     protected $filters = [
