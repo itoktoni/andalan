@@ -1,5 +1,6 @@
 <?php
 
+use App\Dao\Enums\BedaRsType;
 use App\Dao\Enums\CetakType;
 use App\Dao\Enums\CuciType;
 use App\Dao\Enums\LinenType;
@@ -20,28 +21,23 @@ use App\Dao\Models\Rs;
 use App\Dao\Models\Supplier;
 use App\Dao\Models\Transaksi;
 use App\Dao\Models\ViewDetailLinen;
-use App\Dao\Models\ViewOutstanding;
 use App\Http\Controllers\BarcodeController;
 use App\Http\Controllers\DeliveryController;
 use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\UserController;
 use App\Http\Requests\DetailDataRequest;
-use App\Http\Requests\DetailUpdateRequest;
 use App\Http\Requests\OpnameDetailRequest;
 use App\Http\Requests\RegisterRequest;
-use App\Http\Resources\DetailCollection;
 use App\Http\Resources\DetailResource;
 use App\Http\Resources\DownloadCollection;
 use App\Http\Resources\OpnameResource;
 use App\Http\Resources\RsResource;
 use App\Http\Services\SaveOpnameService;
-use App\Http\Services\SaveTransaksiService;
 use App\PushSubscription;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
-use Plugins\History;
 use Plugins\Notes;
 use Plugins\Query;
 
@@ -185,8 +181,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
         try {
 
-            $code = env('CODE_BERSIH', 'REG');
-            $autoNumber = Query::autoNumber(Outstanding::getTableName(), Outstanding::field_key(), $code.date('ymd'), env('AUTO_NUMBER', 15));
+            $code = env('CODE_REGISTER', 'REG');
+            $autoNumber = Query::autoNumber(Outstanding::getTableName(), Outstanding::field_key(), $code . date('ymd'), env('AUTO_NUMBER', 15));
 
             if ($request->status_register == RegisterType::GANTI_CHIP) {
                 $transaksi_status = TransactionType::KOTOR;
@@ -261,7 +257,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
             Detail::insert($detail);
             Outstanding::insert($transaksi);
 
-            if(!empty($config)){
+            if (!empty($config)) {
                 ConfigLinen::insert($config);
             }
 
@@ -347,37 +343,89 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('retur', [TransaksiController::class, 'retur']);
     Route::post('rewash', [TransaksiController::class, 'rewash']);
 
-    Route::get('grouping/{rfid}', function ($rfid, SaveTransaksiService $service) {
+    Route::get('grouping/{rfid}', function ($rfid) {
         try {
-            $data = Outstanding::with('has_view')->findOrFail($rfid);
-            $view = $data->has_view;
 
-            /*
-            update status di outstanding
-            */
-            $data->outstanding_updated_at = ProcessType::QC;
-            $data->outstanding_updated_by = auth()->user()->id;
-            $data->outstanding_status_proses = ProcessType::QC;
-            $data->save();
+            $date = date('Y-m-d H:i:s');
+            $user = auth()->user()->id;
+
+            DB::beginTransaction();
+
+            $data = Outstanding::with('has_view')->find($rfid);
+            if ($data) {
+                $view = $data->has_view;
+
+                /*
+                update status di outstanding
+                 */
+                $data->outstanding_updated_at = $date;
+                $data->outstanding_updated_by = $user;
+                $data->outstanding_status_proses = ProcessType::QC;
+                $data->save();
+
+            } else {
+                $detail = Detail::findOrFail($rfid);
+
+                if ($detail) {
+
+                    $code = env('CODE_KOTOR', 'KTR');
+                    $autoNumber = Query::autoNumber(Outstanding::getTableName(), Outstanding::field_key(), $code . date('ymd'), env('AUTO_NUMBER', 15));
+
+                    Transaksi::create([
+                        Transaksi::field_key() => $autoNumber,
+                        Transaksi::field_rfid() => $rfid,
+                        Transaksi::field_rs_ori() => $detail->detail_id_rs,
+                        Transaksi::field_rs_scan() => $detail->detail_id_rs,
+                        Transaksi::field_beda_rs() => BedaRsType::NO,
+                        Transaksi::field_ruangan_id() => $detail->detail_id_ruangan,
+                        Transaksi::field_status_transaction() => TransactionType::KOTOR,
+                        Transaksi::field_created_at() => $date,
+                        Transaksi::field_created_by() => $user,
+                        Transaksi::field_updated_at() => $date,
+                        Transaksi::field_updated_by() => $user,
+                    ]);
+
+                    Outstanding::create([
+                        Outstanding::field_key() => $autoNumber,
+                        Outstanding::field_primary() => $rfid,
+                        Outstanding::field_status_transaction() => TransactionType::KOTOR,
+                        Outstanding::field_status_process() => ProcessType::QC,
+                        Outstanding::field_created_at() => $date,
+                        Outstanding::field_updated_at() => $date,
+                        Outstanding::field_created_by() => $user,
+                        Outstanding::field_updated_by() => $user,
+                    ]);
+
+                    ModelsHistory::create([
+                        ModelsHistory::field_name() => $rfid,
+                        ModelsHistory::field_status() => LogType::QC_TRANSACTION,
+                        ModelsHistory::field_created_by() => auth()->user()->name,
+                        ModelsHistory::field_created_at() => $date,
+                        ModelsHistory::field_description() => json_encode([ModelsHistory::field_name() => $rfid]),
+                    ]);
+                }
+            }
+
+            DB::commit();
 
             $collection = [
-                'linen_id' => $view->jenis_id,
+                'linen_id' => $view->jenis_id ?? '',
                 'linen_nama' => $view->jenis_nama ?? '',
-                'rs_id' => $view->view_rs_ori_id,
-                'rs_nama' => $view->view_rs_ori_name ?? '',
-                'ruangan_id' => $view->ruangan_id,
+                'rs_id' => $view->view_rs_ori_id ?? '',
+                'rs_nama' => $view->view_rs_ori_nama ?? '',
+                'ruangan_id' => $view->ruangan_id ?? '',
                 'ruangan_nama' => $view->ruangan_nama ?? '',
                 'status_transaksi' => $data->outstanding_status_transaksi,
                 'status_proses' => $data->outstanding_status_proses,
-                'tanggal_create' => $view->outstanding_created_at ? $view->outstanding_created_at->format('Y-m-d') : null,
-                'tanggal_update' => $view->outstanding_updated_at ? $view->outstanding_updated_at->format('Y-m-d') : null,
-                'pemakaian' => 0,
+                'tanggal_create' => $view->outstanding_created_at ? Carbon::make($view->outstanding_created_at)->format('Y-m-d') : null,
+                'tanggal_update' => $view->outstanding_updated_at ? Carbon::make($view->outstanding_updated_at)->format('Y-m-d') : null,
                 'user_nama' => $view->view_operator ?? null,
             ];
 
             return $collection;
 
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
+            DB::rollBack();
             return Notes::error($rfid, 'RFID ' . $rfid . ' tidak ditemukan');
         } catch (\Throwable $th) {
             return Notes::error($rfid, $th->getMessage());

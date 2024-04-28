@@ -34,7 +34,8 @@ class Transaksi extends Model
         'transaksi_barcode',
         'transaksi_delivery',
         'transaksi_beda_rs',
-        'transaksi_id_rs',
+        'transaksi_rs_ori',
+        'transaksi_rs_scan',
         'transaksi_id_ruangan',
         'transaksi_created_at',
         'transaksi_updated_at',
@@ -47,7 +48,6 @@ class Transaksi extends Model
         'transaksi_delivery_at',
         'transaksi_delivery_by',
         'transaksi_bersih',
-        'transaksi_rs_ori',
         'transaksi_uuid_barcode',
         'transaksi_uuid_delviery',
     ];
