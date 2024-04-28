@@ -244,44 +244,39 @@ trait DetailEntity
         return $this->{$this->field_hilang_updated_at()};
     }
 
-    public static function field_total_bersih_kotor()
+    public static function field_total_bersih()
     {
-        return 'detail_total_bersih_kotor';
+        return 'detail_total_bersih';
+    }
+
+    public function getFieldTotalBersihAttribute()
+    {
+        return $this->{$this->detail_total_bersih()};
     }
 
     public function getFieldCuciAttribute()
     {
-        return $this->{$this->field_total_bersih_kotor()};
+        return $this->{$this->detail_total_bersih()};
     }
 
-    public function getFieldTotalAttribute()
+    public static function field_total_retur()
     {
-        return $this->{$this->field_total_bersih_kotor()};
+        return 'detail_total_retur';
     }
 
-    public function getFieldTotalBersihKotorAttribute()
+    public function getFieldTotalReturAttribute()
     {
-        return $this->{$this->field_total_bersih_kotor()};
+        return $this->{$this->detail_total_retur()};
     }
 
-    public static function field_total_bersih_rewash()
+    public static function field_total_rewash()
     {
-        return 'detail_total_bersih_rewash';
+        return 'detail_total_rewash';
     }
 
-    public function getFieldTotalBersihRewashAttribute()
+    public function getFieldTotalRewashAttribute()
     {
-        return $this->{$this->field_total_bersih_rewash()};
-    }
-
-    public static function field_total_bersih_retur()
-    {
-        return 'detail_total_bersih_retur';
-    }
-
-    public function getFieldTotalBersihReturAttribute()
-    {
-        return $this->{$this->field_total_bersih_retur()};
+        return $this->{$this->detail_total_rewash()};
     }
 
     public static function field_cek()
