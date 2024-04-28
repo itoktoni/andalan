@@ -38,6 +38,7 @@ class History extends Model
 
     protected $casts = [
         'history_rfid' => 'string',
+        'history_status' => 'string',
     ];
 
     protected $filters = [

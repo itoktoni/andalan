@@ -7,10 +7,12 @@ use App\Dao\Enums\DetailType;
 use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\RegisterType;
 use App\Dao\Enums\TransactionType;
+use App\Dao\Models\ConfigLinen;
 use App\Dao\Models\Detail;
 use App\Dao\Models\History;
 use App\Dao\Models\JenisLinen;
 use App\Dao\Models\OpnameDetail;
+use App\Dao\Models\Outstanding;
 use App\Dao\Models\Rs;
 use App\Dao\Models\Ruangan;
 use App\Dao\Models\Transaksi;
@@ -143,5 +145,7 @@ class DetailController extends MasterController
     {
         OpnameDetail::whereIn(OpnameDetail::field_rfid(), $code)->delete();
         Transaksi::whereIn(Transaksi::field_rfid(), $code)->delete();
+        ConfigLinen::whereIn(Transaksi::field_rfid(), $code)->delete();
+        Outstanding::whereIn(Transaksi::field_rfid(), $code)->delete();
     }
 }
