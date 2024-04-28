@@ -167,77 +167,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::get('rs/{rsid}', function ($rsid) {
 
-        $status_register = [];
-        foreach (RegisterType::getInstances() as $value => $key) {
-            $status_register[] = [
-                'status_id' => $key,
-                'status_nama' => formatCapitilizeSentance($value),
-            ];
-        }
-
-        $status_cuci = [];
-        foreach (CuciType::getInstances() as $value => $key) {
-            $status_cuci[] = [
-                'status_id' => $key,
-                'status_nama' => formatCapitilizeSentance($value),
-            ];
-        }
-
-        $status_proses = [];
-        foreach (ProcessType::getInstances() as $value => $key) {
-            $status_proses[] = [
-                'status_id' => $key,
-                'status_nama' => formatWorld($value),
-            ];
-        }
-
-        $status_transaksi = [];
-        foreach (TransactionType::getInstances() as $value => $key) {
-            $status_transaksi[] = [
-                'status_id' => $key,
-                'status_nama' => formatWorld($value),
-            ];
-        }
-
-        $data_supplier = [];
-        $supplier = Supplier::get();
-        foreach ($supplier as $vendor) {
-            $data_supplier[] = [
-                'supplier_id' => $vendor->field_primary,
-                'supplier_name' => $vendor->field_name,
-            ];
-        }
-
-        $data_bahan = [];
-        $bahan = JenisBahan::get();
-        foreach ($bahan as $vendor) {
-            $data_bahan[] = [
-                'bahan_id' => $vendor->field_primary,
-                'bahan_name' => $vendor->field_name,
-            ];
-        }
-
-        $data_jenis = [];
-        $jenis = JenisLinen::get();
-        foreach ($jenis as $item) {
-            $data_jenis[] = [
-                'jenis_id' => $item->field_primary,
-                'jenis_name' => $item->field_name,
-            ];
-        }
-
         try {
 
             $rs = Rs::with([HAS_RUANGAN, HAS_JENIS])->findOrFail($rsid);
             $collection = new RsResource($rs);
-            $add['status_transaksi'] = $status_transaksi;
-            $add['status_proses'] = $status_proses;
-            $add['status_cuci'] = $status_cuci;
-            $add['bahan'] = $data_bahan;
-            $add['jenis'] = $data_jenis;
-            $add['supplier'] = $data_supplier;
 
-            return Notes::data($collection, $add);
+            return Notes::data($collection);
 
         } catch (\Throwable $th) {
 
@@ -326,6 +261,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
             Detail::insert($detail);
             Outstanding::insert($transaksi);
+
             if(!empty($config)){
                 ConfigLinen::insert($config);
             }
