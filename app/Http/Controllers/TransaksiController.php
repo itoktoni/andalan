@@ -112,28 +112,28 @@ class TransaksiController extends MasterController
         return Response::redirectBack($transaksi);
     }
 
-    public function kotor(TransactionRequest $request, SaveTransaksiService $service)
+    public function kotor(TransactionRequest $request)
     {
         $request[STATUS_TRANSAKSI] = TransactionType::KOTOR;
         $request[STATUS_PROCESS] = ProcessType::SCAN;
 
-        return $this->transaction($request, $service);
+        return $this->transaction($request);
     }
 
-    public function retur(TransactionRequest $request, SaveTransaksiService $service)
+    public function retur(TransactionRequest $request)
     {
         $request[STATUS_TRANSAKSI] = TransactionType::REJECT;
         $request[STATUS_PROCESS] = ProcessType::SCAN;
 
-        return $this->transaction($request, $service);
+        return $this->transaction($request);
     }
 
-    public function rewash(TransactionRequest $request, SaveTransaksiService $service)
+    public function rewash(TransactionRequest $request)
     {
         $request[STATUS_TRANSAKSI] = TransactionType::REWASH;
         $request[STATUS_PROCESS] = ProcessType::SCAN;
 
-        return $this->transaction($request, $service);
+        return $this->transaction($request);
     }
 
     private function rfidCanSyncToServer($form_transaksi, $status_transaksi, $date)
@@ -149,7 +149,7 @@ class TransaksiController extends MasterController
         return true;
     }
 
-    private function transaction($request, $service)
+    private function transaction($request)
     {
         try {
 
@@ -178,7 +178,7 @@ class TransaksiController extends MasterController
 
                 if (isset($data[$item])) {
                     $detail = $data[$item];
-                    if (empty($detail->outstanding_status_transaksi) and $this->rfidCanSyncToServer($status_transaksi, $detail->field_status_transaction, $detail->field_updated_at)) {
+                    if (empty($detail->outstanding_status_transaksi) and $this->rfidCanSyncToServer($status_transaksi, $detail->field_status_linen, $detail->field_updated_at)) {
                         $status_sync = SyncType::Yes;
 
                         $beda_rs = $request->rs_id == $detail->field_rs_id ? YesNoType::NO : BooleanType::YES;
@@ -317,7 +317,7 @@ class TransaksiController extends MasterController
 
             Detail::whereIn(Detail::field_primary(), $linen)->update([
                 Detail::field_updated_at() => date('Y-m-d H:i:s'),
-                Detail::field_status_transaction() => TransactionType::BERSIH,
+                Detail::field_status_linen() => TransactionType::BERSIH,
             ]);
 
             DB::commit();

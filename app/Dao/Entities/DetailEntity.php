@@ -289,13 +289,23 @@ trait DetailEntity
         return $this->{$this->field_cek()};
     }
 
-    public static function field_dedicated()
+    public static function field_status_kepemilikan()
+    {
+        return 'detail_status_kepemilikan';
+    }
+
+    public function getFieldStatusKepemilikanAttribute()
+    {
+        return $this->{$this->field_status_kepemilikan()};
+    }
+
+    public static function field_status_linen()
     {
         return 'detail_status_linen';
     }
 
-    public function getFieldDedicatedAttribute()
+    public function getFieldStatusLinenAttribute()
     {
-        return $this->{$this->field_dedicated()};
+        return $this->{$this->field_status_linen()};
     }
 }

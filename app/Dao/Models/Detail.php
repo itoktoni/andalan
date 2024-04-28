@@ -59,6 +59,7 @@ class Detail extends Model
 
     protected $casts = [
         'detail_rfid' => 'string',
+        'detail_status_linen' => 'string',
     ];
 
     protected $filters = [

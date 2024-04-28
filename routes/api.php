@@ -206,8 +206,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     Detail::field_jenis_id() => $request->jenis_id,
                     Detail::field_bahan_id() => $request->bahan_id,
                     Detail::field_supplier_id() => $request->supplier_id,
-                    Detail::field_dedicated() => LinenType::FREE,
-                    Detail::field_status_transaction() => $transaksi_status,
+                    Detail::field_status_kepemilikan() => LinenType::FREE,
+                    Detail::field_status_linen() => $transaksi_status,
                     Detail::field_status_cuci() => $request->status_cuci,
                     Detail::field_status_register() => $request->status_register ? $request->status_register : RegisterType::REGISTER,
                     Detail::field_created_at() => date('Y-m-d H:i:s'),
@@ -229,7 +229,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
                 if ($request->has('ruangan_id')) {
                     $merge = array_merge($merge, [
-                        Detail::field_dedicated() => LinenType::DEDICATED,
+                        Detail::field_status_kepemilikan() => LinenType::DEDICATED,
                         Detail::field_ruangan_id() => $request->ruangan_id,
                         Detail::field_rs_id() => $request->rs_id,
                     ]);
@@ -330,7 +330,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     'status_proses' => $data->outstanding_status_proses ?? TransactionType::BERSIH,
                     'tanggal_create' => $data->outstanding_created_at ? Carbon::make($data->outstanding_created_at)->format('Y-m-d') : null,
                     'tanggal_update' => $data->outstanding_updated_at ? Carbon::make($data->outstanding_updated_at)->format('Y-m-d') : null,
-                    'pemakaian' => $data->detail_total_bersih_kotor ?? 0,
+                    'pemakaian' => $data->detail_total_bersih ?? 0,
                     'user_nama' => $data->name ?? null,
                 ];
             }
