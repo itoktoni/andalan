@@ -53,14 +53,6 @@ class DownloadCollection extends ResourceCollection
             }
         }
 
-        $status = [];
-        foreach (ProcessType::getInstances() as $value => $key) {
-            $status[] = [
-                'status_id' => $key,
-                'status_nama' => formatWorld($value),
-            ];
-        }
-
         $rfid = $this->collection->pluck('view_linen_rfid')->toArray();
         $outstanding = Outstanding::whereIn(Outstanding::field_primary(), $rfid)->get();
 
@@ -97,7 +89,6 @@ class DownloadCollection extends ResourceCollection
             'rs' => $data_rs,
             'ruangan' => $ruangan,
             'opname' => $sendOpname,
-            'status_proses' => $status,
         ];
         // return parent::toArray($request);
     }
