@@ -60,11 +60,13 @@ class DownloadCollection extends ResourceCollection
 
         $data = $this->collection->map(function ($item) use ($outstanding) {
             $tanggal = $item->view_tanggal_update;
-            $status = TransactionType::BERSIH;
+            $status_transaction = TransactionType::BERSIH;
+            $status_proses = TransactionType::BERSIH;
 
             if($outstanding->where('outstanding_rfid', $item)->count() > 0) {
                 $tanggal = date('Y-m-d H:i:s');
-                $status = $item->view_status_transaction;
+                $status_transaction = $item->view_status_transaction;
+                $status_proses = $item->view_status_process;
             }
 
             return [
@@ -75,7 +77,8 @@ class DownloadCollection extends ResourceCollection
                 'ruangan_nama' => $item->field_ruangan_name,
                 'jenis_id' => $item->field_id,
                 'jenis_nama' => $item->field_name,
-                'status' => $status,
+                'status_transaksi' => $status_transaction,
+                'status_proses' => $status_proses,
                 'tanggal' => $tanggal,
             ];
         });

@@ -19,7 +19,6 @@ class RsResource extends JsonResource
         return [
             'rs_id' => $this->field_primary,
             'rs_nama' => $this->field_name,
-            'deskripsi' => $this->field_description,
             'ruangan' => RuanganResource::collection($this->has_ruangan),
             'jenis' => JenisResource::collection($this->has_jenis),
         ];
