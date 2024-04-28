@@ -2,9 +2,12 @@
 
 namespace App\Http\Services;
 
+use App\Dao\Enums\LogType;
 use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\TransactionType;
+use App\Dao\Models\Bersih;
 use App\Dao\Models\Detail;
+use App\Dao\Models\Outstanding;
 use App\Dao\Models\Transaksi;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -13,7 +16,7 @@ use Plugins\Notes;
 
 class UpdateDeliveryService
 {
-    public function update($code, $status_transaksi)
+    public function update($data)
     {
         DB::beginTransaction();
 
@@ -28,50 +31,41 @@ class UpdateDeliveryService
                 $report_date = Carbon::now()->addDay(1);
             }
 
-            $transaksi = $status_transaksi;
-            if ($transaksi == TransactionType::BersihKotor) {
-                $transaksi = TransactionType::Kotor;
-            } elseif ($transaksi == TransactionType::BersihRetur) {
-                $transaksi = TransactionType::Retur;
-            } elseif ($transaksi == TransactionType::BersihRewash) {
-                $transaksi = TransactionType::Rewash;
-            } elseif ($transaksi == TransactionType::Unknown) {
-                $transaksi = TransactionType::Register;
+            $transaksi = $data->status_transaksi;
+            if ($transaksi == TransactionType::KOTOR) {
+                $transaksi = TransactionType::BERSIH;
             }
 
-            $check = Transaksi::query()
-                ->whereNull(Transaksi::field_delivery())
-                ->where(Transaksi::field_rs_ori(), request()->get('rs_id'))
-                ->where(Transaksi::field_status_transaction(), $transaksi)
-                ->whereNotNull(Transaksi::field_barcode())
+            $check = Bersih::query()
+                ->whereNull(Bersih::field_delivery())
+                ->where(Bersih::field_rs_ori(), request()->get('rs_id'))
+                ->where(Bersih::field_status(), $transaksi)
+                ->whereNotNull(Bersih::field_barcode())
                 ->update([
-                    Transaksi::field_delivery() => $code,
-                    Transaksi::field_delivery_by() => auth()->user()->id,
-                    Transaksi::field_delivery_at() => date('Y-m-d H:i:s'),
-                    Transaksi::field_report() => $report_date->format('Y-m-d'),
+                    Bersih::field_delivery() => $data->code,
+                    Bersih::field_delivery_by() => auth()->user()->id,
+                    Bersih::field_delivery_at() => date('Y-m-d H:i:s'),
+                    Bersih::field_report() => $report_date->format('Y-m-d'),
                 ]);
 
-            $rfid = Transaksi::select(Transaksi::field_rfid())
-                ->where(Transaksi::field_delivery(), $code)
+            $rfid = Bersih::select(Bersih::field_rfid())
+                ->where(Bersih::field_delivery(), $data->code)
                 ->get();
 
             if ($rfid && $check) {
 
-                $data_rfid = $rfid->pluck(Transaksi::field_rfid());
+                $data_rfid = $rfid->pluck(Bersih::field_rfid());
 
                 Detail::whereIn(Detail::field_primary(), $data_rfid)
-                    ->update([
-                        Detail::field_status_transaction() => $status_transaksi,
-                        Detail::field_status_process() => ProcessType::Bersih,
-                        Detail::field_updated_at() => date('Y-m-d H:i:s'),
-                        Detail::field_updated_by() => auth()->user()->id,
-                        Detail::field_pending_created_at() => null,
-                        Detail::field_pending_updated_at() => null,
-                        Detail::field_hilang_created_at() => null,
-                        Detail::field_hilang_updated_at() => null,
-                    ]);
+                ->update([
+                    Detail::field_status_linen() => TransactionType::BERSIH,
+                    Detail::field_updated_by() => auth()->user()->id,
+                ]);
 
-                History::bulk($data_rfid, ProcessType::Bersih);
+                Outstanding::whereIn(Outstanding::field_primary(), $data_rfid)->delete();
+
+                History::bulk($data_rfid, LogType::BERSIH);
+
             } else {
                 DB::rollBack();
 
@@ -80,7 +74,7 @@ class UpdateDeliveryService
 
             DB::commit();
 
-            $return['code'] = $code;
+            $return['code'] = $data->code;
             $return['rfid'] = $data_rfid;
 
             return Notes::data($return);

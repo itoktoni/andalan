@@ -4,7 +4,9 @@ namespace App\Http\Requests;
 
 use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\TransactionType;
+use App\Dao\Models\Bersih;
 use App\Dao\Models\Detail;
+use App\Dao\Models\Outstanding;
 use App\Dao\Models\Rs;
 use App\Dao\Models\Transaksi;
 use Illuminate\Foundation\Http\FormRequest;
@@ -22,33 +24,28 @@ class DeliveryRequest extends FormRequest
 
     public function withValidator($validator)
     {
-        //RFID HARUS SUDAH DI BARCODE
+        // CASE KETIKA RFID TIDAK DITEMUKAN
+        $status_transaksi = TransactionType::REGISTER;
 
-        $transaksi = $this->status_transaksi;
-
-        if ($transaksi == TransactionType::BersihKotor) {
-            $transaksi = TransactionType::Kotor;
-        } elseif ($transaksi == TransactionType::BersihRetur) {
-            $transaksi = TransactionType::Retur;
-        } elseif ($transaksi == TransactionType::BersihRewash) {
-            $transaksi = TransactionType::Rewash;
-        } elseif ($transaksi == TransactionType::Unknown) {
-            $transaksi = TransactionType::Register;
+        /*
+        notes : status transaksi berasal dari menu desktop
+        */
+        if ($this->status_transaksi == TransactionType::BERSIH) {
+            $status_transaksi = TransactionType::KOTOR;
         }
 
-        $empty = Detail::select(Detail::field_primary())
-            ->where(Detail::field_rs_id(), $this->rs_id)
-            ->where(Detail::field_status_transaction(), $transaksi)
-            ->where(Detail::field_status_process(), ProcessType::Barcode)
+        $outstanding = Outstanding::where(Outstanding::field_rs_ori(), $this->rs_id)
+            ->where(Outstanding::field_status_process(), ProcessType::PACKING)
+            ->where(Outstanding::field_status_transaction(), $status_transaksi)
             ->count();
 
-        $validator->after(function ($validator) use ($empty) {
-            if ($empty == 0) {
-                $validator->errors()->add('rfid', 'RFID tidak valid !');
+        $validator->after(function ($validator) use ($outstanding) {
+            if ($outstanding == 0) {
+                $validator->errors()->add('rfid', 'RFID belum ada yang di packing !');
             }
         });
 
-        if ($empty == 0) {
+        if ($outstanding == 0) {
             return;
         }
     }
@@ -56,30 +53,28 @@ class DeliveryRequest extends FormRequest
     public function prepareForValidation()
     {
         $code = '';
-
-        switch ($this->status_transaksi) {
-            case TransactionType::BersihKotor:
-                $code = env('CODE_DELIVERY_BERSIH', 'BBSH');
+        switch (request()->get('status_transaksi')) {
+            case TransactionType::BERSIH:
+                $code = env('CODE_DELIVERY_BERSIH', 'BSH');
                 break;
-            case TransactionType::BersihRetur:
-                $code = env('CODE_DELIVERY_RETUR', 'BRTR');
+            case TransactionType::REJECT:
+                $code = env('CODE_DELIVERY_RETUR', 'RJK');
                 break;
-            case TransactionType::BersihRewash:
-                $code = env('CODE_DELIVERY_REWASH', 'BWSH');
+            case TransactionType::REWASH:
+                $code = env('CODE_DELIVERY_REWASH', 'RWS');
                 break;
-            case TransactionType::Register:
-                $code = env('CODE_DELIVERY_REGISTER', 'BBRU');
+            case TransactionType::REGISTER:
+                $code = env('CODE_DELIVERY_REGISTER', 'REG');
                 break;
             default:
-                $code = env('CODE_DELIVERY_BERSIH', 'BBSH');
+                $code = env('CODE_DELIVERY_BERSIH', 'BSH');
                 break;
         }
 
         $code_rs = Rs::find($this->rs_id)->rs_code;
         $code = $code.$code_rs.date('ymd');
 
-        $autoNumber = Query::autoNumber(Transaksi::getTableName(), Transaksi::field_delivery(), $code, 17);
-
+        $autoNumber = Query::autoNumber(Bersih::getTableName(), Bersih::field_delivery(), $code, 17);
         $this->merge([
             'code' => $autoNumber,
         ]);

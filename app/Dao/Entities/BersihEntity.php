@@ -209,19 +209,14 @@ trait BersihEntity
         return $this->{$this->field_delivery_at()};
     }
 
-    public static function field_status_bersih()
+    public static function field_status()
     {
-        return 'bersih_bersih';
+        return 'bersih_status';
     }
 
-    public function getFieldStatusBersihAttribute()
+    public function getFieldStatusAttribute()
     {
-        return $this->{$this->field_status_bersih()};
-    }
-
-    public function getFieldStatusBersihNameAttribute()
-    {
-        return TransactionType::getDescription($this->getFieldStatusBersihAttribute());
+        return $this->{$this->field_status()};
     }
 
     public static function field_nama_linen()
@@ -239,24 +234,14 @@ trait BersihEntity
         return $this->{$this->field_total()};
     }
 
-    public static function field_rs_ori()
+    public static function field_rs_id()
     {
-        return 'bersih_rs_ori';
+        return 'bersih_id_rs';
     }
 
-    public function getFieldRsOriAttribute()
+    public function getFieldRsIdAttribute()
     {
-        return $this->{$this->field_rs_ori()};
-    }
-
-    public static function field_rs_scan()
-    {
-        return 'bersih_rs_scan';
-    }
-
-    public function getFieldRsScanAttribute()
-    {
-        return $this->{$this->field_rs_scan()};
+        return $this->{$this->field_rs_id()};
     }
 
     public static function field_uuid_barcode()

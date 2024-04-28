@@ -31,4 +31,6 @@ class LogType extends Enum implements LocalizedEnum
     const DELETE_TRANSAKSI = 'DELETE_TRANSAKSI';
 
     const DELETE_BARCODE = 'DELETE_BARCODE';
+
+    const BERSIH = 'BERSIH';
 }

@@ -367,7 +367,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
             // CHECK OUTSTANDING DATA
             $data_outstanding = [
-                Outstanding::field_key() => $autoNumber,
                 Outstanding::field_primary() => $rfid,
                 Outstanding::field_status_process() => ProcessType::QC,
                 Outstanding::field_updated_at() => $date,
@@ -380,12 +379,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
             if ($detail->field_status_kepemilikan == OwnershipType::FREE) {
 
                 $data_outstanding = array_merge($data_outstanding, [
-                    Outstanding::field_key() => null,
                     Outstanding::field_rs_ori() => null,
                     Outstanding::field_rs_scan() => null,
                     Outstanding::field_ruangan_id() => null,
-                    Outstanding::field_created_at() => null,
-                    Outstanding::field_created_by() => $user,
                 ]);
             }
 
@@ -394,6 +390,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 $outstanding->update($data_outstanding);
             } else {
                 $outstanding = Outstanding::create(array_merge($data_outstanding, [
+                    Outstanding::field_key() => $autoNumber,
+                    Outstanding::field_status_transaction() => TransactionType::KOTOR,
                     Outstanding::field_created_at() => $date,
                     Outstanding::field_created_by() => $user,
                 ]));
@@ -437,6 +435,15 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
             return Notes::error($rfid, 'RFID ' . $rfid . ' tidak ditemukan');
         } catch (\Throwable $th) {
+
+            DB::rollBack();
+
+            if($th->getCode() == 23000){
+                $message = explode('for key', $th->getMessage());
+                $clean = str_replace('SQLSTATE[23000]: Integrity constraint violation: 1062','RFID', $message[0]);
+                return Notes::error($clean);
+            }
+
             return Notes::error($rfid, $th->getMessage());
         }
     });

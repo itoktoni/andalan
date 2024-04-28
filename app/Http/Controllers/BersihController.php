@@ -10,9 +10,13 @@ use App\Dao\Models\Rs;
 use App\Dao\Models\Ruangan;
 use App\Dao\Models\User;
 use App\Dao\Repositories\BersihRepository;
+use App\Http\Requests\DeliveryRequest;
 use App\Http\Requests\GeneralRequest;
+use App\Http\Requests\PackingRequest;
 use App\Http\Services\CreateService;
 use App\Http\Services\SingleService;
+use App\Http\Services\UpdateDeliveryService;
+use App\Http\Services\UpdatePackingService;
 use App\Http\Services\UpdateService;
 use Plugins\Response;
 
@@ -69,8 +73,14 @@ class BersihController extends MasterController
 
     //============================== TRANSAKSI ====================================
 
-    public function packing()
+    public function packing(PackingRequest $request, UpdatePackingService $service)
     {
+       return $service->update($request);
+    }
 
+    public function delivery(DeliveryRequest $request, UpdateDeliveryService $service)
+    {
+        dd($request);
+       return $service->update($request);
     }
 }

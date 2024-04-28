@@ -2,15 +2,13 @@
 
 namespace App\Http\Requests;
 
+use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\TransactionType;
+use App\Dao\Models\Bersih;
 use App\Dao\Models\Detail;
 use App\Dao\Models\Outstanding;
-use App\Dao\Models\Rs;
-use App\Dao\Models\Ruangan;
-use App\Dao\Models\Transaksi;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
-use Plugins\Query;
 
 class PackingRequest extends FormRequest
 {
@@ -29,28 +27,40 @@ class PackingRequest extends FormRequest
         $total = count($this->rfid);
 
         // CASE KETIKA RFID TIDAK DITEMUKAN
-
-        $where = TransactionType::REGISTER;
+        $status_transaksi = TransactionType::REGISTER;
 
         /*
         notes : status transaksi berasal dari menu desktop
         */
         if ($this->status_transaksi == TransactionType::BERSIH) {
-            $where = TransactionType::KOTOR;
+            $status_transaksi = TransactionType::KOTOR;
         }
 
         $rfid = Outstanding::whereIn(Outstanding::field_primary(), $this->rfid)
-            ->where(Outstanding::field_status_transaction(), $where)
-            ->where(Outstanding::field_rs_id(), $this->rs_id)
-            ->where(Outstanding::field_ruangan_id(), $this->ruangan_id);
+            ->where(Outstanding::field_status_process(), '!=', ProcessType::PACKING)
+            ->where(Outstanding::field_status_transaction(), $status_transaksi)->count();
 
-        $total_rfid_original = $rfid->count();
-
-        $compare = $total != $total_rfid_original;
+        $compare = $total !=  $rfid;
 
         $validator->after(function ($validator) use ($compare) {
             if ($compare) {
-                $validator->errors()->add('rfid', 'RFID tidak sesuai dengan proses !');
+                $validator->errors()->add('rfid', 'RFID dengan status ready packing tidak ditemukan !');
+            }
+        });
+
+        if ($compare) {
+            return;
+        }
+
+        // CASE KETIKA RFID SUDAH BERSIH
+
+        $check_bersih = Detail::whereIn(Detail::field_primary(), $this->rfid)
+            ->where(Detail::field_status_linen(), TransactionType::BERSIH)
+            ->count();
+
+        $validator->after(function ($validator) use ($check_bersih) {
+            if ($check_bersih > 0) {
+                $validator->errors()->add('rfid', 'status RFID sudah bersih !');
             }
         });
 
@@ -59,7 +69,6 @@ class PackingRequest extends FormRequest
         }
 
         // CASE YANG DIBARCODE LEBIH DARI YANG DITENTUKAN
-
         $validator->after(function ($validator) use ($total) {
             $maksimal = env('TRANSACTION_BARCODE_MAXIMAL', 10);
             if ($total > $maksimal) {
@@ -70,45 +79,28 @@ class PackingRequest extends FormRequest
 
     public function prepareForValidation()
     {
-        $code = '';
+        $code = Str::orderedUuid()->toString();
+        $date = date('Y-m-d H:i:s');
+        $user = auth()->user()->id;
 
-        switch ($this->status_transaksi) {
-            case TransactionType::BersihKotor:
-                $code = env('CODE_KOTOR', 'KTR');
-                break;
-            case TransactionType::BersihRetur:
-                $code = env('CODE_RETUR', 'RTR');
-                break;
-            case TransactionType::BersihRewash:
-                $code = env('CODE_REWASH', 'WSH');
-                break;
-            case TransactionType::Kotor:
-                $code = env('CODE_KOTOR', 'KTR');
-                break;
-            case TransactionType::Retur:
-                $code = env('CODE_RETUR', 'RTR');
-                break;
-            case TransactionType::Rewash:
-                $code = env('CODE_REWASH', 'WSH');
-                break;
-            case TransactionType::Register:
-                $code = env('CODE_REGISTER', 'BRU');
-                break;
-            default:
-                $code = env('CODE_BERSIH', 'BSH');
-                break;
+        $bersih = [];
+        foreach($this->rfid as $item){
+            $bersih[] = [
+                Bersih::field_barcode() => $code,
+                Bersih::field_rfid() => $item,
+                Bersih::field_rs_id() => $this->rs_id,
+                Bersih::field_ruangan_id() => $this->ruangan_id,
+                Bersih::field_status() => $this->status_transaksi,
+                Bersih::field_created_at() => $date,
+                Bersih::field_created_by() => $user,
+                Bersih::field_updated_at() => $date,
+                Bersih::field_updated_by() => $user,
+            ];
         }
 
-        $code_ruangan = Ruangan::find($this->ruangan_id)->ruangan_code;
-        $code_rs = Rs::find($this->rs_id)->rs_code;
-
-        $code = $code.$code_rs.$code_ruangan.date('ymd');
-
-        $autoNumber = Query::autoNumber(Transaksi::getTableName(), Transaksi::field_barcode(), $code, 22);
-
         $this->merge([
-            'code' => $autoNumber,
-            'uuid' => Str::uuid(),
+            'uuid' => $code,
+            'bersih' => $bersih
         ]);
     }
 }
