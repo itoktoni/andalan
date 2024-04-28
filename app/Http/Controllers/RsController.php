@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Dao\Enums\LinenType;
+use App\Dao\Enums\OwnershipType;
 use App\Dao\Models\JenisLinen;
 use App\Dao\Models\Rs;
 use App\Dao\Models\Ruangan;
@@ -28,7 +28,7 @@ class RsController extends MasterController
 
         $ruangan = Ruangan::getOptions();
         $jenis = JenisLinen::getOptions();
-        $status = LinenType::getOptions();
+        $status = OwnershipType::getOptions();
 
         self::$share = [
             'ruangan' => $ruangan,

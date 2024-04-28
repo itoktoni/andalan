@@ -47,7 +47,7 @@
                                     <td>{{ $table->field_name }}</td>
                                     <td>{{ $table->field_alamat }}</td>
                                     <td>{{ $table->field_description }}</td>
-                                    <td>{{ LinenType::getDescription($table->field_status) }}</td>
+                                    <td>{{ $table->field_status }}</td>
                                     @level(UserLevel::Finance)
                                     <td>{{ $table->field_harga_cuci }}</td>
                                     <td>{{ $table->field_harga_sewa }}</td>

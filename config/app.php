@@ -5,9 +5,9 @@ use App\Dao\Enums\BedaRsType;
 use App\Dao\Enums\BooleanType;
 use App\Dao\Enums\CuciType;
 use App\Dao\Enums\FilterType;
-use App\Dao\Enums\LinenType;
 use App\Dao\Enums\MenuType;
 use App\Dao\Enums\ObsesimanType;
+use App\Dao\Enums\OwnershipType;
 use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\RoleType;
 use App\Dao\Enums\TransactionType;
@@ -268,7 +268,7 @@ return [
         'BedaRsType' => BedaRsType::class,
         'CuciType' => CuciType::class,
         'MenuType' => MenuType::class,
-        'LinenType' => LinenType::class,
+        'OwnershipType' => OwnershipType::class,
         'UserLevel' => UserLevel::class,
         'RoleType' => RoleType::class,
         'YesNoType' => YesNoType::class,

@@ -66,4 +66,11 @@ class BersihController extends MasterController
 
         return Response::redirectBack($data);
     }
+
+    //============================== TRANSAKSI ====================================
+
+    public function packing()
+    {
+
+    }
 }
