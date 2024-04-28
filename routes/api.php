@@ -424,21 +424,30 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::get('grouping/{rfid}', function ($rfid, SaveTransaksiService $service) {
         try {
-            $data = ViewOutstanding::findOrFail($rfid);
+            $data = Outstanding::with('has_view')->findOrFail($rfid);
+            $view = $data->has_view;
+
+            /*
+            update status di outstanding
+            */
+            $data->outstanding_updated_at = ProcessType::QC;
+            $data->outstanding_updated_by = auth()->user()->id;
+            $data->outstanding_status_proses = ProcessType::QC;
+            $data->save();
 
             $collection = [
-                'linen_id' => $data->jenis_id,
-                'linen_nama' => $data->jenis_nama ?? '',
-                'rs_id' => $data->view_rs_ori_id,
-                'rs_nama' => $data->view_rs_ori_name ?? '',
-                'ruangan_id' => $data->ruangan_id,
-                'ruangan_nama' => $data->ruangan_nama ?? '',
-                'status_transaksi' => $data->detail_status_transaksi,
-                'status_proses' => $data->detail_status_proses,
-                'tanggal_create' => $data->outstanding_created_at ? $data->outstanding_created_at->format('Y-m-d') : null,
-                'tanggal_update' => $data->outstanding_updated_at ? $data->outstanding_updated_at->format('Y-m-d') : null,
+                'linen_id' => $view->jenis_id,
+                'linen_nama' => $view->jenis_nama ?? '',
+                'rs_id' => $view->view_rs_ori_id,
+                'rs_nama' => $view->view_rs_ori_name ?? '',
+                'ruangan_id' => $view->ruangan_id,
+                'ruangan_nama' => $view->ruangan_nama ?? '',
+                'status_transaksi' => $data->outstanding_status_transaksi,
+                'status_proses' => $data->outstanding_status_proses,
+                'tanggal_create' => $view->outstanding_created_at ? $view->outstanding_created_at->format('Y-m-d') : null,
+                'tanggal_update' => $view->outstanding_updated_at ? $view->outstanding_updated_at->format('Y-m-d') : null,
                 'pemakaian' => 0,
-                'user_nama' => $data->view_operator ?? null,
+                'user_nama' => $view->view_operator ?? null,
             ];
 
             return $collection;

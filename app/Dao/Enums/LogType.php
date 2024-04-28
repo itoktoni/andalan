@@ -27,4 +27,6 @@ class LogType extends Enum implements LocalizedEnum
     const HILANG = 'HILANG';
 
     const DELETE_TRANSAKSI = 'DELETE_TRANSAKSI';
+
+    const DELETE_BARCODE = 'DELETE_BARCODE';
 }

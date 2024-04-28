@@ -14,7 +14,7 @@ class TransactionType extends Enum implements LocalizedEnum
 
     const KOTOR = 'KOTOR';
 
-    const RETUR = 'RETUR';
+    const REJECT = 'REJECT';
 
     const REWASH = 'REWASH';
 

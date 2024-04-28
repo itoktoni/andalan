@@ -9,14 +9,13 @@ use App\Dao\Traits\ApiTrait;
 use App\Dao\Traits\DataTableTrait;
 use App\Dao\Traits\OptionTrait;
 use App\Http\Resources\GeneralResource;
-use Illuminate\Database\Eloquent\Model;
 use Kirschbaum\PowerJoins\PowerJoins;
 use Kyslik\ColumnSortable\Sortable;
 use Mehradsadeghi\FilterQueryString\FilterQueryString as FilterQueryString;
 use Touhidurabir\ModelSanitize\Sanitizable as Sanitizable;
 use Wildside\Userstamps\Userstamps;
 
-class ViewTransaksi extends Model
+class ViewTransaksi extends Transaksi
 {
     use ActiveTrait, ApiTrait, DataTableTrait, FilterQueryString, OptionTrait, PowerJoins, Sanitizable, Sortable, TransaksiEntity, Userstamps;
 

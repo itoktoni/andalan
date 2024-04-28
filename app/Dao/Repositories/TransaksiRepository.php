@@ -9,20 +9,15 @@ use App\Dao\Models\ViewBarcode;
 use App\Dao\Models\ViewDelivery;
 use App\Dao\Models\ViewTransaksi;
 use Doctrine\DBAL\Query\QueryException;
+use Illuminate\Database\QueryException as DatabaseQueryException;
 use Plugins\Notes;
 use Plugins\Query;
 
 class TransaksiRepository extends MasterRepository implements CrudInterface
 {
-    public $barcode;
-
-    public $delivery;
-
     public function __construct()
     {
         $this->model = empty($this->model) ? new ViewTransaksi() : $this->model;
-        $this->delivery = empty($this->delivery) ? new ViewDelivery() : $this->delivery;
-        $this->barcode = empty($this->barcode) ? new ViewBarcode() : $this->barcode;
     }
 
     public function filterRepository($query)
@@ -49,56 +44,18 @@ class TransaksiRepository extends MasterRepository implements CrudInterface
         return $this->filterRepository($query);
     }
 
-    public function dataBarcode()
+    public function deleteRepository($request)
     {
-        $query = $this->barcode
-            ->select($this->barcode->getSelectedField())
-            ->sortable()->filter();
+        try {
+            is_array($request) ? Transaksi::destroy(array_values($request)) : Transaksi::destroy($request);
 
-        return $this->filterRepository($query);
+            return Notes::delete($request);
+        } catch (DatabaseQueryException $ex) {
+            return Notes::error($ex->getMessage());
+        }
     }
 
-    public function dataDelivery()
-    {
-        $query = $this->delivery
-            ->select($this->delivery->getSelectedField())
-            ->sortable()->filter();
-
-        return $this->filterRepository($query);
-    }
-
-    public function getDetailBersih($type = TransactionType::BersihKotor)
-    {
-        return $this->getQueryReportTransaksi()
-            ->leftJoinRelationship(HAS_RS_DELIVERY)
-        // ->leftJoinRelationship(HAS_CUCI)
-            ->where(Transaksi::field_status_bersih(), $type);
-    }
-
-    public function getDetailAllBersih($filter = BERSIH)
-    {
-        return $this->getQueryReportTransaksi()
-        // ->leftJoinRelationship(HAS_CUCI)
-            ->leftJoinRelationship(HAS_RS_DELIVERY)
-            ->whereIn(Transaksi::field_status_bersih(), $filter);
-    }
-
-    public function getDetailKotor($type = TransactionType::Kotor)
-    {
-        return $this->getQueryReportTransaksi()
-        // ->leftJoinRelationship(HAS_CUCI)
-            ->leftJoinRelationship(HAS_RS)
-            ->where(Transaksi::field_status_transaction(), $type);
-    }
-
-    public function getDetailAllKotor($filter = KOTOR)
-    {
-        return $this->getQueryReportTransaksi()
-            ->leftJoinRelationship(HAS_RS)
-            ->whereIn(Transaksi::field_status_transaction(), $filter);
-    }
-
-    public function getQueryReportTransaksi()
+    public function getTransactionDetail()
     {
         return Transaksi::query()
             ->addSelect(['*'])
@@ -107,19 +64,4 @@ class TransaksiRepository extends MasterRepository implements CrudInterface
             ->filter();
     }
 
-    public function deleteRepository($request)
-    {
-        try {
-            is_array($request) ? Transaksi::destroy(array_values($request)) : Transaksi::destroy($request);
-
-            return Notes::delete($request);
-        } catch (QueryException $ex) {
-            return Notes::error($ex->getMessage());
-        }
-    }
-
-    public function getRekapKotor()
-    {
-        return Query::getTransaction();
-    }
 }

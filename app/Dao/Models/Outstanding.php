@@ -94,4 +94,9 @@ class Outstanding extends Model
     {
         return $this->hasMany(JenisLinen::class, JenisLinen::field_rs_id(), $this->field_primary());
     }
+
+    public function has_view()
+    {
+        return $this->hasOne(ViewOutstanding::class, ViewOutstanding::field_primary(), $this->field_primary());
+    }
 }
