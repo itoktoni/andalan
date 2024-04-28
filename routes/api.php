@@ -287,7 +287,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         } catch (\Illuminate\Database\QueryException $th) {
             DB::rollBack();
 
-            if ($th->getCode() == 23000) {
+            if ($th->getCode() == 23000 && env('APP_ENV') == 'production') {
                 return Notes::error($request->all(), 'data RFID sudah ada di database');
             }
 
