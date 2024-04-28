@@ -48,7 +48,7 @@ define('STATUS_PROCESS', 'status_process');
 define('STATUS_SYNC', 'status_sync');
 define('TANGGAL_UPDATE', 'tanggal_update');
 
-define('KOTOR', [TransactionType::KOTOR, TransactionType::RETUR, TransactionType::REWASH]);
+define('KOTOR', [TransactionType::KOTOR, TransactionType::REJECT, TransactionType::REWASH]);
 define('BERSIH', [TransactionType::BERSIH]);
 
 function module($module = null)

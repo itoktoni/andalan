@@ -34,11 +34,6 @@ class DownloadCollection extends ResourceCollection
             Rs::field_name() => $rs->field_name,
         ];
 
-        $jenis = JenisLinen::addSelect([DB::raw('jenis_linen.jenis_id, jenis_linen.jenis_nama')])
-            ->join('rs_dan_jenis', 'rs_dan_jenis.jenis_id', 'jenis_linen.jenis_id')
-            ->where('rs_id', $rsid)
-            ->get();
-
         $ruangan = Ruangan::addSelect([DB::raw('ruangan.ruangan_id, ruangan.ruangan_nama')])
             ->join('rs_dan_ruangan', 'rs_dan_ruangan.ruangan_id', 'ruangan.ruangan_id')
             ->where('rs_id', $rsid)
@@ -81,12 +76,15 @@ class DownloadCollection extends ResourceCollection
             }
 
             return [
-                'id' => $item->field_primary,
-                'rs' => $item->field_rs_id,
-                'loc' => $item->field_ruangan_id,
-                'jns' => $item->field_id,
-                'sts' => $status,
-                'tgl' => $tanggal,
+                'rfid' => $item->field_primary,
+                'rs_id' => $item->field_rs_id,
+                'rs_nama' => $item->field_rs_name,
+                'ruangan_id' => $item->field_ruangan_id,
+                'ruangan_nama' => $item->field_ruangan_name,
+                'jenis_id' => $item->field_id,
+                'jenis_nama' => $item->field_name,
+                'status' => $status,
+                'tanggal' => $tanggal,
             ];
         });
 
@@ -98,7 +96,6 @@ class DownloadCollection extends ResourceCollection
             'data' => $data,
             'rs' => $data_rs,
             'ruangan' => $ruangan,
-            'jenis' => $jenis,
             'opname' => $sendOpname,
             'status_proses' => $status,
         ];
