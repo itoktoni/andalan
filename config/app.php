@@ -271,6 +271,7 @@ return [
         'LinenType' => LinenType::class,
         'UserLevel' => UserLevel::class,
         'RoleType' => RoleType::class,
+        'YesNoType' => YesNoType::class,
         // 'SharedData' => SharedData::class,
         'SharedData' => SharedData::class,
         'Query' => Query::class,

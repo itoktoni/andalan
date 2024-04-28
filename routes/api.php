@@ -207,6 +207,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     Detail::field_bahan_id() => $request->bahan_id,
                     Detail::field_supplier_id() => $request->supplier_id,
                     Detail::field_dedicated() => LinenType::FREE,
+                    Detail::field_status_transaction() => $transaksi_status,
                     Detail::field_status_cuci() => $request->status_cuci,
                     Detail::field_status_register() => $request->status_register ? $request->status_register : RegisterType::REGISTER,
                     Detail::field_created_at() => date('Y-m-d H:i:s'),
@@ -298,36 +299,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     });
 
-    Route::match (['POST', 'GET'], 'detail', function (Request $request) {
-        try {
-            $query = ViewDetailLinen::query();
-            $data = $query->filter()->paginate(env('PAGINATION_NUMBER', 10));
-
-            $collection = new DetailCollection($data);
-
-            return $collection;
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
-            return Notes::error('data RFID tidak ditemukan');
-        } catch (\Throwable $th) {
-            return Notes::error($th->getMessage());
-        }
-    });
-
     Route::post('detail/rfid', function (DetailDataRequest $request) {
         try {
 
-            $item = Query::getDetail()->whereIn(Detail::field_primary(), $request->rfid)->get();
-
-            $check_status = Outstanding::select(
-                [
-                    Outstanding::field_primary(),
-                    Outstanding::field_status_transaction(),
-                    Outstanding::field_status_process(),
-
-                ])->whereIn(Outstanding::field_primary(), $request->rfid)
-                ->get()->mapWithKeys(function ($item) {
-                    return [$item[Outstanding::field_primary()] => $item];
-                })->toArray() ?? [];
+            $item = Query::getDetail()
+                ->leftJoinRelationship(HAS_OUTSTANDING)
+                ->whereIn(Detail::field_primary(), $request->rfid)
+                ->get();
 
             if ($item->count() == 0) {
                 return Notes::error('data RFID tidak ditemukan');
@@ -335,14 +313,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
             $collection = [];
             foreach ($item as $data) {
-
-                $status_transaksi = TransactionType::BERSIH;
-                $status_proses = TransactionType::BERSIH;
-
-                if(array_key_exists($data->detail_rfid, $check_status)){
-                    $status_transaksi = $check_status[$data->detail_rfid][Outstanding::field_status_transaction()];
-                    $status_proses = $check_status[$data->detail_rfid][Outstanding::field_status_process()];
-                }
 
                 $collection[] = [
                     'rfid' => $data->detail_rfid,
@@ -356,10 +326,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     'ruangan_nama' => $data->ruangan_nama ?? '',
                     'status_register' => $data->detail_status_register,
                     'status_cuci' => $data->detail_status_cuci,
-                    'status_transaksi' => $status_transaksi,
-                    'status_proses' => $status_proses,
-                    'tanggal_create' => $data->detail_created_at ? $data->detail_created_at->format('Y-m-d') : null,
-                    'tanggal_update' => $data->detail_updated_at ? $data->detail_updated_at->format('Y-m-d') : null,
+                    'status_transaksi' => $data->outstanding_status_transaksi ?? TransactionType::BERSIH,
+                    'status_proses' => $data->outstanding_status_proses ?? TransactionType::BERSIH,
+                    'tanggal_create' => $data->outstanding_created_at ? Carbon::make($data->outstanding_created_at)->format('Y-m-d') : null,
+                    'tanggal_update' => $data->outstanding_updated_at ? Carbon::make($data->outstanding_updated_at)->format('Y-m-d') : null,
                     'pemakaian' => $data->detail_total_bersih_kotor ?? 0,
                     'user_nama' => $data->name ?? null,
                 ];

@@ -44,6 +44,7 @@ class Detail extends Model
         'detail_status_cuci',
         'detail_status_register',
         'detail_status_linen',
+        'detail_status_transaksi',
         'detail_status_edar',
         'detail_total_bersih_rewash',
         'detail_total_bersih_retur',
@@ -177,6 +178,11 @@ class Detail extends Model
     public function has_view()
     {
         return $this->hasOne(ViewDetailLinen::class, ViewDetailLinen::field_primary(), self::field_primary());
+    }
+
+    public function has_outstanding()
+    {
+        return $this->hasOne(Outstanding::class, Outstanding::field_primary(), self::field_primary());
     }
 
     public function has_history()

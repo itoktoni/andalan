@@ -8,6 +8,9 @@ use App\Dao\Enums\LogType;
 use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\SyncType;
 use App\Dao\Enums\TransactionType;
+use App\Dao\Enums\YesNoType;
+use App\Dao\Enums\YesType;
+use App\Dao\Models\Bersih;
 use App\Dao\Models\Detail;
 use App\Dao\Models\History;
 use App\Dao\Models\Outstanding;
@@ -119,7 +122,7 @@ class TransaksiController extends MasterController
 
     public function retur(TransactionRequest $request, SaveTransaksiService $service)
     {
-        $request[STATUS_TRANSAKSI] = TransactionType::RETUR;
+        $request[STATUS_TRANSAKSI] = TransactionType::REJECT;
         $request[STATUS_PROCESS] = ProcessType::SCAN;
 
         return $this->transaction($request, $service);
@@ -127,19 +130,23 @@ class TransaksiController extends MasterController
 
     public function rewash(TransactionRequest $request, SaveTransaksiService $service)
     {
-        $request[STATUS_TRANSAKSI] = TransactionType::RETUR;
+        $request[STATUS_TRANSAKSI] = TransactionType::REWASH;
         $request[STATUS_PROCESS] = ProcessType::SCAN;
 
         return $this->transaction($request, $service);
     }
 
-    private function checkValidation($form_transaksi, $status_transaksi, $date)
+    private function rfidCanSyncToServer($form_transaksi, $status_transaksi, $date)
     {
-        if (($form_transaksi == TransactionType::KOTOR) && now()->diffInHours($date) >= env('TRANSACTION_DAY_ALLOWED', 15)) {
-            return true;
+        if ($status_transaksi != TransactionType::BERSIH) {
+            return false;
         }
 
-        return false;
+        if (($form_transaksi == TransactionType::KOTOR) && !(now()->diffInHours($date) >= env('TRANSACTION_HOURS_ALLOWED', 15))) {
+            return false;
+        }
+
+        return true;
     }
 
     private function transaction($request, $service)
@@ -149,26 +156,19 @@ class TransaksiController extends MasterController
             DB::beginTransaction();
 
             $rfid = $request->rfid;
-            $data = Detail::whereIn(Detail::field_primary(), $rfid)
+            $data = Detail::leftJoinRelationship(HAS_OUTSTANDING)
+                ->addSelect([
+                    Outstanding::field_status_transaction(),
+                    Outstanding::field_status_process(),
+                ])
+                ->whereIn(Detail::field_primary(), $rfid)
                 ->get()->mapWithKeys(function ($item) {
                     return [$item[Detail::field_primary()] => $item];
                 });
 
-            $query_transaksi = Outstanding::select(Outstanding::field_primary())
-                ->whereIn(Outstanding::field_primary(), $rfid)
-                ->where(Outstanding::field_rs_ori(), $request->rs_id)
-                ->get()->pluck(Outstanding::field_primary(), Outstanding::field_primary())
-                ->toArray();
-
             $status_transaksi = $request->{STATUS_TRANSAKSI};
             $status_process = $request->{STATUS_PROCESS};
             $status_sync = SyncType::No;
-
-            /*
-            disable for a while, change to another approach
-
-            $this->checkOpname($status_transaksi, $status_process, $rfid);
-            */
 
             $return = $transaksi = $linen = $log = [];
 
@@ -178,19 +178,19 @@ class TransaksiController extends MasterController
 
                 if (isset($data[$item])) {
                     $detail = $data[$item];
-                    if (! in_array($item, $query_transaksi) and $this->checkValidation($status_transaksi, $detail->field_status_transaction, $detail->field_updated_at)) {
+                    if (empty($detail->outstanding_status_transaction) and $this->rfidCanSyncToServer($status_transaksi, $detail->field_status_transaction, $detail->field_updated_at)) {
                         $status_sync = SyncType::Yes;
 
-                        $beda_rs = $request->rs_id == $detail->field_rs_id ? BooleanType::NO : BooleanType::YES;
+                        $beda_rs = $request->rs_id == $detail->field_rs_id ? YesNoType::NO : BooleanType::YES;
 
                         $data_transaksi = [
                             Transaksi::field_key() => $request->key,
                             Transaksi::field_rfid() => $item,
-                            Transaksi::field_status_transaction() => $status_transaksi,
                             Transaksi::field_rs_ori() => $detail->field_rs_id,
                             Transaksi::field_rs_scan() => $request->rs_id,
-                            Transaksi::field_ruangan_id() => $request->ruangan_id,
                             Transaksi::field_beda_rs() => $beda_rs,
+                            Transaksi::field_ruangan_id() => $detail->ruangan_id,
+                            Transaksi::field_status_transaction() => $status_transaksi,
                             Transaksi::field_created_at() => $date,
                             Transaksi::field_created_by() => $user,
                             Transaksi::field_updated_at() => $date,
@@ -203,7 +203,7 @@ class TransaksiController extends MasterController
                             Outstanding::field_rs_ori() => $detail->field_rs_id,
                             Outstanding::field_rs_scan() => $request->rs_id,
                             Outstanding::field_status_beda_rs() => $beda_rs,
-                            Outstanding::field_ruangan_id() => $request->ruangan_id,
+                            Outstanding::field_ruangan_id() => $detail->ruangan_id,
                             Outstanding::field_status_transaction() => $status_transaksi,
                             Outstanding::field_status_process() => $status_process,
                             Outstanding::field_created_at() => date('Y-m-d H:i:s'),
@@ -239,22 +239,24 @@ class TransaksiController extends MasterController
                         $return[] = [
                             KEY => $request->key,
                             STATUS_SYNC => $status_sync,
-                            STATUS_TRANSAKSI => $detail->field_status_transaction,
-                            STATUS_PROCESS => $detail->field_status_process,
+                            STATUS_TRANSAKSI => $detail->outstanding_status_transaction,
+                            STATUS_PROCESS => $detail->outstanding_status_process,
                             RFID => $item,
                             TANGGAL_UPDATE => $date,
                         ];
                     }
                 } else {
 
-                    if (! in_array($item, $query_transaksi) and ! empty($item)) {
+                    if (!empty($item)) {
                         $transaksi[] = [
+
                             Transaksi::field_key() => $request->key,
                             Transaksi::field_rfid() => $item,
-                            Transaksi::field_status_transaction() => $status_transaksi,
                             Transaksi::field_rs_ori() => null,
-                            Transaksi::field_rs_id() => $request->rs_id,
+                            Transaksi::field_rs_scan() => $request->rs_id,
                             Transaksi::field_beda_rs() => BedaRsType::NOT_REGISTERED,
+                            Transaksi::field_ruangan_id() => null,
+                            Transaksi::field_status_transaction() => $status_transaksi,
                             Transaksi::field_created_at() => $date,
                             Transaksi::field_created_by() => $user,
                             Transaksi::field_updated_at() => $date,
@@ -262,11 +264,13 @@ class TransaksiController extends MasterController
                         ];
 
                         $outstanding[] = [
+
                             Outstanding::field_key() => $request->key,
                             Outstanding::field_primary() => $item,
+                            Outstanding::field_rs_ori() => null,
                             Outstanding::field_rs_scan() => $request->rs_id,
                             Outstanding::field_status_beda_rs() => BedaRsType::NOT_REGISTERED,
-                            Outstanding::field_ruangan_id() => $request->ruangan_id,
+                            Outstanding::field_ruangan_id() => null,
                             Outstanding::field_status_transaction() => $status_transaksi,
                             Outstanding::field_status_process() => $status_process,
                             Outstanding::field_created_at() => date('Y-m-d H:i:s'),
@@ -311,24 +315,28 @@ class TransaksiController extends MasterController
                 }
             }
 
+            Detail::whereIn(Detail::field_primary(), $linen)->update([
+                Detail::field_updated_at() => date('Y-m-d H:i:s'),
+                Detail::field_status_transaction() => TransactionType::BERSIH,
+            ]);
+
             DB::commit();
 
         } catch (\Throwable $th) {
             DB::rollBack();
 
+            if($th->getCode() == 23000){
+                $message = explode('for key', $th->getMessage());
+                $clean = str_replace('SQLSTATE[23000]: Integrity constraint violation: 1062','RFID', $message[0]);
+                return Notes::error($clean);
+            }
+
             return Notes::error($th->getMessage());
         }
 
-        // $check = $service->save($request->{STATUS_TRANSAKSI}, $request->{STATUS_PROCESS}, $transaksi, $linen, $log, $return);
-
-        /*
-        cleansing duplicate rfid
-        ketika rfid dibalikin
-        */
-
         $preventif = collect($return);
         if ($preventif->where('status_sync', '!=', 0)->count() == 0) {
-            return Notes::error('Data sudah ada di server !');
+            return Notes::error('Data gagal di sync !');
         }
 
         $return = $preventif->unique(RFID)->values()->all();
