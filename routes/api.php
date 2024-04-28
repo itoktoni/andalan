@@ -100,7 +100,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         foreach (ProcessType::getInstances() as $value => $key) {
             $status_proses[] = [
                 'status_id' => $key,
-                'status_nama' => formatWorld($value),
+                'status_nama' => formatCapitilizeSentance($value),
             ];
         }
 
@@ -108,7 +108,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         foreach (TransactionType::getInstances() as $value => $key) {
             $status_transaksi[] = [
                 'status_id' => $key,
-                'status_nama' => formatWorld($value),
+                'status_nama' => formatCapitilizeSentance($value),
             ];
         }
 
