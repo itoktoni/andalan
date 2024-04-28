@@ -216,6 +216,7 @@ class Query
         $query = Detail::addSelect($select)
             ->leftJoinRelationship(HAS_RS)
             ->leftJoinRelationship(HAS_RUANGAN)
+            ->leftJoinRelationship(HAS_BAHAN)
             ->leftJoinRelationship(HAS_JENIS)
             ->leftJoinRelationship(HAS_USER);
 

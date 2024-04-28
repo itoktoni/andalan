@@ -24,6 +24,7 @@ define('HAS_RS_DELIVERY', 'has_rs_delivery');
 define('HAS_RUANGAN', 'has_ruangan');
 define('HAS_RFID', 'has_rfid');
 define('HAS_JENIS', 'has_jenis');
+define('HAS_BAHAN', 'has_bahan');
 define('HAS_DETAIL', 'has_detail');
 define('HAS_CUCI', 'has_cuci');
 define('HAS_PEMAKAIAN', 'has_cuci');

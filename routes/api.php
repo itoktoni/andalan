@@ -1,6 +1,5 @@
 <?php
 
-use App\Dao\Enums\BooleanType;
 use App\Dao\Enums\CetakType;
 use App\Dao\Enums\CuciType;
 use App\Dao\Enums\LinenType;
@@ -113,7 +112,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
         }
 
         try {
-
             $rs = Rs::with([HAS_RUANGAN, HAS_JENIS])->get();
             $collection = RsResource::collection($rs);
 
@@ -320,6 +318,17 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
             $item = Query::getDetail()->whereIn(Detail::field_primary(), $request->rfid)->get();
 
+            $check_status = Outstanding::select(
+                [
+                    Outstanding::field_primary(),
+                    Outstanding::field_status_transaction(),
+                    Outstanding::field_status_process(),
+
+                ])->whereIn(Outstanding::field_primary(), $request->rfid)
+                ->get()->mapWithKeys(function ($item) {
+                    return [$item[Outstanding::field_primary()] => $item];
+                })->toArray() ?? [];
+
             if ($item->count() == 0) {
                 return Notes::error('data RFID tidak ditemukan');
             }
@@ -327,17 +336,28 @@ Route::middleware(['auth:sanctum'])->group(function () {
             $collection = [];
             foreach ($item as $data) {
 
+                $status_transaksi = TransactionType::BERSIH;
+                $status_proses = TransactionType::BERSIH;
+
+                if(array_key_exists($data->detail_rfid, $check_status)){
+                    $status_transaksi = $check_status[$data->detail_rfid][Outstanding::field_status_transaction()];
+                    $status_proses = $check_status[$data->detail_rfid][Outstanding::field_status_process()];
+                }
+
                 $collection[] = [
-                    'linen_id' => $data->detail_rfid,
-                    'linen_nama' => $data->jenis_nama ?? '',
+                    'rfid' => $data->detail_rfid,
+                    'jenis_id' => $data->detail_rfid,
+                    'jenis_nama' => $data->jenis_nama ?? '',
+                    'bahan_id' => $data->detail_id_bahan,
+                    'bahan_nama' => $data->bahan_nama ?? '',
                     'rs_id' => $data->detail_id_rs ?? '',
                     'rs_nama' => $data->rs_nama ?? '',
                     'ruangan_id' => $data->detail_id_ruangan,
                     'ruangan_nama' => $data->ruangan_nama ?? '',
                     'status_register' => $data->detail_status_register,
                     'status_cuci' => $data->detail_status_cuci,
-                    'status_transaksi' => $data->detail_status_transaksi,
-                    'status_proses' => $data->detail_status_proses,
+                    'status_transaksi' => $status_transaksi,
+                    'status_proses' => $status_proses,
                     'tanggal_create' => $data->detail_created_at ? $data->detail_created_at->format('Y-m-d') : null,
                     'tanggal_update' => $data->detail_updated_at ? $data->detail_updated_at->format('Y-m-d') : null,
                     'pemakaian' => $data->detail_total_bersih_kotor ?? 0,
