@@ -334,14 +334,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     'rs_nama' => $data->rs_nama ?? '',
                     'ruangan_id' => $data->detail_id_ruangan,
                     'ruangan_nama' => $data->ruangan_nama ?? '',
-                    'status_register' => RegisterType::getDescription($data->detail_status_register),
+                    'status_register' => $data->detail_status_register,
                     'status_cuci' => $data->detail_status_cuci,
-                    'status_transaksi' => TransactionType::getDescription($data->detail_status_transaksi),
-                    'status_proses' => ProcessType::getDescription($data->detail_status_proses),
+                    'status_transaksi' => $data->detail_status_transaksi,
+                    'status_proses' => $data->detail_status_proses,
                     'tanggal_create' => $data->detail_created_at ? $data->detail_created_at->format('Y-m-d') : null,
                     'tanggal_update' => $data->detail_updated_at ? $data->detail_updated_at->format('Y-m-d') : null,
-                    'tanggal_delete' => $data->detail_deleted_at ? $data->detail_deleted_at->format('Y-m-d') : null,
-                    'pemakaian' => $data->detail_total_cuci ?? 0,
+                    'pemakaian' => $data->detail_total_bersih_kotor ?? 0,
                     'user_nama' => $data->name ?? null,
                 ];
             }
