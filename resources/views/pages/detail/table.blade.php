@@ -49,7 +49,6 @@
                                 <th class="text-left">JUMLAH REWASH</th>
                                 <th class="text-left">STATUS LINEN</th>
                                 <th class="text-left">TANGGAL POSISI TERAKHIR</th>
-                                <th class="text-left">OPERATOR UPDATE TERAKHIR</th>
                                 <th class="text-left">STATUS REGISTER</th>
                                 <th class="text-left">TANGGAL REGISTRASI</th>
                                 <th class="text-left">OPERATOR REGISTRASI</th>
@@ -81,12 +80,11 @@
                                     <td>{{ $table->view_linen_berat }}</td>
                                     <td>{{ $table->view_ruangan_nama }}</td>
                                     <td>{{ CuciType::getDescription($table->view_status_cuci) }}</td>
-                                    <td>{{ $table->view_transaksi_cuci_total ?? 0 }}</td>
+                                    <td>{{ $table->view_transaksi_bersih_total ?? 0 }}</td>
                                     <td>{{ $table->view_transaksi_retur_total ?? 0 }}</td>
                                     <td>{{ $table->view_transaksi_rewash_total ?? 0 }}</td>
                                     <td>{{ $table->field_status_linen ?? 0 }}</td>
                                     <td>{{ formatDate($table->view_tanggal_update) }}</td>
-                                    <td>{{ $table->view_updated_name }}</td>
                                     <td>{{ $table->field_status_register_name }}</td>
                                     <td>{{ formatDate($table->view_tanggal_create) }}</td>
                                     <td>{{ $table->view_created_name }}</td>

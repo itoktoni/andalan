@@ -259,14 +259,14 @@ trait DetailEntity
         return $this->{$this->detail_total_bersih()};
     }
 
-    public static function field_total_retur()
+    public static function field_total_reject()
     {
-        return 'detail_total_retur';
+        return 'detail_total_reject';
     }
 
     public function getFieldTotalReturAttribute()
     {
-        return $this->{$this->detail_total_retur()};
+        return $this->{$this->detail_total_reject()};
     }
 
     public static function field_total_rewash()

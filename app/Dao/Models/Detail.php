@@ -46,9 +46,9 @@ class Detail extends Model
         'detail_status_linen',
         'detail_status_transaksi',
         'detail_status_edar',
-        'detail_total_bersih_rewash',
-        'detail_total_bersih_retur',
-        'detail_total_bersih_kotor',
+        'detail_total_rewash',
+        'detail_total_retur',
+        'detail_total_bersih',
         'detail_tgl_cek',
     ];
 

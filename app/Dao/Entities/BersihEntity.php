@@ -221,7 +221,7 @@ trait BersihEntity
 
     public static function field_nama_linen()
     {
-        return 'view_linen_nama';
+        return 'jenis_nama';
     }
 
     public static function field_total()

@@ -5,10 +5,8 @@ namespace App\Http\Requests;
 use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\TransactionType;
 use App\Dao\Models\Bersih;
-use App\Dao\Models\Detail;
 use App\Dao\Models\Outstanding;
 use App\Dao\Models\Rs;
-use App\Dao\Models\Transaksi;
 use Illuminate\Foundation\Http\FormRequest;
 use Plugins\Query;
 
@@ -53,7 +51,7 @@ class DeliveryRequest extends FormRequest
     public function prepareForValidation()
     {
         $code = '';
-        switch (request()->get('status_transaksi')) {
+        switch ($this->status_transaksi) {
             case TransactionType::BERSIH:
                 $code = env('CODE_DELIVERY_BERSIH', 'BSH');
                 break;

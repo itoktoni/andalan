@@ -55,7 +55,7 @@ class DetailTotal extends Command
                     Detail::field_total_bersih_retur() => $item->qty_bersih_retur,
                     Detail::field_total_bersih_rewash() => $item->qty_bersih_rewash,
                     Detail::field_total_kotor() => $item->qty_kotor,
-                    Detail::field_total_retur() => $item->qty_retur,
+                    Detail::field_total_reject() => $item->qty_retur,
                     Detail::field_total_rewash() => $item->qty_rewash,
                     Detail::field_total_cuci() => $item->qty_cuci,
                     Detail::field_cek() => date('Y-m-d'),

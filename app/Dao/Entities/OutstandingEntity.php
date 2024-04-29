@@ -232,66 +232,6 @@ trait OutstandingEntity
         return $this->{$this->field_hilang_updated_at()};
     }
 
-    public static function field_total_kotor()
-    {
-        return 'outstanding_total_kotor';
-    }
-
-    public function getFieldTotalKotorAttribute()
-    {
-        return $this->{$this->field_total_kotor()};
-    }
-
-    public static function field_total_retur()
-    {
-        return 'outstanding_total_retur';
-    }
-
-    public function getFieldTotalReturAttribute()
-    {
-        return $this->{$this->field_total_retur()};
-    }
-
-    public static function field_total_rewash()
-    {
-        return 'outstanding_total_rewash';
-    }
-
-    public function getFieldTotalRewashAttribute()
-    {
-        return $this->{$this->field_total_rewash()};
-    }
-
-    public static function field_total_bersih_kotor()
-    {
-        return 'outstanding_total_bersih_kotor';
-    }
-
-    public function getFieldTotalBersihKotorAttribute()
-    {
-        return $this->{$this->field_total_bersih_kotor()};
-    }
-
-    public static function field_total_bersih_rewash()
-    {
-        return 'outstanding_total_bersih_rewash';
-    }
-
-    public function getFieldTotalBersihRewashAttribute()
-    {
-        return $this->{$this->field_total_bersih_rewash()};
-    }
-
-    public static function field_total_bersih_retur()
-    {
-        return 'outstanding_total_bersih_retur';
-    }
-
-    public function getFieldTotalBersihReturAttribute()
-    {
-        return $this->{$this->field_total_bersih_retur()};
-    }
-
     public static function field_total_cuci()
     {
         return 'outstanding_total_cuci';

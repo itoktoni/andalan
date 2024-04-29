@@ -461,7 +461,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         return Notes::data(['total' => $data]);
     });
 
-    Route::post('delivery', [DeliveryController::class, 'delivery']);
+    Route::post('delivery', [BersihController::class, 'delivery']);
     Route::get('delivery/{code}', [DeliveryController::class, 'print']);
 
     Route::get('list/delivery/{rsid}', function ($rsid) {

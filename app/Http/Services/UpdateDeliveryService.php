@@ -38,7 +38,7 @@ class UpdateDeliveryService
 
             $check = Bersih::query()
                 ->whereNull(Bersih::field_delivery())
-                ->where(Bersih::field_rs_ori(), request()->get('rs_id'))
+                ->where(Bersih::field_rs_id(), $data->rs_id)
                 ->where(Bersih::field_status(), $transaksi)
                 ->whereNotNull(Bersih::field_barcode())
                 ->update([
@@ -56,11 +56,27 @@ class UpdateDeliveryService
 
                 $data_rfid = $rfid->pluck(Bersih::field_rfid());
 
-                Detail::whereIn(Detail::field_primary(), $data_rfid)
-                ->update([
+                $detail = [
                     Detail::field_status_linen() => TransactionType::BERSIH,
                     Detail::field_updated_by() => auth()->user()->id,
-                ]);
+                ];
+
+                if ($data->status_transaksi == TransactionType::REWASH) {
+                    $detail = array_merge($detail, [
+                        Detail::field_total_rewash() => DB::raw('detail_total_rewash + 1')
+                    ]);
+                } else if($data->status_transaksi == TransactionType::REJECT){
+                    $detail = array_merge($detail, [
+                        Detail::field_total_reject() => DB::raw('detail_total_reject + 1')
+                    ]);
+                } else {
+                    $detail = array_merge($detail, [
+                        Detail::field_total_bersih() => DB::raw('detail_total_bersih + 1')
+                    ]);
+                }
+
+                Detail::whereIn(Detail::field_primary(), $data_rfid)
+                ->update($detail);
 
                 Outstanding::whereIn(Outstanding::field_primary(), $data_rfid)->delete();
 
