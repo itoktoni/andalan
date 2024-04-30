@@ -47,6 +47,7 @@
                                 <th class="text-left">JUMLAH PEMAKAIAN LINEN</th>
                                 <th class="text-left">JUMLAH RETUR</th>
                                 <th class="text-left">JUMLAH REWASH</th>
+                                <th class="text-left">STATUS KEPEMILIKAN</th>
                                 <th class="text-left">STATUS LINEN</th>
                                 <th class="text-left">TANGGAL POSISI TERAKHIR</th>
                                 <th class="text-left">STATUS REGISTER</th>
@@ -83,6 +84,7 @@
                                     <td>{{ $table->view_transaksi_bersih_total ?? 0 }}</td>
                                     <td>{{ $table->view_transaksi_retur_total ?? 0 }}</td>
                                     <td>{{ $table->view_transaksi_rewash_total ?? 0 }}</td>
+                                    <td>{{ $table->field_status_kepemilikan ?? 0 }}</td>
                                     <td>{{ $table->field_status_linen ?? 0 }}</td>
                                     <td>{{ formatDate($table->view_tanggal_update) }}</td>
                                     <td>{{ $table->field_status_register_name }}</td>

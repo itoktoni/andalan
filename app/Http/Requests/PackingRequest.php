@@ -7,7 +7,9 @@ use App\Dao\Enums\TransactionType;
 use App\Dao\Models\Bersih;
 use App\Dao\Models\Detail;
 use App\Dao\Models\Outstanding;
+use App\Dao\Models\Rs;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class PackingRequest extends FormRequest
@@ -49,6 +51,29 @@ class PackingRequest extends FormRequest
         });
 
         if ($compare) {
+            return;
+        }
+
+        // CASE KETIKA RFID TIDAK ADA DI CONFIG
+
+        $check_config = DB::table('config_linen')
+            ->join(Detail::getTableName(), function($sql){
+                $sql->on('config_linen.detail_rfid', '=', 'detail_linen.detail_rfid');
+                $sql->on('config_linen.rs_id', '=', 'detail_linen.detail_id_rs');
+            })
+            ->where(Detail::field_rs_id(), $this->rs_id)
+            ->whereIn(Detail::getTableName().'.'.Detail::field_primary(), $this->rfid)
+            ->count();
+
+        $comp = $check_config != $total;
+
+        $validator->after(function ($validator) use ($comp) {
+            if ($comp) {
+                $validator->errors()->add('rfid', 'Status Kepemilikan RFID Bermasalah !');
+            }
+        });
+
+        if ($comp) {
             return;
         }
 
