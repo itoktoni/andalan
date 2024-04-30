@@ -543,4 +543,19 @@ Route::middleware(['auth:sanctum'])->group(function () {
         return $data;
     });
 
+
+
+
+
+    Route::post('/reset', function (Request $request) {
+
+        $rfid = $request->rfid;
+        Outstanding::whereIn(Outstanding::field_primary(), $rfid)->delete();
+        Detail::whereIn(Detail::field_primary(), $rfid)->update([
+            Detail::field_updated_at() => now()->addDay(-2)->format('Y-m-d H:i:s'),
+            Detail::field_status_linen() => TransactionType::BERSIH
+        ]);
+
+        return ['OK'];
+    });
 });
