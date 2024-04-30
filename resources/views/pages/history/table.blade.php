@@ -27,6 +27,7 @@
                         <tbody>
                             @forelse($data as $table)
                                 <tr>
+                                    <td>{{ $table->rs_nama }}</td>
                                     <td>{{ $table->field_name }}</td>
                                     <td>{{ $table->field_status }}</td>
                                     <td>{{ $table->field_created_at }}</td>

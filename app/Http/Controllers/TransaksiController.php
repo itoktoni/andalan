@@ -216,6 +216,7 @@ class TransaksiController extends MasterController
                         $linen[] = (string) $item;
 
                         $log[] = [
+                            History::field_rs_id() => $request->rs_id,
                             History::field_name() => $item,
                             History::field_status() => LogType::SCAN,
                             History::field_created_by() => auth()->user()->name,

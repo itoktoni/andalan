@@ -27,7 +27,7 @@ class UpdatePackingService
                     Outstanding::field_updated_at() => date('Y-m-d H:i:s'),
                 ]);
 
-            History::bulk($data->rfid, LogType::PACKING);
+            History::bulk($data->rfid, LogType::PACKING, 'Assign to Rs '.$data->rs_name, $data->rs_id);
 
             DB::commit();
 

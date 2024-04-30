@@ -183,6 +183,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
             $code = env('CODE_REGISTER', 'REG');
             $autoNumber = Query::autoNumber(Outstanding::getTableName(), Outstanding::field_key(), $code . date('ymd'), env('AUTO_NUMBER', 15));
+            $rsid = $request->rs_id;
 
             if ($request->status_register == RegisterType::GANTI_CHIP) {
                 $transaksi_status = TransactionType::KOTOR;
@@ -227,28 +228,28 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     $merge = array_merge($merge, [
                         Detail::field_status_kepemilikan() => OwnershipType::DEDICATED,
                         Detail::field_ruangan_id() => $request->ruangan_id,
-                        Detail::field_rs_id() => $request->rs_id,
+                        Detail::field_rs_id() => $rsid,
                     ]);
 
                     $outstanding = array_merge($outstanding, [
-                        Outstanding::field_rs_ori() => $request->rs_id,
-                        Outstanding::field_rs_scan() => $request->rs_id,
+                        Outstanding::field_rs_ori() => $rsid,
+                        Outstanding::field_rs_scan() => $rsid,
                         Outstanding::field_ruangan_id() => $request->ruangan_id,
                     ]);
 
                     ConfigLinen::updateOrCreate(
                         [
                             ConfigLinen::field_primary() => $item,
-                            ConfigLinen::field_rs_id() => $request->rs_id,
+                            ConfigLinen::field_rs_id() => $rsid,
                         ],
                         [
                             ConfigLinen::field_primary() => $item,
-                            ConfigLinen::field_rs_id() => $request->rs_id,
+                            ConfigLinen::field_rs_id() => $rsid,
                         ]
                     );
 
                 } else {
-                    foreach ($request->rs_id as $id_rs) {
+                    foreach ($rsid as $id_rs) {
                         ConfigLinen::updateOrCreate(
                             [
                                 ConfigLinen::field_primary() => $item,
@@ -271,8 +272,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 Outstanding::upsert($transaksi, Outstanding::field_primary());
             }
 
-            $history = collect($request->rfid)->map(function ($item) {
+            $history = collect($request->rfid)->map(function ($item, $rsid) {
                 return [
+                    ModelsHistory::field_rs_id() => $rsid,
                     ModelsHistory::field_name() => $item,
                     ModelsHistory::field_status() => LogType::REGISTER,
                     ModelsHistory::field_created_by() => auth()->user()->name,
@@ -371,6 +373,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
             $view = $detail->has_view;
 
             ModelsHistory::create([
+                ModelsHistory::field_rs_id() => $detail->field_primary,
                 ModelsHistory::field_name() => $rfid,
                 ModelsHistory::field_status() => LogType::QC_TRANSACTION,
                 ModelsHistory::field_created_by() => auth()->user()->name,

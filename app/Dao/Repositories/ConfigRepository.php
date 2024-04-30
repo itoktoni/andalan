@@ -3,23 +3,28 @@
 namespace App\Dao\Repositories;
 
 use App\Dao\Interfaces\CrudInterface;
-use App\Dao\Models\History;
-use App\Dao\Models\Rs;
+use App\Dao\Models\ConfigLinen;
+use App\Dao\Models\Detail;
+use App\Dao\Models\ViewDetailLinen;
+use Illuminate\Support\Facades\DB;
 use Plugins\Notes;
 
-class HistoryRepository extends MasterRepository implements CrudInterface
+class ConfigRepository extends MasterRepository implements CrudInterface
 {
     public function __construct()
     {
-        $this->model = empty($this->model) ? new History() : $this->model;
+        $this->model = empty($this->model) ? new ConfigLinen() : $this->model;
     }
 
     public function dataRepository()
     {
         $query = $this->model
-            ->select($this->model->getSelectedField())
-            ->addSelect(Rs::field_name())
-            ->leftJoinRelationship('has_rs')
+            ->select('*')
+            ->join(Detail::getTableName(), function($sql){
+                $sql->on('config_linen.detail_rfid', '=', 'detail_linen.detail_rfid');
+                $sql->on('config_linen.rs_id', '=', 'detail_linen.detail_id_rs');
+            })
+            ->join('view_detail_linen', 'view_linen_rfid', '=', 'detail_linen.detail_rfid')
             ->sortable()->filter();
 
         if (request()->hasHeader('authorization')) {
@@ -33,8 +38,6 @@ class HistoryRepository extends MasterRepository implements CrudInterface
 
             return Notes::data($query->get());
         }
-
-        $query = env('PAGINATION_SIMPLE') ? $query->simplePaginate(env('PAGINATION_NUMBER')) : $query->paginate(env('PAGINATION_NUMBER'));
 
         return $query;
     }

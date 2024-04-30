@@ -16,8 +16,7 @@ use App\Dao\Models\Outstanding;
 use App\Dao\Models\Rs;
 use App\Dao\Models\Ruangan;
 use App\Dao\Models\Transaksi;
-use App\Dao\Models\ViewDetailLinen;
-use App\Dao\Repositories\DetailRepository;
+use App\Dao\Repositories\ConfigRepository;
 use App\Http\Requests\DeleteRequest;
 use App\Http\Requests\GeneralRequest;
 use App\Http\Services\DeleteService;
@@ -25,9 +24,9 @@ use App\Http\Services\SingleService;
 use App\Http\Services\UpdateService;
 use Plugins\Response;
 
-class DetailController extends MasterController
+class ConfigController extends MasterController
 {
-    public function __construct(DetailRepository $repository, SingleService $service)
+    public function __construct(ConfigRepository $repository, SingleService $service)
     {
         self::$repository = self::$repository ?? $repository;
         self::$service = self::$service ?? $service;
@@ -98,10 +97,8 @@ class DetailController extends MasterController
 
         $model = $this->get($code);
         $history = History::where(History::field_name(), $code)
-            ->addSelect('*')
-            ->leftJoinRelationship('has_rs')
             ->orderBy(History::field_created_at(), 'DESC')
-            ->limit(10)->showSql()->get();
+            ->limit(10)->get();
 
         return moduleView(modulePathForm('history'), $this->share([
             'model' => $model,

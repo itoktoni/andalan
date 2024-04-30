@@ -25,6 +25,7 @@ class History extends Model
 
     protected $fillable = [
         'history_id',
+        'history_id_rs',
         'history_rfid',
         'history_waktu',
         'history_user',
@@ -59,6 +60,7 @@ class History extends Model
     {
         return [
             DataBuilder::build($this->field_primary())->name('ID')->show(false)->sort(),
+            DataBuilder::build(Rs::field_name())->name('Rumah Sakit')->show()->sort(),
             DataBuilder::build($this->field_name())->name('Nomer Tag RFID')->show()->sort(),
             DataBuilder::build($this->field_status())->name('Status')->show()->sort(),
             DataBuilder::build($this->field_created_at())->name('Waktu')->show()->sort(),
@@ -69,5 +71,10 @@ class History extends Model
     public function apiTransform()
     {
         return GeneralResource::class;
+    }
+
+    public function has_rs()
+    {
+        return $this->hasOne(Rs::class, Rs::field_primary(), $this->field_rs_id());
     }
 }

@@ -80,7 +80,7 @@ class UpdateDeliveryService
 
                 Outstanding::whereIn(Outstanding::field_primary(), $data_rfid)->delete();
 
-                History::bulk($data_rfid, LogType::BERSIH);
+                History::bulk($data_rfid, LogType::BERSIH, 'assign rs ', $data->rs_id);
 
             } else {
                 DB::rollBack();

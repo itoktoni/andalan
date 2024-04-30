@@ -21,10 +21,11 @@
     <x-card label="History Linen">
 
         <div class="table-responsive" id="table_data">
-            <table class="table table-bordered table-striped overflow">
+            <table class="table table-bordered table-striped overflow max-content">
                 <thead>
                     <tr>
-                        <th style="width: 170px">Tanggal</th>
+                        <th>Rumah Sakit</th>
+                        <th>Tanggal</th>
                         <th>User</th>
                         <th>Status</th>
                         <th>Keterangan</th>
@@ -33,7 +34,9 @@
                 <tbody>
                     @forelse($history as $table)
                         <tr>
+                            <td>{{ $table->rs_nama}}</td>
                             <td>{{ $table->field_created_at }}</td>
+                            <td>{{ $table->field_created_by }}</td>
                             <td>{{ $table->field_created_by }}</td>
                             <td>{{ $table->field_status }}</td>
                             <td>{{ $table->field_description }}</td>

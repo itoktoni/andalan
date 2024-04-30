@@ -108,6 +108,8 @@ class PackingRequest extends FormRequest
         $date = date('Y-m-d H:i:s');
         $user = auth()->user()->id;
 
+        $rs_name = Rs::find(Rs::field_primary(), $this->rs_id)->field_name ?? '';
+
         $bersih = [];
         foreach($this->rfid as $item){
             $bersih[] = [
@@ -125,7 +127,8 @@ class PackingRequest extends FormRequest
 
         $this->merge([
             'uuid' => $code,
-            'bersih' => $bersih
+            'bersih' => $bersih,
+            'rs_name' => $rs_name
         ]);
     }
 }

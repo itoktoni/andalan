@@ -65,4 +65,14 @@ trait HistoryEntity
     {
         return $this->{$this->field_created_by()};
     }
+
+    public static function field_rs_id()
+    {
+        return 'history_id_rs';
+    }
+
+    public function getFieldRsIdAttribute()
+    {
+        return $this->{$this->field_rs_id()};
+    }
 }
