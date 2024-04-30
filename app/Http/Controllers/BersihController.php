@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Dao\Builder\DataBuilder;
 use App\Dao\Enums\DetailType;
+use App\Dao\Enums\ProcessType;
+use App\Dao\Enums\TransactionType;
+use App\Dao\Models\Bersih;
 use App\Dao\Models\JenisLinen;
 use App\Dao\Models\Outstanding;
 use App\Dao\Models\Rs;
@@ -78,9 +81,15 @@ class BersihController extends MasterController
     {
         if (request()->exists('delete')) {
             $code = array_unique(request()->get('code'));
+            $where = Bersih::whereIn(Bersih::field_primary(), $code)
+                ->showSql()->get()->pluck(Bersih::field_rfid())
+                ->toArray();
+
+            Outstanding::whereIn(Outstanding::field_primary(), $where)->update([
+                Outstanding::field_status_process() => ProcessType::QC
+            ]);
 
             $data = self::$service->delete(self::$repository, $code);
-            $this->deleteAll($code);
         }
 
         return Response::redirectBack($data);

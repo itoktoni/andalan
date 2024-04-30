@@ -236,17 +236,29 @@ Route::middleware(['auth:sanctum'])->group(function () {
                         Outstanding::field_ruangan_id() => $request->ruangan_id,
                     ]);
 
-                    ConfigLinen::create([
-                        ConfigLinen::field_primary() => $item,
-                        ConfigLinen::field_rs_id() => $request->rs_id,
-                    ]);
+                    ConfigLinen::updateOrCreate(
+                        [
+                            ConfigLinen::field_primary() => $item,
+                            ConfigLinen::field_rs_id() => $request->rs_id,
+                        ],
+                        [
+                            ConfigLinen::field_primary() => $item,
+                            ConfigLinen::field_rs_id() => $request->rs_id,
+                        ]
+                    );
 
                 } else {
                     foreach ($request->rs_id as $id_rs) {
-                        $config[] = [
-                            ConfigLinen::field_name() => $item,
-                            ConfigLinen::field_rs_id() => $id_rs,
-                        ];
+                        ConfigLinen::updateOrCreate(
+                            [
+                                ConfigLinen::field_primary() => $item,
+                                ConfigLinen::field_rs_id() => $id_rs,
+                            ],
+                            [
+                                ConfigLinen::field_primary() => $item,
+                                ConfigLinen::field_rs_id() => $id_rs,
+                            ]
+                        );
                     }
                 }
 
@@ -254,11 +266,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 $transaksi[] = $outstanding;
             }
 
-            Detail::insert($detail);
-            Outstanding::insert($transaksi);
-
-            if (!empty($config)) {
-                ConfigLinen::insert($config);
+            Detail::upsert($detail, Detail::field_primary());
+            if($request->status_register == RegisterType::GANTI_CHIP){
+                Outstanding::upsert($transaksi, Outstanding::field_primary());
             }
 
             $history = collect($request->rfid)->map(function ($item) {
@@ -289,6 +299,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
             return Notes::error($request->all(), $th->getMessage());
         } catch (\Throwable $th) {
             DB::rollBack();
+
+            if($th->getCode() == 23000){
+                $message = explode('for key', $th->getMessage());
+                $clean = str_replace('SQLSTATE[23000]: Integrity constraint violation: 1062','RFID', $message[0]);
+                return Notes::error($clean);
+            }
 
             return Notes::error($request->all(), $th->getMessage());
         }
@@ -389,27 +405,33 @@ Route::middleware(['auth:sanctum'])->group(function () {
             if ($outstanding) {
                 $outstanding->update($data_outstanding);
             } else {
+
+                $transaksi_status = TransactionType::KOTOR;
+                if($detail->field_status_linen == TransactionType::REGISTER){
+                    $transaksi_status = TransactionType::REGISTER;
+                } else {
+                    // CHECK TRANSACTION DATA IF NOT PRESENT
+                    Transaksi::create([
+                        Transaksi::field_key() => $autoNumber,
+                        Transaksi::field_rfid() => $rfid,
+                        Transaksi::field_rs_ori() => $detail->detail_id_rs,
+                        Transaksi::field_rs_scan() => $detail->detail_id_rs,
+                        Transaksi::field_beda_rs() => BedaRsType::NO,
+                        Transaksi::field_ruangan_id() => $detail->detail_id_ruangan,
+                        Transaksi::field_status_transaction() => TransactionType::KOTOR,
+                        Transaksi::field_created_at() => $date,
+                        Transaksi::field_created_by() => $user,
+                        Transaksi::field_updated_at() => $date,
+                        Transaksi::field_updated_by() => $user,
+                    ]);
+                }
+
                 $outstanding = Outstanding::create(array_merge($data_outstanding, [
                     Outstanding::field_key() => $autoNumber,
-                    Outstanding::field_status_transaction() => TransactionType::KOTOR,
+                    Outstanding::field_status_transaction() => $transaksi_status,
                     Outstanding::field_created_at() => $date,
                     Outstanding::field_created_by() => $user,
                 ]));
-
-                // CHECK TRANSACTION DATA IF NOT PRESENT
-                Transaksi::create([
-                    Transaksi::field_key() => $autoNumber,
-                    Transaksi::field_rfid() => $rfid,
-                    Transaksi::field_rs_ori() => $detail->detail_id_rs,
-                    Transaksi::field_rs_scan() => $detail->detail_id_rs,
-                    Transaksi::field_beda_rs() => BedaRsType::NO,
-                    Transaksi::field_ruangan_id() => $detail->detail_id_ruangan,
-                    Transaksi::field_status_transaction() => TransactionType::KOTOR,
-                    Transaksi::field_created_at() => $date,
-                    Transaksi::field_created_by() => $user,
-                    Transaksi::field_updated_at() => $date,
-                    Transaksi::field_updated_by() => $user,
-                ]);
             }
 
             DB::commit();

@@ -61,7 +61,7 @@
                                     <td>{{ iteration($data, $key) }}</td>
                                     <td>{{ $table->field_delivery }}</td>
                                     <td>{{ $table->field_barcode }}</td>
-                                    <td>{{ $table->field_primary }}</td>
+                                    <td>{{ $table->field_rfid }}</td>
                                     <td>{{ $table->field_report }}</td>
                                     <td>{{ $table->jenis_nama }}</td>
                                     <td>{{ $table->rs_nama }}</td>
