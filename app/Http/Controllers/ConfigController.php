@@ -60,6 +60,18 @@ class ConfigController extends MasterController
         ];
     }
 
+    public function getUpdate($code)
+    {
+        $this->beforeForm();
+        $this->beforeUpdate($code);
+
+        $data = Detail::find($code);
+
+        return moduleView(modulePathForm(), $this->share([
+            'model' => $data,
+        ]));
+    }
+
     public function getData()
     {
         $query = self::$repository->dataRepository();

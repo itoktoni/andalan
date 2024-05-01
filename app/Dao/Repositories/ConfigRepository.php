@@ -5,6 +5,7 @@ namespace App\Dao\Repositories;
 use App\Dao\Interfaces\CrudInterface;
 use App\Dao\Models\ConfigLinen;
 use App\Dao\Models\Detail;
+use App\Dao\Models\Rs;
 use App\Dao\Models\ViewDetailLinen;
 use Illuminate\Support\Facades\DB;
 use Plugins\Notes;
@@ -20,6 +21,7 @@ class ConfigRepository extends MasterRepository implements CrudInterface
     {
         $query = $this->model
             ->select('*')
+            ->join(Rs::getTableName(), 'config_linen.rs_id', '=', 'rs.rs_id')
             ->join(Detail::getTableName(), function($sql){
                 $sql->on('config_linen.detail_rfid', '=', 'detail_linen.detail_rfid');
                 $sql->on('config_linen.rs_id', '=', 'detail_linen.detail_id_rs');
