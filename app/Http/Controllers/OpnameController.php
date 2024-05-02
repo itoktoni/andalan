@@ -71,7 +71,6 @@ class OpnameController extends MasterController
         $model = $this->get($code);
         $detail = OpnameDetail::with([
             'has_view',
-            'has_view.has_cuci',
         ])->where(OpnameDetail::field_opname(), $code)
             ->fastPaginate(200);
 

@@ -40,7 +40,7 @@
                                     </td>
                                     <td class="col-md-2 text-center column-action">
                                         <x-crud :model="$table">
-                                            <x-button module="getCapture" label="Capture" class="badge badge-success mt-1" color="success" key="{{ $table->field_primary }}" />
+                                            <x-button module="getCapture" label="Capture" class="btn btn-success btn-sm mt-1" color="success" key="{{ $table->field_primary }}" />
                                         </x-crud>
                                     </td>
                                     <td>{{ iteration($data, $key) }}</td>

@@ -3,6 +3,7 @@
 namespace App\Http\Services;
 
 use App\Dao\Enums\BooleanType;
+use App\Dao\Enums\LogType;
 use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\TransactionType;
 use App\Dao\Models\OpnameDetail;
@@ -31,13 +32,13 @@ class SaveOpnameService
                     OpnameDetail::field_rfid() => $rfid,
                     OpnameDetail::field_opname() => $opname_id,
                     OpnameDetail::field_code() => $code,
-                    OpnameDetail::field_register() => BooleanType::No,
+                    OpnameDetail::field_register() => BooleanType::NO,
                     OpnameDetail::field_updated_at() => date('Y-m-d H:i:s'),
                     OpnameDetail::field_updated_by() => auth()->user()->id,
-                    OpnameDetail::field_transaksi() => TransactionType::Unknown,
-                    OpnameDetail::field_proses() => ProcessType::Unknown,
-                    OpnameDetail::field_scan_rs() => BooleanType::Yes,
-                    OpnameDetail::field_ketemu() => BooleanType::Yes,
+                    OpnameDetail::field_transaksi() => TransactionType::UNKNOWN,
+                    OpnameDetail::field_proses() => ProcessType::UNKNOWN,
+                    OpnameDetail::field_scan_rs() => BooleanType::YES,
+                    OpnameDetail::field_ketemu() => BooleanType::YES,
                 ];
 
                 if (! $detail) {
@@ -47,23 +48,23 @@ class SaveOpnameService
 
                     $insert_register[] = $item;
                     $item = array_merge($item, [
-                        OpnameDetail::field_sync() => BooleanType::Yes,
+                        OpnameDetail::field_sync() => BooleanType::YES,
                     ]);
 
-                } elseif ($detail->opname_detail_ketemu == BooleanType::Yes) {
+                } elseif ($detail->opname_detail_ketemu == BooleanType::YES) {
                     $item = array_merge($item, [
-                        OpnameDetail::field_register() => BooleanType::Yes,
+                        OpnameDetail::field_register() => BooleanType::YES,
                         OpnameDetail::field_transaksi() => $detail->opname_detail_transaksi,
                         OpnameDetail::field_proses() => $detail->opname_detail_proses,
-                        OpnameDetail::field_scan_rs() => BooleanType::No,
-                        OpnameDetail::field_ketemu() => BooleanType::No,
+                        OpnameDetail::field_scan_rs() => BooleanType::YES,
+                        OpnameDetail::field_ketemu() => BooleanType::YES,
                         OpnameDetail::field_waktu() => $detail->opname_detail_waktu,
-                        OpnameDetail::field_sync() => BooleanType::No,
+                        OpnameDetail::field_sync() => BooleanType::YES,
                     ]);
-                } elseif ($detail->opname_detail_ketemu == BooleanType::No) {
+                } elseif ($detail->opname_detail_ketemu == BooleanType::NO) {
                     $item = array_merge($item, [
                         OpnameDetail::field_waktu() => $waktu,
-                        OpnameDetail::field_sync() => BooleanType::Yes,
+                        OpnameDetail::field_sync() => BooleanType::YES,
                     ]);
 
                     $scan_rs[] = $rfid;
@@ -79,12 +80,12 @@ class SaveOpnameService
             if ($scan_rs) {
                 OpnameDetail::whereIn(OpnameDetail::field_rfid(), $scan_rs)
                     ->update([
-                        OpnameDetail::field_ketemu() => BooleanType::Yes,
-                        OpnameDetail::field_scan_rs() => BooleanType::Yes,
+                        OpnameDetail::field_ketemu() => BooleanType::YES,
+                        OpnameDetail::field_scan_rs() => BooleanType::YES,
                         OpnameDetail::field_waktu() => $waktu,
                     ]);
 
-                PluginsHistory::bulk($scan_rs, ProcessType::Opname, 'Ketemu ketika Opname');
+                PluginsHistory::bulk($scan_rs, LogType::OPNAME, 'Ketemu ketika Opname');
             }
 
             DB::commit();

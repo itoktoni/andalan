@@ -222,6 +222,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     Outstanding::field_updated_at() => date('Y-m-d H:i:s'),
                     Outstanding::field_created_by() => auth()->user()->id,
                     Outstanding::field_updated_by() => auth()->user()->id,
+                    Outstanding::field_hilang_created_at() => null,
+                    Outstanding::field_pending_created_at() => null,
                 ];
 
                 if ($request->has('ruangan_id')) {
@@ -393,6 +395,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 Outstanding::field_rs_ori() => $detail->field_rs_id,
                 Outstanding::field_rs_scan() => $detail->field_rs_id,
                 Outstanding::field_ruangan_id() => $detail->field_ruangan_id,
+                Outstanding::field_hilang_created_at() => null,
+                Outstanding::field_pending_created_at() => null,
             ];
 
             if ($detail->field_status_kepemilikan == OwnershipType::FREE) {
@@ -512,16 +516,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
 
     Route::get('total/delivery/{rsid}/{transaksi}', function ($rsid, $transaksi) {
-
-        // if ($transaksi == TransactionType::BersihKotor) {
-        //     $transaksi = TransactionType::Kotor;
-        // } elseif ($transaksi == TransactionType::BersihRetur) {
-        //     $transaksi = TransactionType::Retur;
-        // } elseif ($transaksi == TransactionType::BersihRewash) {
-        //     $transaksi = TransactionType::Rewash;
-        // } elseif ($transaksi == TransactionType::Unknown) {
-        //     $transaksi = TransactionType::Register;
-        // }
 
         $data = Transaksi::whereNull(Transaksi::field_delivery())
             ->whereNotNull(Transaksi::field_barcode())

@@ -210,6 +210,8 @@ class TransaksiController extends MasterController
                             Outstanding::field_updated_at() => date('Y-m-d H:i:s'),
                             Outstanding::field_created_by() => auth()->user()->id,
                             Outstanding::field_updated_by() => auth()->user()->id,
+                            Outstanding::field_hilang_created_at() => null,
+                            Outstanding::field_pending_created_at() => null,
                         ];
 
                         $transaksi[] = $data_transaksi;
@@ -278,6 +280,8 @@ class TransaksiController extends MasterController
                             Outstanding::field_updated_at() => date('Y-m-d H:i:s'),
                             Outstanding::field_created_by() => auth()->user()->id,
                             Outstanding::field_updated_by() => auth()->user()->id,
+                            Outstanding::field_hilang_created_at() => null,
+                            Outstanding::field_pending_created_at() => null,
                         ];
                     }
 
