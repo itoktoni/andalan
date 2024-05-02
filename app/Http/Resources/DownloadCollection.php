@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use App\Dao\Enums\OpnameType;
 use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\TransactionType;
+use App\Dao\Models\ConfigLinen;
 use App\Dao\Models\JenisLinen;
 use App\Dao\Models\Opname;
 use App\Dao\Models\OpnameDetail;
@@ -39,22 +40,30 @@ class DownloadCollection extends ResourceCollection
             ->where('rs_id', $rsid)
             ->get();
 
-        $opname = Opname::with(['has_detail' => function ($query) {
-            $query->where(OpnameDetail::field_ketemu(), 1);
-        }])
-            ->where(Opname::field_rs_id(), $rsid)
-            ->where(Opname::field_status(), OpnameType::Proses)
-            ->first();
+        $rfid = ConfigLinen::select(ConfigLinen::field_primary())
+            ->where(ConfigLinen::field_rs_id(), $rsid)
+            ->get()
+            ->pluck(ConfigLinen::field_primary())
+            ->toArray() ?? [];
+
+        // $opname = Opname::with(['has_detail' => function ($query) {
+        //     $query->where(OpnameDetail::field_ketemu(), 1);
+        // }])
+        //     ->where(Opname::field_rs_id(), $rsid)
+        //     ->where(Opname::field_status(), OpnameType::Proses)
+        //     ->first();
 
         $sendOpname = [];
-        if (! empty($opname)) {
-            if ($opname->has_detail) {
-                $sendOpname = $opname->has_detail->pluck(OpnameDetail::field_rfid());
-            }
-        }
+        // if (! empty($opname)) {
+        //     if ($opname->has_detail) {
+        //         $sendOpname = $opname->has_detail->pluck(OpnameDetail::field_rfid());
+        //     }
+        // }
 
-        $rfid = $this->collection->pluck('view_linen_rfid')->toArray();
-        $outstanding = Outstanding::whereIn(Outstanding::field_primary(), $rfid)->get();
+        $outstanding = Outstanding::whereIn(Outstanding::field_primary(), $rfid)
+            ->get()->mapWithKeys(function($item){
+                return [$item->outstanding_rfid => $item];
+            });
 
         $check = [];
 
@@ -63,10 +72,11 @@ class DownloadCollection extends ResourceCollection
             $status_transaction = TransactionType::BERSIH;
             $status_proses = TransactionType::BERSIH;
 
-            if($outstanding->where('outstanding_rfid', $item)->count() > 0) {
+            if(isset($outstanding[$item->field_primary])){
                 $tanggal = date('Y-m-d H:i:s');
-                $status_transaction = $item->view_status_transaction;
-                $status_proses = $item->view_status_process;
+                $out = $outstanding[$item->field_primary];
+                $status_transaction = $out->field_status_transaction;
+                $status_proses = $out->field_status_process;
             }
 
             return [
