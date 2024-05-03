@@ -15,7 +15,9 @@ class ViewOutstanding extends Outstanding
         'outstanding_rs_scan' => 'integer',
         'outstanding_created_at' => 'datetime',
         'outstanding_updated_at' => 'datetime',
-        'outstanding_pending_at' => 'datetime',
-        'outstanding_hilang_at' => 'datetime',
+        'outstanding_pending_created_at' => 'datetime',
+        'outstanding_pending_updated_at' => 'datetime',
+        'outstanding_hilang_created_at' => 'datetime',
+        'outstanding_hilang_updated_at' => 'datetime',
     ];
 }
