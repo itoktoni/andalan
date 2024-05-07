@@ -61,8 +61,8 @@ class CaptureOpnameService
                         OpnameDetail::field_waktu() => $tgl,
                         OpnameDetail::field_ketemu() => $ketemu,
                         OpnameDetail::field_opname() => $opname_id,
-                        OpnameDetail::field_pending() => ! empty($item->outstanding_pending_at) ? Carbon::make($item->outstanding_pending_at)->format('Y-m-d H:i:s') : null,
-                        OpnameDetail::field_hilang() => ! empty($item->outstanding_hilang_at) ? Carbon::make($item->outstanding_hilang_at)->format('Y-m-d H:i:s') : null,
+                        OpnameDetail::field_pending() => ! empty($item->outstanding_pending_created_at) ? Carbon::make($item->outstanding_pending_created_at)->format('Y-m-d H:i:s') : null,
+                        OpnameDetail::field_hilang() => ! empty($item->outstanding_hilang_created_at) ? Carbon::make($item->outstanding_hilang_created_at)->format('Y-m-d H:i:s') : null,
                     ];
 
                     $log[] = [

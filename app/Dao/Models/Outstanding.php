@@ -35,8 +35,10 @@ class Outstanding extends Model
         'outstanding_status_proses',
         'outstanding_created_at',
         'outstanding_updated_at',
-        'outstanding_pending_at',
-        'outstanding_hilang_at',
+        'outstanding_pending_created_at',
+        'outstanding_pending_updated_at',
+        'outstanding_hilang_created_at',
+        'outstanding_hilang_updated_at',
         'outstanding_created_by',
         'outstanding_updated_by',
     ];

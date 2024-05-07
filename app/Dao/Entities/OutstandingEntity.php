@@ -204,7 +204,7 @@ trait OutstandingEntity
 
     public static function field_pending_updated_at()
     {
-        return 'outstanding_pending_at';
+        return 'outstanding_pending_updated_at';
     }
 
     public function getFieldPendingAtAttribute()
@@ -214,7 +214,7 @@ trait OutstandingEntity
 
     public static function field_hilang_created_at()
     {
-        return 'outstanding_hilang_at';
+        return 'outstanding_hilang_created_at';
     }
 
     public function getFieldHilangCreatedAtAttribute()
