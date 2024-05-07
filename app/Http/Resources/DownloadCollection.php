@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Dao\Enums\BooleanType;
 use App\Dao\Enums\OpnameType;
 use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\TransactionType;
@@ -46,19 +47,19 @@ class DownloadCollection extends ResourceCollection
             ->pluck(ConfigLinen::field_primary())
             ->toArray() ?? [];
 
-        // $opname = Opname::with(['has_detail' => function ($query) {
-        //     $query->where(OpnameDetail::field_ketemu(), 1);
-        // }])
-        //     ->where(Opname::field_rs_id(), $rsid)
-        //     ->where(Opname::field_status(), OpnameType::Proses)
-        //     ->first();
+        $opname = Opname::with(['has_detail' => function ($query) {
+            $query->where(OpnameDetail::field_ketemu(), BooleanType::YES);
+        }])
+            ->where(Opname::field_rs_id(), $rsid)
+            ->where(Opname::field_status(), OpnameType::Proses)
+            ->first();
 
         $sendOpname = [];
-        // if (! empty($opname)) {
-        //     if ($opname->has_detail) {
-        //         $sendOpname = $opname->has_detail->pluck(OpnameDetail::field_rfid());
-        //     }
-        // }
+        if (! empty($opname)) {
+            if ($opname->has_detail) {
+                $sendOpname = $opname->has_detail->pluck(OpnameDetail::field_rfid());
+            }
+        }
 
         $outstanding = Outstanding::whereIn(Outstanding::field_primary(), $rfid)
             ->get()->mapWithKeys(function($item){
