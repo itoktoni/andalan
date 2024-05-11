@@ -14,7 +14,9 @@ use App\Dao\Models\Outstanding;
 use App\Dao\Models\Rs;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Laravel\Prompts\Note;
 use Plugins\Alert;
+use Plugins\Notes;
 
 class CaptureOpnameService
 {
@@ -41,9 +43,8 @@ class CaptureOpnameService
                 ->get();
 
             $log = [];
-            if ($data_rfid) {
+            if ($data_rfid->count() > 0) {
                 $id = auth()->user()->id;
-
                 foreach ($data_rfid as $item) {
 
                     $status_transaksi = $item->outstanding_status_transaksi ?? TransactionType::BERSIH;
@@ -82,6 +83,9 @@ class CaptureOpnameService
                     ModelsHistory::insert($log_transaksi);
                 }
             }
+            else{
+                Notes::error('data RFID tidak ditemukan');
+            }
 
             Alert::create();
 
@@ -90,8 +94,7 @@ class CaptureOpnameService
         } catch (\Throwable $th) {
             DB::rollBack();
             Alert::error($th->getMessage());
-
-            return $th->getMessage();
+            return Notes::error($th->getMessage());
         }
 
         return $check;
