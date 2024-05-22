@@ -73,6 +73,67 @@ Route::middleware(['auth:sanctum'])->group(function () {
         return $resource;
     });
 
+    Route::get('jenis_linen', function () {
+        set_time_limit(0);
+        $data = JenisLinen::select([JenisLinen::field_primary(), JenisLinen::field_name()])->get();
+        if (count($data) == 0) {
+            return Notes::error('Data Tidak Ditemukan !');
+        }
+
+        return $data;
+    });
+
+    Route::get('supplier', function () {
+        set_time_limit(0);
+        $data = Supplier::select([Supplier::field_primary(), Supplier::field_name()])->get();
+        if (count($data) == 0) {
+            return Notes::error('Data Tidak Ditemukan !');
+        }
+
+        return $data;
+    });
+
+    Route::get('jenis_bahan', function () {
+        set_time_limit(0);
+        $data = JenisBahan::select([JenisBahan::field_primary(), JenisBahan::field_name()])->get();
+        if (count($data) == 0) {
+            return Notes::error('Data Tidak Ditemukan !');
+        }
+
+        return $data;
+    });
+
+    Route::get('status_proses', function () {
+        set_time_limit(0);
+        $data = ProcessType::getOptions();
+        if (count($data) == 0) {
+            return Notes::error('Data Tidak Ditemukan !');
+        }
+
+        return $data;
+    });
+
+    Route::get('status_cuci', function () {
+        set_time_limit(0);
+        $data = CuciType::getOptions();
+        if (count($data) == 0) {
+            return Notes::error('Data Tidak Ditemukan !');
+        }
+
+        return $data;
+    });
+
+    Route::get('status_register', function () {
+        set_time_limit(0);
+        $data = RegisterType::getOptions();
+        if (count($data) == 0) {
+            return Notes::error('Data Tidak Ditemukan !');
+        }
+
+        return $data;
+    });
+
+
     Route::get('rs', function (Request $request) {
 
         $status_register = [];
