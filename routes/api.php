@@ -105,42 +105,78 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::get('status_proses', function () {
         set_time_limit(0);
-        $data = ProcessType::getOptions();
-        if (count($data) == 0) {
+        $data = ProcessType::getInstances();
+        $array = [];
+        foreach($data as $key => $status){
+            if($status->getValue($key) != null){
+                $array[] = [
+                    'status_id' => $key,
+                    'status_name' => $status->getValue($key)
+                ];
+            }
+        }
+        if (count($array) == 0) {
             return Notes::error('Data Tidak Ditemukan !');
         }
 
-        return $data;
+        return $array;
     });
 
     Route::get('status_transaksi', function () {
         set_time_limit(0);
-        $data = TransactionType::getOptions();
-        if (count($data) == 0) {
+        $data = TransactionType::getInstances();
+        $array = [];
+        foreach($data as $key => $status){
+            if($status->getValue($key) != null){
+                $array[] = [
+                    'status_id' => $key,
+                    'status_name' => $status->getValue($key)
+                ];
+            }
+        }
+        if (count($array) == 0) {
             return Notes::error('Data Tidak Ditemukan !');
         }
 
-        return $data;
+        return $array;
     });
 
     Route::get('status_cuci', function () {
         set_time_limit(0);
-        $data = CuciType::getOptions();
-        if (count($data) == 0) {
+        $data = CuciType::getInstances();
+        $array = [];
+        foreach($data as $key => $status){
+            if($status->getValue($key) != null){
+                $array[] = [
+                    'status_id' => $key,
+                    'status_name' => $status->getValue($key)
+                ];
+            }
+        }
+        if (count($array) == 0) {
             return Notes::error('Data Tidak Ditemukan !');
         }
 
-        return $data;
+        return $array;
     });
 
     Route::get('status_register', function () {
         set_time_limit(0);
-        $data = RegisterType::getOptions();
-        if (count($data) == 0) {
+        $data = RegisterType::getInstances();
+        $array = [];
+        foreach($data as $key => $status){
+            if($status->getValue($key) != null){
+                $array[] = [
+                    'status_id' => $key,
+                    'status_name' => $status->getValue($key)
+                ];
+            }
+        }
+        if (count($array) == 0) {
             return Notes::error('Data Tidak Ditemukan !');
         }
 
-        return $data;
+        return $array;
     });
 
 
