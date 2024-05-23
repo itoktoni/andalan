@@ -113,6 +113,16 @@ Route::middleware(['auth:sanctum'])->group(function () {
         return $data;
     });
 
+    Route::get('status_transaksi', function () {
+        set_time_limit(0);
+        $data = TransactionType::getOptions();
+        if (count($data) == 0) {
+            return Notes::error('Data Tidak Ditemukan !');
+        }
+
+        return $data;
+    });
+
     Route::get('status_cuci', function () {
         set_time_limit(0);
         $data = CuciType::getOptions();
