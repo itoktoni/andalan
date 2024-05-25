@@ -383,68 +383,65 @@ Route::middleware(['auth:sanctum'])->group(function () {
             $item = Query::getDetail()
                 ->leftJoinRelationship(HAS_OUTSTANDING)
                 ->whereIn(Detail::field_primary(), $request->rfid)
-                ->get();
+                ->get()
+                ->mapWithKeys(function ($item) {
+                    return [$item[Detail::field_primary()] => $item];
+                }) ?? [];
 
-            $rfid = [];
-
-            if ($item->count() == 0) {
-                if(is_array($request->rfid)){
-                    foreach($request->rfid as $code){
-                        $rfid[] = [
-                            'rfid' => $code,
-                            'jenis_id' => null,
-                            'jenis_nama' => null,
-                            'bahan_id' => null,
-                            'bahan_nama' => null,
-                            'supplier_id' => null,
-                            'supplier_nama' => null,
-                            'rs_id' => null,
-                            'rs_nama' => null,
-                            'ruangan_id' => null,
-                            'ruangan_nama' => null,
-                            'status_register' => null,
-                            'status_cuci' => null,
-                            'status_transaksi' => null,
-                            'status_proses' => null,
-                            'tanggal_create' => null,
-                            'tanggal_update' => null,
-                            'pemakaian' => null,
-                            'user_nama' => null
-                        ];
-                    }
-                }
-
-                return Notes::data($rfid, [
-                    'status' => false,
-                    'code' => 404,
-                    'message' => 'data tidak ditemukan'
-                ]);
-            }
-
-            $collection = [];
-            foreach ($item as $data) {
-
-                $collection[] = [
-                    'rfid' => $data->detail_rfid,
-                    'jenis_id' => $data->detail_rfid,
-                    'jenis_nama' => $data->jenis_nama ?? '',
-                    'bahan_id' => $data->detail_id_bahan,
-                    'bahan_nama' => $data->bahan_nama ?? '',
-                    'supplier_id' => $data->supplier_id,
-                    'supplier_nama' => $data->supplier_nama ?? '',
-                    'rs_id' => $data->detail_id_rs ?? '',
-                    'rs_nama' => $data->rs_nama ?? '',
-                    'ruangan_id' => $data->detail_id_ruangan,
-                    'ruangan_nama' => $data->ruangan_nama ?? '',
-                    'status_register' => $data->detail_status_register,
-                    'status_cuci' => $data->detail_status_cuci,
-                    'status_transaksi' => $data->outstanding_status_transaksi ?? TransactionType::BERSIH,
-                    'status_proses' => $data->outstanding_status_proses ?? TransactionType::BERSIH,
-                    'tanggal_create' => $data->outstanding_created_at ? Carbon::make($data->outstanding_created_at)->format('Y-m-d') : null,
-                    'tanggal_update' => $data->outstanding_updated_at ? Carbon::make($data->outstanding_updated_at)->format('Y-m-d') : null,
-                    'pemakaian' => $data->detail_total_bersih ?? 0,
-                    'user_nama' => $data->name ?? null,
+                $kosong = [
+                    'rfid' => null,
+                    'jenis_id' => null,
+                    'jenis_nama' => null,
+                    'bahan_id' => null,
+                    'bahan_nama' => null,
+                    'supplier_id' => null,
+                    'supplier_nama' => null,
+                    'rs_id' => null,
+                    'rs_nama' => null,
+                    'ruangan_id' => null,
+                    'ruangan_nama' => null,
+                    'status_register' => null,
+                    'status_cuci' => null,
+                    'status_transaksi' => null,
+                    'status_proses' => null,
+                    'tanggal_create' => null,
+                    'tanggal_update' => null,
+                    'pemakaian' => null,
+                    'user_nama' => null
                 ];
+
+            foreach($request->rfid as $code){
+
+                if(isset($item[$code])){
+                    $data = $item[$code];
+
+                    $collection[] = [
+                        'rfid' => $code,
+                        'jenis_id' => $data->detail_rfid,
+                        'jenis_nama' => $data->jenis_nama ?? '',
+                        'bahan_id' => $data->detail_id_bahan,
+                        'bahan_nama' => $data->bahan_nama ?? '',
+                        'supplier_id' => $data->supplier_id,
+                        'supplier_nama' => $data->supplier_nama ?? '',
+                        'rs_id' => $data->detail_id_rs ?? '',
+                        'rs_nama' => $data->rs_nama ?? '',
+                        'ruangan_id' => $data->detail_id_ruangan,
+                        'ruangan_nama' => $data->ruangan_nama ?? '',
+                        'status_register' => $data->detail_status_register,
+                        'status_cuci' => $data->detail_status_cuci,
+                        'status_transaksi' => $data->outstanding_status_transaksi ?? TransactionType::BERSIH,
+                        'status_proses' => $data->outstanding_status_proses ?? TransactionType::BERSIH,
+                        'tanggal_create' => $data->outstanding_created_at ? Carbon::make($data->outstanding_created_at)->format('Y-m-d') : null,
+                        'tanggal_update' => $data->outstanding_updated_at ? Carbon::make($data->outstanding_updated_at)->format('Y-m-d') : null,
+                        'pemakaian' => $data->detail_total_bersih ?? 0,
+                        'user_nama' => $data->name ?? null,
+                    ];
+                }
+                else{
+                    $collection[] = array_merge($kosong, [
+                        'rfid' => $code
+                    ]);
+                }
             }
 
             return Notes::data($collection);
