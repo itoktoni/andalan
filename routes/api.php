@@ -73,112 +73,67 @@ Route::middleware(['auth:sanctum'])->group(function () {
         return $resource;
     });
 
-    Route::get('jenis_linen', function () {
+    Route::get('configuration', function () {
         set_time_limit(0);
-        $data = JenisLinen::select([JenisLinen::field_primary(), JenisLinen::field_name()])->get();
-        if (count($data) == 0) {
-            return Notes::error('Data Tidak Ditemukan !');
+        $jenis_linen = JenisLinen::select([JenisLinen::field_primary(), JenisLinen::field_name()])->get();
+        $jenis_bahan = JenisBahan::select([JenisBahan::field_primary(), JenisBahan::field_name()])->get();
+
+        $supplier = Supplier::select([Supplier::field_primary(), Supplier::field_name()])->get();
+
+        $getProses = ProcessType::getInstances();
+        $status_proses = [];
+        foreach($getProses as $key => $status){
+            if($status->getValue($key) != null){
+                $status_proses[] = [
+                    'status_id' => $key,
+                    'status_name' => $status->getValue($key)
+                ];
+            }
         }
+
+        $getTransaction = TransactionType::getInstances();
+        $status_transaksi = [];
+        foreach($getTransaction as $key => $status){
+            if($status->getValue($key) != null){
+                $status_transaksi[] = [
+                    'status_id' => $key,
+                    'status_name' => $status->getValue($key)
+                ];
+            }
+        }
+        $getCuci = CuciType::getInstances();
+        $status_cuci = [];
+        foreach($getCuci as $key => $status){
+            if($status->getValue($key) != null){
+                $status_cuci[] = [
+                    'status_id' => $key,
+                    'status_name' => $status->getValue($key)
+                ];
+            }
+        }
+        $getRegister = RegisterType::getInstances();
+        $status_register = [];
+        foreach($getRegister as $key => $status){
+            if($status->getValue($key) != null){
+                $status_register[] = [
+                    'status_id' => $key,
+                    'status_name' => $status->getValue($key)
+                ];
+            }
+        }
+
+        $data = [
+            'supplier' => $supplier,
+            'jenis_bahan' => $jenis_bahan,
+            'jenis_linen' => $jenis_linen,
+            'status_proses' => $status_proses,
+            'status_transaksi' => $status_transaksi,
+            'status_cuci' => $status_cuci,
+            'status_register' => $status_register,
+        ];
 
         return $data;
     });
-
-    Route::get('supplier', function () {
-        set_time_limit(0);
-        $data = Supplier::select([Supplier::field_primary(), Supplier::field_name()])->get();
-        if (count($data) == 0) {
-            return Notes::error('Data Tidak Ditemukan !');
-        }
-
-        return $data;
-    });
-
-    Route::get('jenis_bahan', function () {
-        set_time_limit(0);
-        $data = JenisBahan::select([JenisBahan::field_primary(), JenisBahan::field_name()])->get();
-        if (count($data) == 0) {
-            return Notes::error('Data Tidak Ditemukan !');
-        }
-
-        return $data;
-    });
-
-    Route::get('status_proses', function () {
-        set_time_limit(0);
-        $data = ProcessType::getInstances();
-        $array = [];
-        foreach($data as $key => $status){
-            if($status->getValue($key) != null){
-                $array[] = [
-                    'status_id' => $key,
-                    'status_name' => $status->getValue($key)
-                ];
-            }
-        }
-        if (count($array) == 0) {
-            return Notes::error('Data Tidak Ditemukan !');
-        }
-
-        return $array;
-    });
-
-    Route::get('status_transaksi', function () {
-        set_time_limit(0);
-        $data = TransactionType::getInstances();
-        $array = [];
-        foreach($data as $key => $status){
-            if($status->getValue($key) != null){
-                $array[] = [
-                    'status_id' => $key,
-                    'status_name' => $status->getValue($key)
-                ];
-            }
-        }
-        if (count($array) == 0) {
-            return Notes::error('Data Tidak Ditemukan !');
-        }
-
-        return $array;
-    });
-
-    Route::get('status_cuci', function () {
-        set_time_limit(0);
-        $data = CuciType::getInstances();
-        $array = [];
-        foreach($data as $key => $status){
-            if($status->getValue($key) != null){
-                $array[] = [
-                    'status_id' => $key,
-                    'status_name' => $status->getValue($key)
-                ];
-            }
-        }
-        if (count($array) == 0) {
-            return Notes::error('Data Tidak Ditemukan !');
-        }
-
-        return $array;
-    });
-
-    Route::get('status_register', function () {
-        set_time_limit(0);
-        $data = RegisterType::getInstances();
-        $array = [];
-        foreach($data as $key => $status){
-            if($status->getValue($key) != null){
-                $array[] = [
-                    'status_id' => $key,
-                    'status_name' => $status->getValue($key)
-                ];
-            }
-        }
-        if (count($array) == 0) {
-            return Notes::error('Data Tidak Ditemukan !');
-        }
-
-        return $array;
-    });
-
 
     Route::get('rs', function (Request $request) {
 
@@ -430,8 +385,40 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 ->whereIn(Detail::field_primary(), $request->rfid)
                 ->get();
 
+            $rfid = [];
+
             if ($item->count() == 0) {
-                return Notes::error('data RFID tidak ditemukan');
+                if(is_array($request->rfid)){
+                    foreach($request->rfid as $code){
+                        $rfid[] = [
+                            'rfid' => $code,
+                            'jenis_id' => null,
+                            'jenis_nama' => null,
+                            'bahan_id' => null,
+                            'bahan_nama' => null,
+                            'supplier_id' => null,
+                            'supplier_nama' => null,
+                            'rs_id' => null,
+                            'rs_nama' => null,
+                            'ruangan_id' => null,
+                            'ruangan_nama' => null,
+                            'status_register' => null,
+                            'status_cuci' => null,
+                            'status_transaksi' => null,
+                            'status_proses' => null,
+                            'tanggal_create' => null,
+                            'tanggal_update' => null,
+                            'pemakaian' => null,
+                            'user_nama' => null
+                        ];
+                    }
+                }
+
+                return Notes::data($rfid, [
+                    'status' => false,
+                    'code' => 404,
+                    'message' => 'data tidak ditemukan'
+                ]);
             }
 
             $collection = [];
@@ -443,6 +430,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     'jenis_nama' => $data->jenis_nama ?? '',
                     'bahan_id' => $data->detail_id_bahan,
                     'bahan_nama' => $data->bahan_nama ?? '',
+                    'supplier_id' => $data->supplier_id,
+                    'supplier_nama' => $data->supplier_nama ?? '',
                     'rs_id' => $data->detail_id_rs ?? '',
                     'rs_nama' => $data->rs_nama ?? '',
                     'ruangan_id' => $data->detail_id_ruangan,
