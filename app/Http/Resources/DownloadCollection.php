@@ -66,9 +66,15 @@ class DownloadCollection extends ResourceCollection
                 return [$item->outstanding_rfid => $item];
             });
 
+        $transaksi = Transaksi::whereIn(Transaksi::field_rfid(), $rfid)
+            ->groupBy(Transaksi::field_rfid())
+            ->get()->mapWithKeys(function($item){
+                return [$item->transaksi_rfid => $item];
+            });
+
         $check = [];
 
-        $data = $this->collection->map(function ($item) use ($outstanding) {
+        $data = $this->collection->map(function ($item) use ($outstanding, $transaksi) {
             $tanggal = $item->view_tanggal_update;
             $status_transaction = TransactionType::BERSIH;
             $status_proses = TransactionType::BERSIH;
@@ -78,6 +84,10 @@ class DownloadCollection extends ResourceCollection
                 $out = $outstanding[$item->field_primary];
                 $status_transaction = $out->field_status_transaction;
                 $status_proses = $out->field_status_process;
+            }
+
+            if(isset($transaksi[$item->field_primary])){
+                $status_proses = TransactionType::REGISTER;
             }
 
             return [
