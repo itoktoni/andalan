@@ -331,7 +331,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 $transaksi[] = $outstanding;
             }
 
-            Detail::upsert($detail, Detail::field_primary());
+            Detail::insert($detail, Detail::field_primary());
             if($request->status_register == RegisterType::GANTI_CHIP){
                 Outstanding::upsert($transaksi, Outstanding::field_primary());
             }
