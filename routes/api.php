@@ -359,7 +359,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
             DB::rollBack();
 
             if ($th->getCode() == 23000 && env('APP_ENV') == 'production') {
-                return Notes::error($request->all(), 'data RFID sudah ada di database');
+                $message = explode('for key', $th->getMessage());
+                $clean = str_replace('SQLSTATE[23000]: Integrity constraint violation: 1062','RFID', $message[0]);
+                return Notes::error($clean);
             }
 
             return Notes::error($request->all(), $th->getMessage());
