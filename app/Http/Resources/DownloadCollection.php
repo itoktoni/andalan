@@ -86,7 +86,7 @@ class DownloadCollection extends ResourceCollection
                 $status_proses = $out->field_status_process;
             }
 
-            if(isset($transaksi[$item->field_primary])){
+            if(!isset($transaksi[$item->field_primary])){
                 $status_transaction = TransactionType::REGISTER;
             }
 
