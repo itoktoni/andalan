@@ -249,7 +249,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
             if ($request->status_register == RegisterType::GANTI_CHIP) {
                 $transaksi_status = TransactionType::KOTOR;
-                $proses_status = ProcessType::KOTOR;
+                $proses_status = ProcessType::SCAN;
             } else {
                 $transaksi_status = TransactionType::REGISTER;
                 $proses_status = ProcessType::REGISTER;
