@@ -23,17 +23,11 @@
 
         <x-form method="POST" action="{{ moduleRoute('getTable') }}">
 
-            <x-action/>
-
             <div class="container-fluid">
                 <div class="table-responsive" id="table_data">
                     <table class="table table-bordered table-striped overflow max-content">
                         <thead>
                             <tr>
-                                <th width="9" class="center">
-                                    <input class="btn-check-d" type="checkbox">
-                                </th>
-                                <th style="width: 100px" class="text-center column-action">{{ __('Action') }}</th>
                                 <th class="text-center column-checkbox">{{ __('No.') }}</th>
                                 <th class="text-left">NO. RFID</th>
                                 <th class="text-left">RUMAH SAKIT</th>
@@ -58,18 +52,8 @@
                         <tbody>
                             @forelse($data as $key => $table)
                                 <tr>
-                                    <td>
-                                        <input type="checkbox" class="checkbox" name="code[]"
-                                            value="{{ $table->field_primary }}">
-                                    </td>
-                                    <td class="col-md-3 text-center column-action">
-                                        @if(!empty($table->field_primary))
-                                        <x-crud :model="$table"/>
-                                        @else
-                                        @endif
-                                    </td>
                                     <td>{{ iteration($data, $key) }}</td>
-                                    <td>{{ $table->field_primary }}</td>
+                                    <td>{{ $table->view_rfid }}</td>
                                     <td>{{ $table->rs_nama }}</td>
                                     <td>{{ $table->view_kategori_nama }}</td>
                                     <td>{{ $table->view_bahan_nama }}</td>
@@ -84,7 +68,7 @@
                                     <td>{{ $table->field_status_kepemilikan ?? 0 }}</td>
                                     <td>{{ $table->field_status_linen ?? 0 }}</td>
                                     <td>{{ formatDate($table->view_tanggal_update) }}</td>
-                                    <td>{{ $table->field_status_register_name }}</td>
+                                    <td>{{ $table->view_status_register }}</td>
                                     <td>{{ formatDate($table->view_tanggal_create) }}</td>
                                     <td>{{ $table->view_created_name }}</td>
                                     <td></td>

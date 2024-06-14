@@ -4,6 +4,7 @@ namespace App\Dao\Repositories;
 
 use App\Dao\Enums\TransactionType;
 use App\Dao\Interfaces\CrudInterface;
+use App\Dao\Models\Rs;
 use App\Dao\Models\Transaksi;
 use App\Dao\Models\ViewBarcode;
 use App\Dao\Models\ViewDelivery;
@@ -64,4 +65,14 @@ class TransaksiRepository extends MasterRepository implements CrudInterface
             ->filter();
     }
 
+    public function getDetailKotor()
+    {
+        $query = $this->getTransactionDetail()
+            ->leftJoin(Rs::getTableName() . ' as scan', function ($join) {
+                $join->on('transaksi.transaksi_rs_scan', '=', 'scan.rs_id');
+            })
+            ->sortable();
+
+        return $query;
+    }
 }

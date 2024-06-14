@@ -20,13 +20,17 @@ class ConfigRepository extends MasterRepository implements CrudInterface
     public function dataRepository()
     {
         $query = $this->model
-            ->select('*')
-            ->join(Rs::getTableName(), 'config_linen.rs_id', '=', 'rs.rs_id')
-            ->join(Detail::getTableName(), function($sql){
+            ->select([
+                Detail::getTableName().'.*',
+                'view_detail_linen.*',
+                DB::raw('config_linen.detail_rfid as view_rfid'),
+            ])
+            ->leftJoin(Rs::getTableName(), 'config_linen.rs_id', '=', 'rs.rs_id')
+            ->leftJoin(Detail::getTableName(), function($sql){
                 $sql->on('config_linen.detail_rfid', '=', 'detail_linen.detail_rfid');
                 $sql->on('config_linen.rs_id', '=', 'detail_linen.detail_id_rs');
             })
-            ->join('view_detail_linen', 'view_linen_rfid', '=', 'detail_linen.detail_rfid')
+            ->leftJoin('view_detail_linen', 'view_linen_rfid', '=', 'detail_linen.detail_rfid')
             ->sortable()->filter();
 
         if (request()->hasHeader('authorization')) {

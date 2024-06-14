@@ -146,6 +146,11 @@ class Detail extends Model
         return $this->hasOne(Rs::class, Rs::field_primary(), self::field_rs_id());
     }
 
+    public function has_user()
+    {
+        return $this->hasOne(User::class, User::field_primary(), self::field_created_by());
+    }
+
     public function has_bahan()
     {
         return $this->hasOne(JenisBahan::class, JenisBahan::field_primary(), self::field_bahan_id());
@@ -154,11 +159,6 @@ class Detail extends Model
     public function has_supplier()
     {
         return $this->hasOne(Supplier::class, Supplier::field_primary(), self::field_supplier_id());
-    }
-
-    public function has_user()
-    {
-        return $this->hasOne(User::class, User::field_primary(), self::field_created_by());
     }
 
     public function has_cuci()

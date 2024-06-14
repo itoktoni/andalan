@@ -18,6 +18,7 @@ use App\Dao\Models\Opname;
 use App\Dao\Models\Outstanding;
 use App\Dao\Models\Register;
 use App\Dao\Models\Rs;
+use App\Dao\Models\Ruangan;
 use App\Dao\Models\Supplier;
 use App\Dao\Models\Transaksi;
 use App\Dao\Models\ViewDetailLinen;
@@ -138,35 +139,43 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('rs', function (Request $request) {
 
         $status_register = [];
-        foreach (RegisterType::getInstances() as $value => $key) {
-            $status_register[] = [
-                'status_id' => $key,
-                'status_nama' => formatCapitilizeSentance($value),
-            ];
+        foreach (RegisterType::getInstances() as $key => $value) {
+            if(!empty($value->value)){
+                $status_register[] = [
+                    'status_id' => $key,
+                    'status_nama' => formatCapitilizeSentance($value->description),
+                ];
+            }
         }
 
         $status_cuci = [];
-        foreach (CuciType::getInstances() as $value => $key) {
-            $status_cuci[] = [
-                'status_id' => $key,
-                'status_nama' => formatCapitilizeSentance($value),
-            ];
+        foreach (CuciType::getInstances() as $key => $value) {
+            if(!empty($value->value)){
+                $status_cuci[] = [
+                    'status_id' => $key,
+                    'status_nama' => formatCapitilizeSentance($value->description),
+                ];
+            }
         }
 
         $status_proses = [];
-        foreach (ProcessType::getInstances() as $value => $key) {
-            $status_proses[] = [
-                'status_id' => $key,
-                'status_nama' => formatCapitilizeSentance($value),
-            ];
+        foreach (ProcessType::getInstances() as $key => $value) {
+            if(!empty($value->value)){
+                $status_proses[] = [
+                    'status_id' => $key,
+                    'status_nama' => formatCapitilizeSentance($value->description),
+                ];
+            }
         }
 
         $status_transaksi = [];
-        foreach (TransactionType::getInstances() as $value => $key) {
-            $status_transaksi[] = [
-                'status_id' => $key,
-                'status_nama' => formatCapitilizeSentance($value),
-            ];
+        foreach (TransactionType::getInstances() as $key => $value) {
+            if(!empty($value->value)){
+                $status_transaksi[] = [
+                    'status_id' => $key,
+                    'status_nama' => formatCapitilizeSentance($value->description),
+                ];
+            }
         }
 
         try {
@@ -174,31 +183,45 @@ Route::middleware(['auth:sanctum'])->group(function () {
             $collection = RsResource::collection($rs);
 
             $data_supplier = [];
-            $supplier = Supplier::get();
-            foreach ($supplier as $vendor) {
-                $data_supplier[] = [
-                    'supplier_id' => $vendor->field_primary,
-                    'supplier_name' => $vendor->field_name,
-                ];
-            }
+            $data_supplier = Supplier::select(Supplier::field_primary(), Supplier::field_name())->get() ?? [];
+            // foreach ($supplier as $vendor) {
+            //     $data_supplier[] = [
+            //         'supplier_id' => $vendor->field_primary,
+            //         'supplier_nama' => $vendor->field_name,
+            //     ];
+            // }
 
-            $data_bahan = [];
-            $bahan = JenisBahan::get();
-            foreach ($bahan as $vendor) {
-                $data_bahan[] = [
-                    'bahan_id' => $vendor->field_primary,
-                    'bahan_name' => $vendor->field_name,
-                ];
-            }
+            $data_bahan = JenisBahan::select(JenisBahan::field_primary(), JenisBahan::field_name())->get() ?? [];
+            // foreach ($bahan as $vendor) {
+            //     $data_bahan[] = [
+            //         'bahan_id' => $vendor->field_primary,
+            //         'bahan_nama' => $vendor->field_name,
+            //     ];
+            // }
 
             $data_jenis = [];
-            $jenis = JenisLinen::get();
-            foreach ($jenis as $item) {
-                $data_jenis[] = [
-                    'jenis_id' => $item->field_primary,
-                    'jenis_name' => $item->field_name,
-                ];
-            }
+            $data_jenis = JenisLinen::select([
+                'jenis_linen.jenis_id',
+                'jenis_linen.jenis_nama',
+                'rs_id',
+            ])
+                ->leftJoin('rs_dan_jenis', 'rs_dan_jenis.jenis_id', '=', 'jenis_linen.jenis_id')
+                ->get() ?? [];
+
+            // foreach ($jenis as $item) {
+            //     $data_jenis[] = [
+            //         'jenis_id' => $item->field_primary,
+            //         'jenis_nama' => $item->field_name,
+            //     ];
+            // }
+
+            $ruangan = Ruangan::select([
+                'ruangan.ruangan_id',
+                'ruangan_nama',
+                'rs_id',
+            ])
+                ->leftJoin('rs_dan_ruangan', 'rs_dan_ruangan.ruangan_id', '=', 'ruangan.ruangan_id')
+                ->get();
 
             $add = [
                 'status_transaksi' => $status_transaksi,
@@ -207,7 +230,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 'status_register' => $status_register,
                 'bahan' => $data_bahan,
                 'supplier' => $data_supplier,
-                'jenis' => $data_jenis,
+                'jenis' => JenisLinen::select([
+                    'jenis_id',
+                    'jenis_nama',
+                ])->get() ?? [],
+                'jenis_rs' => $data_jenis,
+                'ruangan' => $ruangan,
             ];
 
             $data = Notes::data($collection, $add);
@@ -219,6 +247,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
             return Notes::error($th->getMessage());
         }
 
+    });
+
+    Route::get('rs_lite', function(){
+        $rs = Rs::select(Rs::field_primary(), Rs::field_name())->get() ?? [];
+        return Notes::data($rs);
     });
 
     Route::get('rs/{rsid}', function ($rsid) {
@@ -324,6 +357,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
                                 ConfigLinen::field_rs_id() => $id_rs,
                             ]
                         );
+
+                        $merge = array_merge($merge, [
+                            Detail::field_rs_id() => $id_rs,
+                        ]);
                     }
                 }
 
@@ -331,7 +368,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 $transaksi[] = $outstanding;
             }
 
-            Detail::insert($detail, Detail::field_primary());
+            Detail::upsert($detail, Detail::field_primary());
             if($request->status_register == RegisterType::GANTI_CHIP){
                 Outstanding::upsert($transaksi, Outstanding::field_primary());
             }
@@ -539,6 +576,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
             DB::commit();
 
             $collection = [
+                'rfid' => $rfid ?? '',
                 'linen_id' => $view->view_linen_id ?? '',
                 'linen_nama' => $view->view_linen_nama ?? '',
                 'rs_id' => $view->view_rs_id ?? '',
@@ -573,32 +611,35 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
 
     Route::post('packing', [BersihController::class, 'packing']);
-    Route::get('packing/{code}', [BersihController::class, 'print']);
+    Route::get('packing/{code}', [DeliveryController::class, 'printPacking']);
 
     Route::get('list/packing/{rsid}', function ($rsid) {
         $data = Cetak::select([Cetak::field_name()])
             ->where(Cetak::field_rs_id(), $rsid)
             ->where(Cetak::field_type(), CetakType::Barcode)
             ->where(Cetak::field_date(), '>=', now()->addDay(-30))
+            ->orderBy(Cetak::field_date(), 'DESC')
             ->get();
 
-        return Notes::data(['total' => $data]);
+        return Notes::data($data);
     });
 
     Route::post('delivery', [BersihController::class, 'delivery']);
-    Route::get('delivery/{code}', [DeliveryController::class, 'print']);
+    Route::get('delivery/{code}', [DeliveryController::class, 'printDelivery']);
 
     Route::get('list/delivery/{rsid}', function ($rsid) {
         $data = Cetak::select([Cetak::field_name()])
             ->where(Cetak::field_rs_id(), $rsid)
             ->where(Cetak::field_type(), CetakType::Delivery)
-            ->where(Cetak::field_date(), '>=', now()->addDay(-30));
+            ->where(Cetak::field_date(), '>=', now()->addDay(-30))
+            ->orderBy(Cetak::field_date(), 'DESC')
+            ;
 
         if (request()->get('tgl')) {
             $data->where(Cetak::field_date(), '=', request()->get('tgl'));
         }
 
-        return Notes::data(['total' => $data->get()]);
+        return Notes::data($data->get());
     });
 
     Route::get('total/delivery/{rsid}', function ($rsid) {

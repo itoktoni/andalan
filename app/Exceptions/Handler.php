@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use Exception;
 use GuzzleHttp\Client;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
@@ -121,6 +122,31 @@ class Handler extends ExceptionHandler
             if (! $this->checkError($e)) {
                 $client->request('GET', $url, $data);
             }
+        }
+
+        if(request()->getContent('application/json') && request()->hasHeader('authorization')){
+
+            if ($e instanceof AuthenticationException) {
+                return Notes::validation("User belum punya akses !");
+            }
+
+            if ($e instanceof ValidationException) {
+                return Notes::validation($e->getMessage());
+            }
+
+            if ($e instanceof ModelNotFoundException) {
+                return Notes::error($e->getMessage());
+            }
+
+            if ($e instanceof NotFoundHttpException) {
+                return Notes::error($e->getMessage());
+            }
+
+            if ($e instanceof QueryException) {
+                return Notes::error($e->getMessage());
+            }
+
+            return Notes::error($e->getMessage(), 'Error '.$e->getCode());
         }
 
         if (request()->hasHeader('authorization')) {

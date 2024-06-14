@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Dao\Enums\CetakType;
 use App\Dao\Enums\ProcessType;
+use App\Dao\Models\Bersih;
 use App\Dao\Models\Cetak;
 use App\Dao\Models\Detail;
 use App\Dao\Models\Transaksi;
@@ -93,10 +94,9 @@ class DeliveryController extends MasterController
         if ($transaksi) {
 
             Detail::find($transaksi->field_rfid)->update([
-                Detail::field_status_process() => ProcessType::Barcode,
+                Detail::field_status_process() => ProcessType::PACKING,
             ]);
 
-            PluginsHistory::log($transaksi->field_rfid, ProcessType::DeleteDelivery, 'Data di delete dari barcode '.$transaksi->field_primary);
             Notes::delete($transaksi->get()->toArray());
             Alert::delete();
 
@@ -128,11 +128,10 @@ class DeliveryController extends MasterController
             $rfid = $data_rfid->pluck(Transaksi::field_rfid());
 
             Detail::whereIn(Detail::field_primary(), $rfid)->update([
-                Detail::field_status_process() => ProcessType::Barcode,
+                Detail::field_status_process() => ProcessType::PACKING,
             ]);
 
             $bulk = $data_rfid->toArray();
-            PluginsHistory::bulk($rfid, ProcessType::DeleteDelivery, $bulk);
             Notes::delete($bulk);
             Alert::delete();
         }
@@ -147,11 +146,27 @@ class DeliveryController extends MasterController
         return $check;
     }
 
-    public function print($code)
+    public function printPacking($code)
     {
-
-        $total = Transaksi::where(Transaksi::field_delivery(), $code)
-            ->join((new ViewDetailLinen())->getTable(), ViewDetailLinen::field_primary(), Transaksi::field_rfid())
+        $total = Bersih::where(Bersih::field_barcode(), $code)
+            ->addSelect([
+                'bersih_rfid',
+                'bersih_id_rs',
+                'bersih_id_ruangan',
+                'bersih_barcode',
+                'bersih_delivery',
+                'bersih_status',
+                'bersih_report',
+                'rs_nama',
+                'ruangan_nama',
+                'jenis_id',
+                'jenis_nama',
+                'name',
+            ])
+            ->leftJoinRelationship('has_rs')
+            ->leftJoinRelationship('has_ruangan')
+            ->leftJoinRelationship('has_user')
+            ->leftJoinRelationship('has_detail.has_jenis')
             ->get();
 
         $data = null;
@@ -166,33 +181,115 @@ class DeliveryController extends MasterController
                     Cetak::field_name() => $code,
                     Cetak::field_type() => CetakType::Delivery,
                     Cetak::field_user() => auth()->user()->name ?? null,
-                    Cetak::field_rs_id() => $total[0]->transaksi_rs_ori ?? null,
+                    Cetak::field_rs_id() => $total[0]->bersih_id_rs ?? null,
                 ]);
             }
 
             $data = $total->mapToGroups(function ($item) {
                 $parse = [
-                    'id' => $item->view_linen_id,
-                    'nama' => $item->view_linen_nama,
-                    'lokasi' => $item->view_ruangan_nama,
+                    'id' => $item->jenis_id,
+                    'nama' => $item->jenis_nama,
+                    'rs' => $item->rs_nama,
+                    'lokasi' => $item->ruangan_nama,
+                    'status' => $item->bersih_status,
+                    'tgl' => formatDate($item->bersih_report, 'd/M/Y'),
                 ];
 
-                return [$item['view_linen_id'].'#'.$item['view_ruangan_id'] => $parse];
+                return [$item['jenis_id'].'#'.$item['ruangan_id'] => $parse];
             });
 
+            $no = 1;
             foreach ($data as $item) {
                 $return[] = [
-                    'id' => $item[0]['id'],
-                    'nama' => $item[0]['nama'],
-                    'lokasi' => $item[0]['lokasi'],
+                    'id' => $no,
+                    'code' => $code,
+                    'tgl' => $item[0]['tgl'] ?? null,
+                    'rs' => $item[0]['rs'] ?? null,
+                    'nama' => $item[0]['nama'] ?? null,
+                    'status' => $item[0]['status'] ?? null,
+                    'lokasi' => $item[0]['lokasi'] ?? null,
+                    'user' => auth()->user()->name ?? null,
                     'total' => count($item),
                 ];
+
+                $no++;
             }
 
-            $passing['total'] = count($total);
-            $passing['user'] = $cetak->field_user;
-            $passing['rs_nama'] = $cetak->has_rs->field_name ?? 'Admin';
-            $passing['tanggal_cetak'] = $cetak->field_date;
+            $passing = Notes::data($return, $passing);
+
+        }
+
+        return $passing;
+    }
+
+    public function printDelivery($code)
+    {
+        $total = Bersih::where(Bersih::field_delivery(), $code)
+            ->addSelect([
+                'bersih_rfid',
+                'bersih_id_rs',
+                'bersih_id_ruangan',
+                'bersih_barcode',
+                'bersih_delivery',
+                'bersih_status',
+                'bersih_report',
+                'rs_nama',
+                'ruangan_nama',
+                'jenis_id',
+                'jenis_nama',
+                'name',
+            ])
+            ->leftJoinRelationship('has_rs')
+            ->leftJoinRelationship('has_ruangan')
+            ->leftJoinRelationship('has_user')
+            ->leftJoinRelationship('has_detail.has_jenis')
+            ->get();
+
+        $data = null;
+        $passing = [];
+
+        if ($total->count() > 0) {
+
+            $cetak = Cetak::where(Cetak::field_name(), $code)->first();
+            if (! $cetak) {
+                $cetak = Cetak::create([
+                    Cetak::field_date() => date('Y-m-d'),
+                    Cetak::field_name() => $code,
+                    Cetak::field_type() => CetakType::Delivery,
+                    Cetak::field_user() => auth()->user()->name ?? null,
+                    Cetak::field_rs_id() => $total[0]->bersih_id_rs ?? null,
+                ]);
+            }
+
+            $data = $total->mapToGroups(function ($item) {
+                $parse = [
+                    'id' => $item->jenis_id,
+                    'nama' => $item->jenis_nama,
+                    'rs' => $item->rs_nama,
+                    'lokasi' => $item->ruangan_nama,
+                    'status' => $item->bersih_status,
+                    'tgl' => formatDate($item->bersih_report, 'd/M/Y'),
+                ];
+
+                return [$item['jenis_id'].'#'.$item['ruangan_id'] => $parse];
+            });
+
+            $no = 1;
+            foreach ($data as $item) {
+                $return[] = [
+                    'id' => $no,
+                    'code' => $code,
+                    'tgl' => $item[0]['tgl'] ?? null,
+                    'rs' => $item[0]['rs'] ?? null,
+                    'nama' => $item[0]['nama'] ?? null,
+                    'lokasi' => $item[0]['lokasi'] ?? null,
+                    'status' => $item[0]['status'] ?? null,
+                    'user' => auth()->user()->name ?? null,
+                    'total' => count($item),
+                ];
+
+                $no++;
+            }
 
             $passing = Notes::data($return, $passing);
 

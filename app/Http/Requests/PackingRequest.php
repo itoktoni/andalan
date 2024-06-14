@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\TransactionType;
 use App\Dao\Models\Bersih;
+use App\Dao\Models\ConfigLinen;
 use App\Dao\Models\Detail;
 use App\Dao\Models\Outstanding;
 use App\Dao\Models\Rs;
@@ -27,7 +28,6 @@ class PackingRequest extends FormRequest
     public function withValidator($validator)
     {
         $total = count($this->rfid);
-
         // CASE KETIKA RFID TIDAK DITEMUKAN
         $status_transaksi = TransactionType::REGISTER;
 
@@ -57,12 +57,12 @@ class PackingRequest extends FormRequest
         // CASE KETIKA RFID TIDAK ADA DI CONFIG
 
         $check_config = DB::table('config_linen')
-            ->join(Detail::getTableName(), function($sql){
+            ->leftJoin(Detail::getTableName(), function($sql){
                 $sql->on('config_linen.detail_rfid', '=', 'detail_linen.detail_rfid');
                 $sql->on('config_linen.rs_id', '=', 'detail_linen.detail_id_rs');
             })
-            ->where(Detail::field_rs_id(), $this->rs_id)
-            ->whereIn(Detail::getTableName().'.'.Detail::field_primary(), $this->rfid)
+            ->where(ConfigLinen::field_rs_id(), $this->rs_id)
+            ->whereIn('config_linen.'.ConfigLinen::field_primary(), $this->rfid)
             ->count();
 
         $comp = $check_config != $total;
@@ -108,7 +108,7 @@ class PackingRequest extends FormRequest
         $date = date('Y-m-d H:i:s');
         $user = auth()->user()->id;
 
-        $rs_name = Rs::find(Rs::field_primary(), $this->rs_id)->field_name ?? '';
+        $rs_name = Rs::find($this->rs_id)->field_name ?? '';
 
         $bersih = [];
         foreach($this->rfid as $item){

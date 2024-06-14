@@ -73,4 +73,24 @@ class Bersih extends Model
     {
         return GeneralResource::class;
     }
+
+    public function has_detail()
+    {
+        return $this->hasOne(Detail::class, Detail::field_primary(), self::field_rfid());
+    }
+
+    public function has_ruangan()
+    {
+        return $this->hasOne(Ruangan::class, Ruangan::field_primary(), self::field_ruangan_id());
+    }
+
+    public function has_rs()
+    {
+        return $this->hasOne(Rs::class, Rs::field_primary(), self::field_rs_id());
+    }
+
+    public function has_user()
+    {
+        return $this->hasOne(User::class, User::field_primary(), self::field_created_by());
+    }
 }
