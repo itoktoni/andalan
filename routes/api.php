@@ -585,10 +585,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 'ruangan_nama' => $view->view_ruangan_nama ?? '',
                 'status_transaksi' => $outstanding->outstanding_status_transaksi,
                 'status_proses' => $outstanding->outstanding_status_proses,
+                'status_kepemilikan' => $detail->detail_status_kepemilikan ?? null,
                 'tanggal_create' => $outstanding->outstanding_created_at ? Carbon::make($outstanding->outstanding_created_at)->format('Y-m-d') : null,
                 'tanggal_update' => $outstanding->outstanding_updated_at ? Carbon::make($outstanding->outstanding_updated_at)->format('Y-m-d') : null,
                 'user_nama' => $view->view_created_name ?? null,
-                'kepemilikan' => $detail->detail_status_kepemilikan ?? null,
             ];
 
             return $collection;
