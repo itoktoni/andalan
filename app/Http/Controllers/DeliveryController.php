@@ -185,14 +185,14 @@ class DeliveryController extends MasterController
                 ]);
             }
 
-            $data = $total->mapToGroups(function ($item) {
+            $data = $total->mapToGroups(function ($item) use ($cetak) {
                 $parse = [
                     'id' => $item->jenis_id,
                     'nama' => $item->jenis_nama,
                     'rs' => $item->rs_nama,
                     'lokasi' => $item->ruangan_nama,
                     'status' => $item->bersih_status,
-                    'tgl' => formatDate($item->bersih_report, 'd/M/Y'),
+                    'tgl' => formatDate($cetak->cetak_date, 'd/M/Y'),
                 ];
 
                 return [$item['jenis_id'].'#'.$item['ruangan_id'] => $parse];
