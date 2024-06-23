@@ -14,8 +14,6 @@ class RsRequest extends FormRequest
     {
         return [
             Rs::field_name() => 'required',
-            // Rs::field_harga_cuci() => 'required|numeric',
-            // Rs::field_harga_sewa() => 'required|numeric',
             'rs_code' => 'required|alpha:ascii|unique:rs,rs_code|min:3|max:3',
             'rs_status' => 'required',
             'ruangan' => 'required',
@@ -26,7 +24,6 @@ class RsRequest extends FormRequest
     public function prepareForValidation(){
 
         $this->merge([
-            Rs::field_active() => 1,
             Rs::field_code() => strtoupper($this->rs_code)
         ]);
     }
