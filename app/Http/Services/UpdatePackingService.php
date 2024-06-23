@@ -21,7 +21,6 @@ class UpdatePackingService
         $passing = $return = [];
 
         DB::beginTransaction();
-
         try {
             Bersih::insert($data->bersih);
 
@@ -37,10 +36,9 @@ class UpdatePackingService
 
             History::bulk($data->rfid, LogType::PACKING, 'Assign to Rs '.$data->rs_name, $data->rs_id);
 
-
             // CETAK PRINT
 
-            $code = $data->code;
+            $code = $data->uuid;
             $total = Bersih::where(Bersih::field_barcode(), $code)
                 ->addSelect([
                     'bersih_rfid',
