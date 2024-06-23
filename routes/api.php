@@ -398,7 +398,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         } catch (\Illuminate\Database\QueryException $th) {
             DB::rollBack();
 
-            if ($th->getCode() == 23000 && env('APP_ENV') == 'production') {
+            if ($th->getCode() == 23000) {
                 $message = explode('for key', $th->getMessage());
                 $clean = str_replace('SQLSTATE[23000]: Integrity constraint violation: 1062','RFID', $message[0]);
                 return Notes::error($clean);
