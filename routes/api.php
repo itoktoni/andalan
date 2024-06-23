@@ -334,7 +334,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
                         Outstanding::field_ruangan_id() => $request->ruangan_id,
                     ]);
 
-                    ConfigLinen::updateOrCreate(
+                    //ConfigLinen::updateOrCreate(
+                    ConfigLinen::create(
                         [
                             ConfigLinen::field_primary() => $item,
                             ConfigLinen::field_rs_id() => $rsid,
@@ -347,7 +348,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
                 } else {
                     foreach ($rsid as $id_rs) {
-                        ConfigLinen::updateOrCreate(
+                        //ConfigLinen::updateOrCreate(
+                        ConfigLinen::create(
                             [
                                 ConfigLinen::field_primary() => $item,
                                 ConfigLinen::field_rs_id() => $id_rs,
@@ -368,7 +370,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 $transaksi[] = $outstanding;
             }
 
-            Detail::upsert($detail, Detail::field_primary());
+            //Detail::upsert($detail, Detail::field_primary());
+            Detail::insert($detail);
             if($request->status_register == RegisterType::GANTI_CHIP){
                 Outstanding::upsert($transaksi, Outstanding::field_primary());
             }
