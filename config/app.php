@@ -14,10 +14,10 @@ use App\Dao\Enums\TransactionType;
 use App\Dao\Enums\UserLevel;
 use App\Dao\Models\Transaksi;
 use App\Providers\CacheableAuthUserServiceProvider;
-// use Coderello\SharedData\Facades\SharedData;
+use Coderello\SharedData\Facades\SharedData;
+//use Plugins\SharedData;
 use Illuminate\Support\Str;
 use Plugins\Query;
-use Plugins\SharedData;
 use Plugins\Template;
 use Plugins\Views;
 

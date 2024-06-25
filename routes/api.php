@@ -538,7 +538,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
                 $data_outstanding = array_merge($data_outstanding, [
                     Outstanding::field_rs_ori() => null,
-                    Outstanding::field_rs_scan() => null,
                     Outstanding::field_ruangan_id() => null,
                 ]);
             }

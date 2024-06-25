@@ -170,7 +170,7 @@ class TransaksiController extends MasterController
             $status_process = $request->{STATUS_PROCESS};
             $status_sync = SyncType::No;
 
-            $return = $transaksi = $linen = $log = [];
+            $return = $transaksi = $linen = $log = $outstanding = [];
 
             foreach ($rfid as $item) {
                 $date = date('Y-m-d H:i:s');
@@ -189,7 +189,7 @@ class TransaksiController extends MasterController
                             Transaksi::field_rs_ori() => $detail->field_rs_id,
                             Transaksi::field_rs_scan() => $request->rs_id,
                             Transaksi::field_beda_rs() => $beda_rs,
-                            Transaksi::field_ruangan_id() => $detail->ruangan_id,
+                            Transaksi::field_ruangan_id() => $detail->field_ruangan_id,
                             Transaksi::field_status_transaction() => $status_transaksi,
                             Transaksi::field_created_at() => $date,
                             Transaksi::field_created_by() => $user,
@@ -203,7 +203,7 @@ class TransaksiController extends MasterController
                             Outstanding::field_rs_ori() => $detail->field_rs_id,
                             Outstanding::field_rs_scan() => $request->rs_id,
                             Outstanding::field_status_beda_rs() => $beda_rs,
-                            Outstanding::field_ruangan_id() => $detail->ruangan_id,
+                            Outstanding::field_ruangan_id() => $detail->field_ruangan_id,
                             Outstanding::field_status_transaction() => $status_transaksi,
                             Outstanding::field_status_process() => $status_process,
                             Outstanding::field_created_at() => date('Y-m-d H:i:s'),

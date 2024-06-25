@@ -66,6 +66,7 @@
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/",
             "Alkhachatryan\\LaravelWebConsole\\": "plugins/alkhachatryan/laravel-web-console/src/",
+            "Coderello\\SharedData\\": "plugins/coderello/shared-data/src/",
             "ProtoneMedia\\LaravelFormComponents\\": "plugins/protonemedia/laravel-form-components/src/"
         },
         "files": [

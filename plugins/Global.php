@@ -6,7 +6,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Carbon as SupportCarbon;
 use Illuminate\Support\Str;
 use Plugins\Notes;
-use Plugins\SharedData;
+//use Plugins\SharedData;
+use Coderello\SharedData\Facades\SharedData;
 
 define('ACTION_CREATE', 'getCreate');
 define('ACTION_UPDATE', 'getUpdate');

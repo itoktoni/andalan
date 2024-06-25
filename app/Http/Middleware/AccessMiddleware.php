@@ -4,8 +4,11 @@ namespace App\Http\Middleware;
 
 use App\Dao\Models\SystemPermision;
 use Closure;
+use Coderello\SharedData\Facades\SharedData;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Cache;
+use Peyman3d\Share\Share;
+use Peyman3d\Share\ShareFacade;
 use Plugins\Alert;
 use Plugins\Core;
 use Plugins\Query;
@@ -112,17 +115,11 @@ class AccessMiddleware
                 'timer' => env('APP_TIMER_ALERT', 5000),
             ]);
 
-            $userID = auth()->user()->id.'-';
+            SharedData::put($data);
 
-            if ($data) {
-                foreach ($data as $key => $value) {
-                    Cache::add($userID.$key, $value, env('CACHE_TTL'));
-                }
-            }
-
-            // share($data);
         } catch (\Throwable$th) {
             //throw $th;
+            dd($th);
         }
 
         return $next($request);
