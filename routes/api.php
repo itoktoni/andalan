@@ -360,9 +360,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
                             ]
                         );
 
-                        $merge = array_merge($merge, [
-                            Detail::field_rs_id() => $id_rs,
-                        ]);
+                        // $merge = array_merge($merge, [
+                        //     Detail::field_rs_id() => $id_rs,
+                        // ]);
                     }
                 }
 
