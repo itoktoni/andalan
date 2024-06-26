@@ -4,6 +4,7 @@ namespace App\Dao\Repositories;
 
 use App\Dao\Interfaces\CrudInterface;
 use App\Dao\Models\Detail;
+use App\Dao\Models\ViewConfigLinen;
 use App\Dao\Models\ViewDetailLinen;
 use Illuminate\Support\Facades\DB;
 use Plugins\Notes;
@@ -40,6 +41,13 @@ class DetailRepository extends MasterRepository implements CrudInterface
     public function getPrint()
     {
         $sql = ViewDetailLinen::query()->filter();
+
+        return $sql;
+    }
+
+    public function getConfig()
+    {
+        $sql = ViewConfigLinen::query()->filter();
 
         return $sql;
     }

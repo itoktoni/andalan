@@ -11,7 +11,7 @@ use App\Dao\Models\ViewDetailLinen;
 use App\Dao\Repositories\DetailRepository;
 use Illuminate\Http\Request;
 
-class ReportRegisterLinenController extends MinimalController
+class ReportConfigLinenController extends MinimalController
 {
     public $data;
 
@@ -40,7 +40,7 @@ class ReportRegisterLinenController extends MinimalController
 
     private function getQuery($request)
     {
-        return self::$repository->getConfig()->get();
+        return self::$repository->getPrint()->get();
     }
 
     public function getPrint(Request $request)

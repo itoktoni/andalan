@@ -47,11 +47,14 @@ class JenisLinenRepository extends MasterRepository implements CrudInterface
 
     public function getParstok()
     {
-        return Detail::query()
-            ->addSelect(['*', DB::raw('count(detail_rfid) as qty')])
+        $query = Detail::query()
+            ->addSelect(['*', DB::raw('count(config_linen.detail_rfid) as qty')])
+            ->join('config_linen', 'detail_linen.detail_rfid', '=', 'config_linen.detail_rfid')
+            ->join('rs', 'rs.rs_id', '=', 'config_linen.rs_id')
             ->leftJoinRelationship('has_jenis')
-            ->leftJoinRelationship('has_rs')
             ->groupBy(Detail::field_jenis_id())
             ->filter();
+
+        return $query;
     }
 }

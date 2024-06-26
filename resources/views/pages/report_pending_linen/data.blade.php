@@ -40,7 +40,6 @@
 				<th>RUANGAN</th>
 				<th>JUMLAH PEMAKAIAN LINEN</th>
 				<th>TANGGAL REGISTER</th>
-				<th>TANGGAL PENERIMAAN</th>
 				<th>STATUS</th>
 				<th>PROSES TERAKHIR</th>
 			</tr>
@@ -55,11 +54,10 @@
 				<td>{{ $loop->iteration }}</td>
 				<td>{{ $table->field_primary }}</td>
 				<td>{{ $table->field_name }}</td>
-				<td>{{ $table->field_rs_name }}</td>
+				<td>{{ $table->field_rs_ori_name }}</td>
 				<td>{{ $table->field_ruangan_name }}</td>
 				<td class="text-right">{{ $table->view_pemakaian ?? 0 }}</td>
-				<td>{{ formatDate($table->field_tanggal_create) }}</td>
-				<td>{{ formatDate($table->view_tanggal_update, true) }}</td>
+				<td>{{ formatDate($table->view_register_at) }}</td>
 				<td>{{ TransactionType::getDescription($table->view_status_transaksi) }}</td>
 				<td>{{ ProcessType::getDescription($table->view_log_status) }}</td>
 			</tr>

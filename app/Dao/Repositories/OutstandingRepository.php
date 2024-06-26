@@ -36,4 +36,12 @@ class OutstandingRepository extends MasterRepository implements CrudInterface
 
         return $query;
     }
+
+    public function getPrint()
+    {
+        $query = ViewOutstanding::query()
+            ->sortable()->filter();
+
+        return $query;
+    }
 }

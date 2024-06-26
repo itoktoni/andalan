@@ -89,6 +89,16 @@ trait ViewDetailLinenEntity
         return $this->{$this->field_status_register()};
     }
 
+    public static function field_status_kepemilikan()
+    {
+        return 'view_status_kepemilikan';
+    }
+
+    public function getFieldStatusKepemilikanAttribute()
+    {
+        return $this->{$this->field_status_kepemilikan()};
+    }
+
     public function getFieldStatusRegisterNameAttribute()
     {
         return RegisterType::getDescription($this->getFieldStatusRegisterAttribute());

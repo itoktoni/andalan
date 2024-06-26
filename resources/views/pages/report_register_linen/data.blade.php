@@ -40,6 +40,7 @@
 				<th>RUANGAN</th>
 				<th>CUCI/RENTAL</th>
 				<th>STATUS REGISTRASI</th>
+				<th>STATUS KEPEMILIKAN</th>
 				<th>TANGGAL REGISTER</th>
 				<th>OPERATOR</th>
 			</tr>
@@ -56,8 +57,9 @@
 				<td>{{ $table->field_name }}</td>
 				<td>{{ $table->field_rs_name }}</td>
 				<td>{{ $table->field_ruangan_name }}</td>
-				<td>{{ $table->field_status_cuci_name }}</td>
-				<td>{{ $table->field_status_register_name }}</td>
+				<td>{{ $table->field_status_cuci }}</td>
+				<td>{{ $table->field_status_register }}</td>
+				<td>{{ $table->field_status_kepemilikan }}</td>
 				<td>{{ formatDate($table->field_tanggal_create) }}</td>
 				<td>{{ $table->field_created_name }}</td>
 			</tr>

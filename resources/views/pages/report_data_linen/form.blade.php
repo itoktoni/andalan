@@ -8,7 +8,7 @@
 
             <input type="hidden" name="report_name" value="Laporan Data Linen">
 
-            <livewire:dropdown />
+            <livewire:dropdownrs />
 
         @endbind
 
