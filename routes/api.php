@@ -8,6 +8,7 @@ use App\Dao\Enums\OwnershipType;
 use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\RegisterType;
 use App\Dao\Enums\TransactionType;
+use App\Dao\Models\Bersih;
 use App\Dao\Models\Cetak;
 use App\Dao\Models\ConfigLinen;
 use App\Dao\Models\Detail;
@@ -646,9 +647,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
 
     Route::get('total/delivery/{rsid}', function ($rsid) {
-        $data = Transaksi::whereNull(Transaksi::field_delivery())
-            ->whereNotNull(Transaksi::field_barcode())
-            ->where(Transaksi::field_rs_ori(), $rsid)
+        $data = Bersih::whereNull(Bersih::field_delivery())
+            ->whereNotNull(Bersih::field_barcode())
+            ->where(Bersih::field_rs_id(), $rsid)
             ->count();
 
         return Notes::data(['total' => $data]);
