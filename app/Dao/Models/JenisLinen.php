@@ -30,7 +30,6 @@ class JenisLinen extends Model
         'jenis_deskripsi',
         'jenis_id_rs',
         'jenis_gambar',
-        'jenis_parstok',
         'jenis_berat',
     ];
 

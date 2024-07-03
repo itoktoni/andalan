@@ -23,6 +23,7 @@ use App\Dao\Models\Ruangan;
 use App\Dao\Models\Supplier;
 use App\Dao\Models\Transaksi;
 use App\Dao\Models\ViewDetailLinen;
+use App\Dao\Models\ViewTotalJenis;
 use App\Http\Controllers\BersihController;
 use App\Http\Controllers\DeliveryController;
 use App\Http\Controllers\TransaksiController;
@@ -656,15 +657,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
         return Notes::data(['total' => $data]);
     });
 
-    Route::get('total/delivery/{rsid}/{transaksi}', function ($rsid, $transaksi) {
+    Route::get('total/parstok/{rsid}/{jenis}', function ($rsid, $jenis) {
 
-        $data = Transaksi::whereNull(Transaksi::field_delivery())
-            ->whereNotNull(Transaksi::field_barcode())
-            ->where(Transaksi::field_status_transaction(), $transaksi)
-            ->where(Transaksi::field_rs_ori(), $rsid)
-            ->count();
+        $data = ViewTotalJenis::where(ViewTotalJenis::field_rs_id(), $rsid)
+            ->where(ViewTotalJenis::field_primary(), $jenis)
+            ->first();
 
-        return Notes::data(['total' => $data]);
+        return Notes::data($data);
     });
 
     Route::get('opname', function (Request $request) {

@@ -23,4 +23,24 @@ trait ViewTotalJenisEntity
     {
         return $this->{$this->field_total()};
     }
+
+    public static function field_rs_id()
+    {
+        return 'view_rs_id';
+    }
+
+    public function getFieldRsIdAttribute()
+    {
+        return $this->{$this->field_rs_id()};
+    }
+
+    public static function field_parstok()
+    {
+        return 'view_parstok';
+    }
+
+    public function getFieldParstokAttribute()
+    {
+        return $this->{$this->field_parstok()};
+    }
 }
