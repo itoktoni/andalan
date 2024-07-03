@@ -661,7 +661,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
         $data = ViewTotalJenis::where(ViewTotalJenis::field_rs_id(), $rsid)
             ->where(ViewTotalJenis::field_primary(), $jenis)
-            ->first();
+            ->first() ?? [];
 
         return Notes::data($data);
     });
