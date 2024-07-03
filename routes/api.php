@@ -659,9 +659,16 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::get('total/parstok/{rsid}/{jenis}', function ($rsid, $jenis) {
 
+        $kosong = [
+            'view_jenis_id' => 0,
+            'view_rs_id' => 0,
+            'view_parstok' => 0,
+            'view_jenis_total' => 0,
+        ];
+
         $data = ViewTotalJenis::where(ViewTotalJenis::field_rs_id(), $rsid)
             ->where(ViewTotalJenis::field_primary(), $jenis)
-            ->first() ?? ['view_parstok' => 0];
+            ->first() ?? $kosong;
 
         return Notes::data($data);
     });
