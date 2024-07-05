@@ -52,7 +52,7 @@ class CheckHilang extends Command
 
         if ($outstanding) {
 
-            $rfid = $outstanding->pluck(Outstanding::field_rfid());
+            $rfid = $outstanding->pluck(Outstanding::field_primary());
 
             History::bulk($rfid, ProcessType::PENDING, 'RFID HILANG');
 
