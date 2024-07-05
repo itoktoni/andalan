@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Dao\Enums\ProcessType;
 use App\Dao\Models\Detail;
+use App\Dao\Models\Outstanding;
 use App\Dao\Models\Transaksi;
 use App\Dao\Models\ViewDetailLinen;
 use Illuminate\Console\Command;
@@ -43,33 +44,22 @@ class CheckPending extends Command
      */
     public function handle()
     {
-
-        // $outstanding = Detail::whereDate(Detail::UPDATED_AT, '>=', Carbon::now()->subMinutes(1440)->toDateString())
-        //     ->whereDate(Detail::UPDATED_AT, '<', Carbon::now()->toDateString())
-        //     ->whereNotIn(Detail::field_status_transaction(), BERSIH)
-        //     ->where(Detail::field_status_process(), '!=', ProcessType::Pending)
-        //     ->get();
-
-        $outstanding = Transaksi::query()
-            ->select(Transaksi::field_rfid())
-            ->joinRelationship(HAS_DETAIL)
-            ->whereDate(ViewDetailLinen::field_tanggal_update(), '>=', Carbon::now()->subMinutes(1440)->toDateString())
-            ->whereDate(ViewDetailLinen::field_tanggal_update(), '<', Carbon::now()->toDateString())
-            ->whereNull(Transaksi::field_status_bersih())
-            ->whereNotIn(ViewDetailLinen::field_status_trasaction(), BERSIH)
-            ->where(ViewDetailLinen::field_status_process(), '!=', ProcessType::Pending)
+        $outstanding = Outstanding::query()
+            ->select(Outstanding::field_primary())
+            ->whereDate(Outstanding::field_updated_at(), '>=', Carbon::now()->subMinutes(1440)->toDateString())
+            ->whereDate(Outstanding::field_updated_at(), '<', Carbon::now()->toDateString())
+            ->whereNotIn(Outstanding::field_status_process(), [ProcessType::PENDING, ProcessType::HILANG])
             ->get();
 
         if ($outstanding) {
 
-            $rfid = $outstanding->pluck(Transaksi::field_rfid());
+            $rfid = $outstanding->pluck(Outstanding::field_primary());
 
-            PluginsHistory::bulk($rfid, ProcessType::Pending, 'RFID Pending');
-            Detail::whereIn(Detail::field_primary(), $rfid)->update([
-                Detail::field_status_process() => ProcessType::Pending,
-                // Detail::field_updated_at() => date('Y-m-d H:i:s'),
-                Detail::field_pending_created_at() => date('Y-m-d H:i:s'),
-                Detail::field_pending_updated_at() => date('Y-m-d H:i:s'),
+            PluginsHistory::bulk($rfid, ProcessType::PENDING, 'RFID Pending');
+            Outstanding::whereIn(Outstanding::field_primary(), $rfid)->update([
+                Outstanding::field_status_process() => ProcessType::PENDING,
+                Outstanding::field_pending_created_at() => date('Y-m-d H:i:s'),
+                Outstanding::field_pending_updated_at() => date('Y-m-d H:i:s'),
             ]);
         }
 

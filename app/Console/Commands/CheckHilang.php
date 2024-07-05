@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Dao\Enums\ProcessType;
-use App\Dao\Models\Detail;
+use App\Dao\Models\Outstanding;
 use App\Dao\Models\Transaksi;
 use App\Dao\Models\ViewDetailLinen;
 use Illuminate\Console\Command;
@@ -44,31 +44,24 @@ class CheckHilang extends Command
     public function handle()
     {
 
-        // $outstanding = Detail::whereDate(Detail::UPDATED_AT, '<=', Carbon::now()->subMinutes(4320)->toDateString())
-        //     ->whereNotIn(Detail::field_status_transaction(), BERSIH)
-        //     ->where(Detail::field_status_process(), '!=', ProcessType::Hilang)
-        //     ->get();
-
-        $outstanding = Transaksi::query()
-            ->select(Transaksi::field_rfid())
-            ->joinRelationship(HAS_DETAIL)
-            ->whereDate(ViewDetailLinen::field_tanggal_update(), '<=', Carbon::now()->subMinutes(4320)->toDateString())
-            ->whereNull(Transaksi::field_status_bersih())
-            ->whereNotIn(ViewDetailLinen::field_status_trasaction(), BERSIH)
-            ->where(ViewDetailLinen::field_status_process(), '!=', ProcessType::Hilang)
+        $outstanding = Outstanding::query()
+            ->select(Outstanding::field_primary())
+            ->whereDate(Outstanding::field_updated_at(), '<=', Carbon::now()->subMinutes(4320)->toDateString())
+            ->where(Outstanding::field_status_process(), '!=', ProcessType::HILANG)
             ->get();
 
         if ($outstanding) {
 
-            $rfid = $outstanding->pluck(Transaksi::field_rfid());
+            $rfid = $outstanding->pluck(Outstanding::field_rfid());
 
-            History::bulk($rfid, ProcessType::Pending, 'RFID Hilang');
-            Detail::whereIn(Detail::field_primary(), $rfid)->update([
-                Detail::field_pending_created_at() => null,
-                Detail::field_pending_updated_at() => null,
-                Detail::field_status_process() => ProcessType::Hilang,
-                Detail::field_hilang_updated_at() => date('Y-m-d H:i:s'),
-                Detail::field_hilang_created_at() => date('Y-m-d H:i:s'),
+            History::bulk($rfid, ProcessType::PENDING, 'RFID HILANG');
+
+            Outstanding::whereIn(Outstanding::field_primary(), $rfid)->update([
+                Outstanding::field_pending_created_at() => null,
+                Outstanding::field_pending_updated_at() => null,
+                Outstanding::field_status_process() => ProcessType::HILANG,
+                Outstanding::field_hilang_updated_at() => date('Y-m-d H:i:s'),
+                Outstanding::field_hilang_created_at() => date('Y-m-d H:i:s'),
             ]);
         }
 
