@@ -552,6 +552,20 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 $transaksi_status = TransactionType::KOTOR;
                 if($detail->field_status_linen == TransactionType::REGISTER){
                     $transaksi_status = TransactionType::REGISTER;
+
+                    Transaksi::create([
+                        Transaksi::field_key() => $autoNumber,
+                        Transaksi::field_rfid() => $rfid,
+                        Transaksi::field_rs_ori() => $detail->detail_id_rs,
+                        Transaksi::field_rs_scan() => $detail->detail_id_rs,
+                        Transaksi::field_beda_rs() => BedaRsType::NO,
+                        Transaksi::field_ruangan_id() => $detail->detail_id_ruangan,
+                        Transaksi::field_status_transaction() => $transaksi_status,
+                        Transaksi::field_created_by() => $user,
+                        Transaksi::field_updated_at() => $date,
+                        Transaksi::field_updated_by() => $user,
+                    ]);
+
                 } else {
                     // CHECK TRANSACTION DATA IF NOT PRESENT
                     Transaksi::create([
