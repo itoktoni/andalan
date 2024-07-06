@@ -65,6 +65,7 @@ class RsController extends MasterController
         $this->beforeUpdate($code);
 
         return moduleView(modulePathForm('jenis'), $this->share([
+            'code' => $code,
             'model' => $data,
             'jenis' => $jenis,
         ]));

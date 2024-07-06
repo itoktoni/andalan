@@ -19,6 +19,7 @@
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $item->field_name }}</td>
                             <td>
+                                <input type="hidden" name="jenis[{{ $loop->index }}][rs_id]" value="{{ $code }}">
                                 <input type="hidden" name="jenis[{{ $loop->index }}][jenis_id]" value="{{ $item->field_primary }}">
                                 <input class="form-control" style="width: 100%" type="text" name="jenis[{{ $loop->index }}][parstock]" value="{{ $item->pivot->parstock }}">
                             </td>
