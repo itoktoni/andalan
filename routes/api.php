@@ -662,7 +662,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
 
     Route::get('total/delivery/{transaksi}/{rsid}/{jenis}', function ($transaksi, $rsid, $jenis) {
-        $data = DB::table('view_outstanding')
+        $data = DB::table('view_total_outstanding')
             ->where('view_status', $transaksi)
             ->where('view_rs_id', $rsid)
             ->where('view_jenis_id', $jenis)
