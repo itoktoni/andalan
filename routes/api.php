@@ -661,14 +661,14 @@ Route::middleware(['auth:sanctum'])->group(function () {
         return Notes::data($data->get());
     });
 
-    Route::get('total/delivery/{transaksi}/{rsid}', function ($transaksi,$rsid) {
-        $data = Bersih::whereNull(Bersih::field_delivery())
-            ->whereNotNull(Bersih::field_barcode())
-            ->where(Bersih::field_status_transaction(), $transaksi)
-            ->where(Bersih::field_rs_id(), $rsid)
-            ->count();
+    Route::get('total/delivery/{transaksi}/{rsid}/{jenis}', function ($transaksi, $rsid, $jenis) {
+        $data = DB::table('view_outstanding')
+            ->where('view_status', $transaksi)
+            ->where('view_rs_id', $rsid)
+            ->where('view_jenis_id', $jenis)
+            ->first();
 
-        return Notes::data(['total' => $data]);
+        return Notes::data(['total' => $data->view_jenis_total ?? 0]);
     });
 
     Route::get('total/parstok/{rsid}/{jenis}', function ($rsid, $jenis) {
