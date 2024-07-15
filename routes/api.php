@@ -594,8 +594,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 ]));
             }
 
-            DB::commit();
-
             $collection = [
                 'rfid' => $rfid ?? '',
                 'linen_id' => $view->view_linen_id ?? '',
@@ -611,6 +609,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 'tanggal_update' => $outstanding->outstanding_updated_at ? Carbon::make($outstanding->outstanding_updated_at)->format('Y-m-d') : null,
                 'user_nama' => $view->view_created_name ?? null,
             ];
+
+            $detail->update([
+                Detail::field_status_linen() => TransactionType::KOTOR,
+            ]);
+
+            DB::commit();
 
             return $collection;
 
