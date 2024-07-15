@@ -234,6 +234,7 @@ class DeliveryController extends MasterController
                 'bersih_status',
                 'bersih_report',
                 'rs_nama',
+                'ruangan_id',
                 'ruangan_nama',
                 'jenis_id',
                 'jenis_nama',

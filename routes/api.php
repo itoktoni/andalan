@@ -674,6 +674,14 @@ Route::middleware(['auth:sanctum'])->group(function () {
         return Notes::data(['total' => $data->view_jenis_total ?? 0]);
     });
 
+    Route::get('total/delivery/{rsid}', function ($rsid) {
+        $data = DB::table('view_total_outstanding')
+            ->where('view_rs_id', $rsid)
+            ->first();
+
+        return Notes::data(['total' => $data->view_jenis_total ?? 0]);
+    });
+
     Route::get('total/parstok/{rsid}/{jenis}', function ($rsid, $jenis) {
 
         $kosong = [
