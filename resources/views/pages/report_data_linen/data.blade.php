@@ -36,7 +36,7 @@
 				<th>RUANGAN</th>
 				<th>CUCI/RENTAL</th>
 				<th>JUMLAH BERSIH</th>
-				<th>JUMLAH RETUR</th>
+				<th>JUMLAH REJECT</th>
 				<th>JUMLAH REWASH</th>
 				<th>POSISI TERAKHIR</th>
 				<th>TGL POSISI TERAKHIR</th>

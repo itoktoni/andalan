@@ -43,7 +43,6 @@
                 @foreach($location as $loc)
                     <th>{{ $loc->field_name }}</th>
                 @endforeach
-                <th>Belum teregister</th>
                 <th>Beda RS</th>
                 <th>Total Kotor (Pcs)</th>
                 <th>(Kg) Kotor</th>
@@ -75,7 +74,6 @@
                             {{ $total_ruangan > 0 ? $total_ruangan : '0' }}
                         </td>
                     @endforeach
-                    <td><!-- tempat belum register --></td>
                     <td><!-- tempat beda rs --></td>
                     <td>
                         @php
@@ -106,23 +104,6 @@
 			@endforelse
             <tr>
                 <td>{{ $total_number + 1 }}</td>
-                <td>Belum Register</td>
-                @foreach($location as $loc)
-                <td></td>
-                @endforeach
-                <td>
-                @php
-                $total_belum_register = $kotor->sum('view_qty_belum_register');
-                @endphp
-                {{ $total_belum_register > 0 ? $total_belum_register : '0' }}
-                </td>
-                <td></td>
-                <td>{{ $total_belum_register }}</td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>{{ $total_number + 2 }}</td>
                 <td>Linen Lain</td>
                 @foreach($location as $loc)
                 <td></td>
@@ -130,7 +111,7 @@
                 <td></td>
                 <td>
                 @php
-                $total_beda_rs = $kotor->sum('view_qty_beda_rs');
+                $total_beda_rs = $kotor->whereNull('view_ruangan_id')->sum('view_qty');
                 @endphp
                 {{ $total_beda_rs }}
                 </td>
