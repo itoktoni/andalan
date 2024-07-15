@@ -521,6 +521,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
             ]);
 
             $code = env('CODE_KOTOR', 'KTR');
+            if($detail->field_status_linen == TransactionType::REGISTER){
+                $code = env('CODE_REGISTER', 'REG');
+            }
             $autoNumber = Query::autoNumber(Outstanding::getTableName(), Outstanding::field_key(), $code . date('ymd'), env('AUTO_NUMBER', 15));
 
             // CHECK OUTSTANDING DATA
