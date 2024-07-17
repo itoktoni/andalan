@@ -711,7 +711,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
             'view_status' => "",
         ];
 
-        $data = DB::table('view_total_bersih_dedicated')
+        $data = DB::table('view_total_bersih_free')
             ->where('view_rs_id', $rsid)
             ->where('view_jenis_id', $jenis)
             ->where('view_ruangan_id', $ruangan)
