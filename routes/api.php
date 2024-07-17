@@ -668,39 +668,60 @@ Route::middleware(['auth:sanctum'])->group(function () {
         return Notes::data($data->get());
     });
 
-    Route::get('total/delivery/{transaksi}/{rsid}/{jenis}', function ($transaksi, $rsid, $jenis) {
-        $data = DB::table('view_total_outstanding')
-            ->where('view_status', $transaksi)
+
+
+
+    Route::get('total/delivery/{rsid}/{status}', function ($rsid, $status) {
+        $data = DB::table('view_total_bersih_dedicated')
             ->where('view_rs_id', $rsid)
-            ->where('view_jenis_id', $jenis)
+            ->where('view_status', $status)
             ->first();
 
-        return Notes::data(['total' => $data->view_jenis_total ?? 0]);
+        return Notes::data(['total' => $data->view_total ?? 0]);
     });
 
-    Route::get('total/delivery/{rsid}', function ($rsid) {
-        $data = DB::table('view_total_outstanding')
-            ->where('view_rs_id', $rsid)
-            ->first();
-
-        return Notes::data(['total' => $data->view_jenis_total ?? 0]);
-    });
-
-    Route::get('total/parstok/{rsid}/{jenis}', function ($rsid, $jenis) {
+    Route::get('total/outstanding/{rsid}/{ruangan}/{jenis}/{transaksi}', function ($rsid, $ruangan, $jenis, $transaksi) {
 
         $kosong = [
             'view_jenis_id' => 0,
+            'view_ruangan_id' => 0,
             'view_rs_id' => 0,
-            'view_parstok' => 0,
-            'view_jenis_total' => 0,
+            'view_total' => 0,
+            'view_status' => "",
         ];
 
-        $data = ViewTotalJenis::where(ViewTotalJenis::field_rs_id(), $rsid)
-            ->where(ViewTotalJenis::field_primary(), $jenis)
+        $data = DB::table('view_total_transaksi')
+            ->where('view_rs_id', $rsid)
+            ->where('view_jenis_id', $jenis)
+            ->where('view_ruangan_id', $ruangan)
+            ->where('view_status', $transaksi)
             ->first() ?? $kosong;
 
         return Notes::data($data);
     });
+
+
+    Route::get('total/bersih/{rsid}/{ruangan}/{jenis}/{transaksi}', function ($rsid, $ruangan, $jenis, $transaksi) {
+
+        $kosong = [
+            'view_jenis_id' => 0,
+            'view_ruangan_id' => 0,
+            'view_rs_id' => 0,
+            'view_total' => 0,
+            'view_status' => "",
+        ];
+
+        $data = DB::table('view_total_bersih_dedicated')
+            ->where('view_rs_id', $rsid)
+            ->where('view_jenis_id', $jenis)
+            ->where('view_ruangan_id', $ruangan)
+            ->where('view_status', $transaksi)
+            ->first() ?? $kosong;
+
+        return Notes::data($data);
+    });
+
+
 
     Route::get('opname', function (Request $request) {
         try {
