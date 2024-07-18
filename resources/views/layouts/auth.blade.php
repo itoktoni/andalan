@@ -86,14 +86,9 @@
                                                     <div class="testi-contain text-white">
                                                         <i class="bx bxs-quote-alt-left text-success display-6"></i>
 
-                                                        <h4 class="mt-4 fw-medium lh-base text-white">“I feel confident
-                                                            imposing change
-                                                            on myself. It's a lot more progressing fun than looking back.
-                                                            That's why
-                                                            I ultricies enim
-                                                            at malesuada nibh diam on tortor neaded to throw curve balls.”
+                                                        <h4 class="mt-4 fw-medium lh-base text-white">“Scale Up Your Laundry with RFID Technology”
                                                         </h4>
-                                                        <div class="mt-4 pt-3 pb-5">
+                                                        {{-- <div class="mt-4 pt-3 pb-5">
                                                             <div class="d-flex align-items-start">
                                                                 <div class="flex-shrink-0">
                                                                     <img src="assets/images/users/avatar-1.jpg" class="avatar-md img-fluid rounded-circle" alt="...">
@@ -104,7 +99,7 @@
                                                                     <p class="mb-0 text-white-50">Web Designer</p>
                                                                 </div>
                                                             </div>
-                                                        </div>
+                                                        </div> --}}
                                                     </div>
                                                 </div>
 
@@ -112,13 +107,8 @@
                                                     <div class="testi-contain text-white">
                                                         <i class="bx bxs-quote-alt-left text-success display-6"></i>
 
-                                                        <h4 class="mt-4 fw-medium lh-base text-white">“Our task must be to
-                                                            free ourselves by widening our circle of compassion to embrace
-                                                            all living
-                                                            creatures and
-                                                            the whole of quis consectetur nunc sit amet semper justo. nature
-                                                            and its beauty.”</h4>
-                                                        <div class="mt-4 pt-3 pb-5">
+                                                        <h4 class="mt-4 fw-medium lh-base text-white">“RFID Makes Your Work Easier”</h4>
+                                                        {{-- <div class="mt-4 pt-3 pb-5">
                                                             <div class="d-flex align-items-start">
                                                                 <div class="flex-shrink-0">
                                                                     <img src="assets/images/users/avatar-2.jpg" class="avatar-md img-fluid rounded-circle" alt="...">
@@ -129,11 +119,11 @@
                                                                     <p class="mb-0 text-white-50">Web Developer</p>
                                                                 </div>
                                                             </div>
-                                                        </div>
+                                                        </div> --}}
                                                     </div>
                                                 </div>
 
-                                                <div class="carousel-item">
+                                                {{-- <div class="carousel-item">
                                                     <div class="testi-contain text-white">
                                                         <i class="bx bxs-quote-alt-left text-success display-6"></i>
 
@@ -155,7 +145,7 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                </div> --}}
                                             </div>
                                             <!-- end carousel-inner -->
                                         </div>
