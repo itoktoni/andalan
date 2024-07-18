@@ -3,24 +3,16 @@
 
         <div class="col-xl-3 col-md-6">
             <!-- card -->
-            <div class="card card-h-100">
+            <div class="card card-h-50">
                 <!-- card body -->
                 <div class="card-body">
                     <div class="row align-items-center">
-                        <div class="col-6">
-                            <span class="text-muted mb-3 lh-1 d-block text-truncate">My Wallet</span>
+                        <div class="col-12">
+                            <span class="text-muted mb-3 lh-1 d-block text-truncate">Total Rumah Sakit</span>
                             <h4 class="mb-3">
-                                $<span class="counter-value" data-target="865.2">0</span>k
+                                <span class="counter-value" data-target="27"></span>
                             </h4>
                         </div>
-
-                        <div class="col-6">
-                            <div id="mini-chart1" data-colors='["#5156be"]' class="apex-charts mb-2"></div>
-                        </div>
-                    </div>
-                    <div class="text-nowrap">
-                        <span class="badge bg-soft-success text-success">+$20.9k</span>
-                        <span class="ms-1 text-muted font-size-13">Since last week</span>
                     </div>
                 </div><!-- end card body -->
             </div><!-- end card -->
@@ -28,23 +20,16 @@
 
         <div class="col-xl-3 col-md-6">
             <!-- card -->
-            <div class="card card-h-100">
+            <div class="card card-h-50">
                 <!-- card body -->
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-6">
-                            <span class="text-muted mb-3 lh-1 d-block text-truncate">Number of Trades</span>
+                            <span class="text-muted mb-3 lh-1 d-block text-truncate">Total Linen</span>
                             <h4 class="mb-3">
-                                <span class="counter-value" data-target="6258">0</span>
+                                <span class="counter-value" data-target="6258"></span>
                             </h4>
                         </div>
-                        <div class="col-6">
-                            <div id="mini-chart2" data-colors='["#5156be"]' class="apex-charts mb-2"></div>
-                        </div>
-                    </div>
-                    <div class="text-nowrap">
-                        <span class="badge bg-soft-danger text-danger">-29 Trades</span>
-                        <span class="ms-1 text-muted font-size-13">Since last week</span>
                     </div>
                 </div><!-- end card body -->
             </div><!-- end card -->
@@ -52,23 +37,16 @@
 
         <div class="col-xl-3 col-md-6">
             <!-- card -->
-            <div class="card card-h-100">
+            <div class="card card-h-50">
                 <!-- card body -->
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-6">
-                            <span class="text-muted mb-3 lh-1 d-block text-truncate">Invested Amount</span>
+                            <span class="text-muted mb-3 lh-1 d-block text-truncate">Kotor Hari Ini</span>
                             <h4 class="mb-3">
-                                $<span class="counter-value" data-target="4.32">0</span>M
+                                <span class="counter-value" data-target="240"></span>
                             </h4>
                         </div>
-                        <div class="col-6">
-                            <div id="mini-chart3" data-colors='["#5156be"]' class="apex-charts mb-2"></div>
-                        </div>
-                    </div>
-                    <div class="text-nowrap">
-                        <span class="badge bg-soft-success text-success">+ $2.8k</span>
-                        <span class="ms-1 text-muted font-size-13">Since last week</span>
                     </div>
                 </div><!-- end card body -->
             </div><!-- end card -->
@@ -76,23 +54,16 @@
 
         <div class="col-xl-3 col-md-6">
             <!-- card -->
-            <div class="card card-h-100">
+            <div class="card card-h-50">
                 <!-- card body -->
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-6">
-                            <span class="text-muted mb-3 lh-1 d-block text-truncate">Profit Ration</span>
+                            <span class="text-muted mb-3 lh-1 d-block text-truncate">Bersih Hari Ini</span>
                             <h4 class="mb-3">
-                                <span class="counter-value" data-target="12.57">0</span>%
+                                <span class="counter-value" data-target="230"></span>
                             </h4>
                         </div>
-                        <div class="col-6">
-                            <div id="mini-chart4" data-colors='["#5156be"]' class="apex-charts mb-2"></div>
-                        </div>
-                    </div>
-                    <div class="text-nowrap">
-                        <span class="badge bg-soft-success text-success">+ $2.8k</span>
-                        <span class="ms-1 text-muted font-size-13">Since last week</span>
                     </div>
                 </div><!-- end card body -->
             </div><!-- end card -->

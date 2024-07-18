@@ -16,9 +16,9 @@ class DashboardKotorHarian
     public function build(): \ArielMejiaDev\LarapexCharts\PieChart
     {
         return $this->chart->pieChart()
-            ->setTitle('Top 3 scorers of the team.')
-            ->setSubtitle('Season 2021.')
-            ->addData([40, 50, 30])
-            ->setLabels(['Player 7', 'Player 10', 'Player 9']);
+            ->setTitle('Sebaran Linen di Rumah Sakit.')
+            ->setSubtitle('Tahun 2024.')
+            ->addData([10294, 6567, 8035])
+            ->setLabels(['Siloam Kebon Jeruk', 'Carolus Serpong', 'Premier Bintaro']);
     }
 }

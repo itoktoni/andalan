@@ -16,10 +16,10 @@ class DashboardBersihHarian
     public function build(): \ArielMejiaDev\LarapexCharts\LineChart
     {
         return $this->chart->lineChart()
-            ->setTitle('Sales during 2021.')
-            ->setSubtitle('Physical sales vs Digital sales.')
-            ->addData('Physical sales', [40, 93, 35, 42, 18, 82])
-            ->addData('Digital sales', [70, 29, 77, 28, 55, 45])
-            ->setXAxis(['January', 'February', 'March', 'April', 'May', 'June']);
+            ->setTitle('Perbandingan Bersih dan Kotor Minggu ini')
+            ->setSubtitle('Bersih vs Kotor.')
+            ->addData('Bersih', [40, 93, 35, 42, 18, 82])
+            ->addData('Kotor', [70, 29, 77, 28, 55, 45])
+            ->setXAxis(['Tgl 01', 'Tgl 02', 'Tgl 03', 'Tgl 04', 'Tgl 05', 'Tgl 06']);
     }
 }
