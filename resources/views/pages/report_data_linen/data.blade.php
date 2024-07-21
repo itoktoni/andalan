@@ -40,7 +40,6 @@
 				<th>JUMLAH REWASH</th>
 				<th>POSISI TERAKHIR</th>
 				<th>TGL POSISI TERAKHIR</th>
-				<th>OPERATOR UPDATE TERAKHIR</th>
 				<th>STATUS REGISTER</th>
 				<th>TGL REGISTRASI</th>
 				<th>OPERATOR REGISTRASI</th>
@@ -64,9 +63,8 @@
 				<td>{{ $table->field_bersih ?? 0 }}</td>
 				<td>{{ $table->field_retur ?? 0 }}</td>
 				<td>{{ $table->field_rewash ?? 0 }}</td>
-				<td>{{ $table->field_status_process_name }}</td>
+				<td>{{ $table->field_status_process }}</td>
 				<td>{{ formatDate($table->field_tanggal_update) }}</td>
-				<td>{{ $table->field_updated_name }}</td>
 				<td>{{ $table->field_status_register_name }}</td>
 				<td>{{ formatDate($table->field_tanggal_create) }}</td>
 				<td>{{ $table->field_created_name }}</td>

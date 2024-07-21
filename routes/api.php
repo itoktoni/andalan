@@ -35,6 +35,7 @@ use App\Http\Resources\DetailResource;
 use App\Http\Resources\DownloadCollection;
 use App\Http\Resources\OpnameResource;
 use App\Http\Resources\RsResource;
+use App\Http\Resources\RsSingleResource;
 use App\Http\Services\SaveOpnameService;
 use App\PushSubscription;
 use Illuminate\Http\Request;
@@ -140,33 +141,44 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::get('rs', function (Request $request) {
 
+        $type = $request->type;
+
         $status_register = [];
-        foreach (RegisterType::getInstances() as $key => $value) {
-            if(!empty($value->value)){
-                $status_register[] = [
-                    'status_id' => $key,
-                    'status_nama' => formatCapitilizeSentance($value->description),
-                ];
-            }
-        }
-
         $status_cuci = [];
-        foreach (CuciType::getInstances() as $key => $value) {
-            if(!empty($value->value)){
-                $status_cuci[] = [
-                    'status_id' => $key,
-                    'status_nama' => formatCapitilizeSentance($value->description),
-                ];
-            }
-        }
-
         $status_proses = [];
-        foreach (ProcessType::getInstances() as $key => $value) {
-            if(!empty($value->value)){
-                $status_proses[] = [
-                    'status_id' => $key,
-                    'status_nama' => formatCapitilizeSentance($value->description),
-                ];
+        $data_supplier = [];
+        $data_jenis = [];
+        $data_bahan = [];
+        $data_jenis_rs = [];
+        $ruangan = [];
+
+        if(empty($type) || $type == "register")
+        {
+            foreach (RegisterType::getInstances() as $key => $value) {
+                if(!empty($value->value)){
+                    $status_register[] = [
+                        'status_id' => $key,
+                        'status_nama' => formatCapitilizeSentance($value->description),
+                    ];
+                }
+            }
+
+            foreach (CuciType::getInstances() as $key => $value) {
+                if(!empty($value->value)){
+                    $status_cuci[] = [
+                        'status_id' => $key,
+                        'status_nama' => formatCapitilizeSentance($value->description),
+                    ];
+                }
+            }
+
+            foreach (ProcessType::getInstances() as $key => $value) {
+                if(!empty($value->value)){
+                    $status_proses[] = [
+                        'status_id' => $key,
+                        'status_nama' => formatCapitilizeSentance($value->description),
+                    ];
+                }
             }
         }
 
@@ -181,49 +193,61 @@ Route::middleware(['auth:sanctum'])->group(function () {
         }
 
         try {
-            $rs = Rs::with([HAS_RUANGAN, HAS_JENIS])->get();
-            $collection = RsResource::collection($rs);
 
-            $data_supplier = [];
-            $data_supplier = Supplier::select(Supplier::field_primary(), Supplier::field_name())->get() ?? [];
-            // foreach ($supplier as $vendor) {
-            //     $data_supplier[] = [
-            //         'supplier_id' => $vendor->field_primary,
-            //         'supplier_nama' => $vendor->field_name,
-            //     ];
-            // }
+            if(empty($type))
+            {
+                $rs = Rs::with([HAS_RUANGAN, HAS_JENIS])->get();
+                $collection = RsResource::collection($rs);
+                $data_supplier = Supplier::select(Supplier::field_primary(), Supplier::field_name())->get() ?? [];
+                $data_bahan = JenisBahan::select(JenisBahan::field_primary(), JenisBahan::field_name())->get() ?? [];
+                $data_jenis = JenisLinen::select(JenisLinen::field_primary(), JenisLinen::field_name())->get() ?? [];
+            }
+            else if($type == "register")
+            {
+                $rs = Rs::get();
+                $collection = RsSingleResource::collection($rs);
 
-            $data_bahan = JenisBahan::select(JenisBahan::field_primary(), JenisBahan::field_name())->get() ?? [];
-            // foreach ($bahan as $vendor) {
-            //     $data_bahan[] = [
-            //         'bahan_id' => $vendor->field_primary,
-            //         'bahan_nama' => $vendor->field_name,
-            //     ];
-            // }
+                $data_supplier = Supplier::select(Supplier::field_primary(), Supplier::field_name())->get() ?? [];
+                $data_bahan = JenisBahan::select(JenisBahan::field_primary(), JenisBahan::field_name())->get() ?? [];
+                $data_jenis = JenisLinen::select(JenisLinen::field_primary(), JenisLinen::field_name())->get() ?? [];
+                $data_jenis_rs = JenisLinen::select([
+                    'jenis_linen.jenis_id',
+                    'jenis_linen.jenis_nama',
+                    'rs_id',
+                ])->leftJoin('rs_dan_jenis', 'rs_dan_jenis.jenis_id', '=', 'jenis_linen.jenis_id')->get() ?? [];
 
-            $data_jenis = [];
-            $data_jenis = JenisLinen::select([
-                'jenis_linen.jenis_id',
-                'jenis_linen.jenis_nama',
-                'rs_id',
-            ])
-                ->leftJoin('rs_dan_jenis', 'rs_dan_jenis.jenis_id', '=', 'jenis_linen.jenis_id')
-                ->get() ?? [];
+                $ruangan = Ruangan::select([
+                    'ruangan.ruangan_id',
+                    'ruangan_nama',
+                    'rs_id',
+                ])->leftJoin('rs_dan_ruangan', 'rs_dan_ruangan.ruangan_id', '=', 'ruangan.ruangan_id')->get();
+            }
+            else{
 
-            // foreach ($jenis as $item) {
-            //     $data_jenis[] = [
-            //         'jenis_id' => $item->field_primary,
-            //         'jenis_nama' => $item->field_name,
-            //     ];
-            // }
+                $rs = Rs::query();
 
-            $ruangan = Ruangan::select([
-                'ruangan.ruangan_id',
-                'ruangan_nama',
-                'rs_id',
-            ])
-                ->leftJoin('rs_dan_ruangan', 'rs_dan_ruangan.ruangan_id', '=', 'ruangan.ruangan_id')
-                ->get();
+                if($type == "free")
+                {
+                    $data_jenis_rs = JenisLinen::select([
+                        'jenis_linen.jenis_id',
+                        'jenis_linen.jenis_nama',
+                        'rs_id',
+                    ])->leftJoin('rs_dan_jenis', 'rs_dan_jenis.jenis_id', '=', 'jenis_linen.jenis_id')->get() ?? [];
+
+                    $rs = $rs->where(Rs::field_status(), OwnershipType::FREE);
+                }
+                else {
+                    $rs = $rs->where(Rs::field_status(), OwnershipType::DEDICATED);
+                }
+
+                $collection = RsSingleResource::collection($rs->get());
+
+                $ruangan = Ruangan::select([
+                    'ruangan.ruangan_id',
+                    'ruangan_nama',
+                    'rs_id',
+                ])->leftJoin('rs_dan_ruangan', 'rs_dan_ruangan.ruangan_id', '=', 'ruangan.ruangan_id')->get();
+            }
 
             $add = [
                 'status_transaksi' => $status_transaksi,
@@ -232,11 +256,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 'status_register' => $status_register,
                 'bahan' => $data_bahan,
                 'supplier' => $data_supplier,
-                'jenis' => JenisLinen::select([
-                    'jenis_id',
-                    'jenis_nama',
-                ])->get() ?? [],
-                'jenis_rs' => $data_jenis,
+                'jenis' => $data_jenis,
+                'jenis_rs' => $data_jenis_rs,
                 'ruangan' => $ruangan,
             ];
 

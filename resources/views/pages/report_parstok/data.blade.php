@@ -18,14 +18,6 @@
 			</h3>
 		</td>
 	</tr>
-	<tr>
-		<td></td>
-		<td colspan="10">
-			<h3>
-				Periode : {{ formatDate(request()->get('start_date')) }} - {{ formatDate(request()->get('end_date')) }}
-			</h3>
-		</td>
-	</tr>
 </table>
 
 <div class="table-responsive" id="table_data">
