@@ -281,7 +281,7 @@ trait DetailEntity
 
     public static function field_cek()
     {
-        return 'detail_tanggal_cek';
+        return 'detail_tgl_cek';
     }
 
     public function getFieldCekAttribute()
