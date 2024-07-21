@@ -33,6 +33,7 @@ class Outstanding extends Model
         'outstanding_id_jenis',
         'outstanding_status_transaksi',
         'outstanding_status_proses',
+        'outstanding_status_hilang',
         'outstanding_created_at',
         'outstanding_updated_at',
         'outstanding_pending_created_at',

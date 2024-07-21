@@ -65,13 +65,17 @@ class TransaksiRepository extends MasterRepository implements CrudInterface
             ->filter();
     }
 
-    public function getDetailKotor()
+    public function getDetailKotor($status = false)
     {
         $query = $this->getTransactionDetail()
             ->leftJoin(Rs::getTableName() . ' as scan', function ($join) {
                 $join->on('transaksi.transaksi_rs_scan', '=', 'scan.rs_id');
             })
             ->sortable();
+
+        if($status){
+            $query = $query->where('transaksi_status', $status);
+        }
 
         return $query;
     }

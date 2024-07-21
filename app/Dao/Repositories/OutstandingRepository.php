@@ -40,6 +40,16 @@ class OutstandingRepository extends MasterRepository implements CrudInterface
     public function getPrint()
     {
         $query = ViewOutstanding::query()
+            ->joinRelationship('has_outstanding')
+            ->leftJoinRelationship('has_detail')
+            ->addSelect([
+                'view_outstanding.*',
+                'outstanding_pending_created_at',
+                'outstanding_hilang_created_at',
+                'view_tanggal_create',
+                'view_transaksi_bersih_total',
+                'view_status_proses',
+            ])
             ->sortable()->filter();
 
         return $query;

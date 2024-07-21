@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Dao\Enums\TransactionType;
 use App\Dao\Models\Rs;
 use App\Dao\Models\User;
+use App\Dao\Models\ViewDetailLinen;
 use App\Dao\Repositories\TransaksiRepository;
 use App\Http\Requests\RekapReportRequest;
 use Illuminate\Support\Carbon;
@@ -32,10 +33,10 @@ class ReportRekapKotorController extends MinimalController
 
     private function getQueryKotor($request)
     {
-        // $query = self::$repository->getDetailAllKotor([TransactionType::Kotor]);
-        // $query = self::$repository->getRekapKotor();
-
-        $query = DB::table('view_rekap_kotor')->where('view_rs_id', $request->rs_id);
+        $query = DB::table('view_rekap_kotor')
+            ->where('view_rs_id', $request->rs_id)
+            ->where('view_status', TransactionType::KOTOR)
+            ;
 
         if ($start_date = $request->start_rekap) {
             $query = $query->where('view_tanggal', '>=', $start_date);
@@ -50,8 +51,6 @@ class ReportRekapKotorController extends MinimalController
 
     private function getQueryBersih($request)
     {
-        // $query = self::$repository->getDetailAllBersih([TransactionType::BersihKotor]);
-
         $query = DB::table('view_rekap_bersih')->where('view_rs_id', $request->rs_id);
 
         if ($start_date = $request->start_rekap) {
@@ -77,31 +76,20 @@ class ReportRekapKotorController extends MinimalController
         ini_set('memory_limit', '512M');
         $location = $linen = $lawan = $nama = [];
 
-        $rs = Rs::with([HAS_RUANGAN, HAS_JENIS])->find(request()->get(Rs::field_primary()));
-        $location = $rs->has_ruangan;
-        $linen = $rs->has_jenis;
+        // $rs = Rs::with([HAS_RUANGAN, HAS_JENIS])->find(request()->get(Rs::field_primary()));
+        // $location = $rs->has_ruangan;
+        // $linen = $rs->has_jenis;
 
+        $rs = Rs::find(request()->get(Rs::field_primary()));
         $kotor = $this->getQueryKotor($request);
-        $bersih = $this->getQueryBersih($request);
-
-        // $this->data = $kotor->merge($bersih);
-
-        // if ($this->data) {
-        //     $location = $this->data->mapWithKeys(function ($item) {
-        //         return [$item->view_ruangan_id => strtoupper($item->view_ruangan_nama)];
-        //     })->sort();
-
-        //     $linen = $this->data->mapWithKeys(function ($item) {
-        //         return [$item->view_linen_id => strtoupper($item->view_linen_nama)];
-        //     })->sort();
-        // }
+        $linen = $kotor->sortBy(ViewDetailLinen::field_name())->pluck(ViewDetailLinen::field_name(), ViewDetailLinen::field_id());
+        $location = $kotor->sortBy(ViewDetailLinen::field_ruangan_name())->pluck(ViewDetailLinen::field_ruangan_name(), ViewDetailLinen::field_ruangan_id());
 
         return moduleView(modulePathPrint(), $this->share([
             'data' => $this->data,
             'rs' => $rs,
             'location' => $location,
             'linen' => $linen,
-            'bersih' => $bersih,
             'kotor' => $kotor,
         ]));
     }

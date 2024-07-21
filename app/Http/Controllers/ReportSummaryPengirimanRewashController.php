@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Dao\Enums\TransactionType;
+use App\Dao\Models\Bersih;
 use App\Dao\Models\Rs;
 use App\Dao\Models\Transaksi;
 use App\Dao\Models\User;
@@ -33,16 +34,11 @@ class ReportSummaryPengirimanRewashController extends MinimalController
 
     private function getQuery($request)
     {
-        $query = self::$repository->getDetailBersih(TransactionType::BersihRewash)
-            ->select([
-                'transaksi_delivery',
-                'view_rs_nama',
-                'view_ruangan_nama',
-                DB::raw('count(transaksi_rfid) as total_rfid'),
-                'transaksi_delivery_at',
-                DB::raw('user_delivery.name as user_delivery'),
-            ])
-            ->leftJoinRelationship('has_created_delivery', 'user_delivery');
+        $query = self::$repository->getReport()->where(Bersih::field_status(), TransactionType::REWASH)
+        ->select([
+            'view_bersih.*',
+            DB::raw('count(bersih_rfid) as total_rfid'),
+        ]);
 
         if ($start_date = $request->start_delivery) {
             $query = $query->where(Transaksi::field_report(), '>=', $start_date);

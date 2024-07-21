@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Dao\Enums\HilangType;
+use App\Dao\Enums\LogType;
 use App\Dao\Enums\ProcessType;
 use App\Dao\Models\Detail;
 use App\Dao\Models\Outstanding;
@@ -48,16 +50,16 @@ class CheckPending extends Command
             ->select(Outstanding::field_primary())
             ->whereDate(Outstanding::field_updated_at(), '>=', Carbon::now()->subMinutes(1440)->toDateString())
             ->whereDate(Outstanding::field_updated_at(), '<', Carbon::now()->toDateString())
-            ->whereNotIn(Outstanding::field_status_process(), [ProcessType::PENDING, ProcessType::HILANG])
+            ->where(Outstanding::field_status_hilang(), HilangType::NORMAL)
             ->get();
 
         if ($outstanding) {
 
             $rfid = $outstanding->pluck(Outstanding::field_primary());
 
-            PluginsHistory::bulk($rfid, ProcessType::PENDING, 'RFID Pending');
+            PluginsHistory::bulk($rfid, LogType::PENDING, 'RFID Pending');
             Outstanding::whereIn(Outstanding::field_primary(), $rfid)->update([
-                Outstanding::field_status_process() => ProcessType::PENDING,
+                Outstanding::field_status_hilang() => ProcessType::PENDING,
                 Outstanding::field_pending_created_at() => date('Y-m-d H:i:s'),
                 Outstanding::field_pending_updated_at() => date('Y-m-d H:i:s'),
             ]);

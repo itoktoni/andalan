@@ -45,6 +45,7 @@ class Bersih extends Model
 
     protected $casts = [
         'bersih_id' => 'integer',
+        'bersih_rfid' => 'string',
     ];
 
     protected $filters = [

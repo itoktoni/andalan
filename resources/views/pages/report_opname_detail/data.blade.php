@@ -5,7 +5,7 @@
 			<h3>
 				<b>REPORT OPNAME DETAIL
 				@if($filter = request()->get('status'))
-				 {{ Str::upper(FilterType::getDescription(intval($filter))) }}
+				 {{ Str::upper(FilterType::getDescription($filter)) }}
 				@endif
 				: {{ $opname->field_primary ?? '' }} </b>
 			</h3>
@@ -48,7 +48,7 @@
 				<th>STATUS LINEN</th>
 				<th>CUCI/RENTAL</th>
 				<th>JUMLAH PEMAKAIAN LINEN</th>
-				@if($filter == FilterType::Retur)
+				@if($filter == FilterType::Reject)
 				<th>JUMLAH RETUR</th>
 				@elseif($filter == FilterType::Rewash)
 				<th>JUMLAH REWASH</th>
@@ -65,13 +65,13 @@
 				<td>{{ $table->view_linen_nama ?? '' }}</td>
 				<td>{{ $table->view_rs_nama ?? '' }}</td>
 				<td>{{ $table->view_ruangan_nama ?? '' }}</td>
-				<td>{{ $table->opname_detail_created_at }}</td>
-				<td>{{ $table->opname_detail_ketemu == 1 ? $table->opname_detail_waktu : '' }}</td>
+				<td>{{ formatDate($table->opname_detail_created_at) }}</td>
+				<td>{{ $table->opname_detail_ketemu == 1 ? formatDate($table->opname_detail_waktu) : '' }}</td>
 				<td>{{ $table->opname_detail_transaksi ? TransactionType::getDescription($table->opname_detail_transaksi) : 'Belum Register' }}</td>
-				<td>{{ $table->opname_detail_proses ? ProcessType::getDescription($table->opname_detail_proses) : 'Belum Register' }}</td>
+				<td>{{ $table->opname_detail_proses ? $table->opname_detail_proses : 'Belum Register' }}</td>
 				<td>{{ empty($table->view_status_cuci) ? '' : CuciType::getDescription($table->view_status_cuci) }}</td>
-				<td>{{ $table->view_transaksi_cuci_total ?? 0 }}</td>
-				@if($filter == FilterType::Retur)
+				<td>{{ $table->view_transaksi_bersih_total ?? 0 }}</td>
+				@if($filter == FilterType::Reject)
 				<td>{{ $table->view_transaksi_retur_total ?? 0 }}</td>
 				@elseif($filter == FilterType::Rewash)
 				<td>{{ $table->view_transaksi_rewash_total ?? 0 }}</td>

@@ -46,10 +46,10 @@
 			<tr>
 				<td>{{ $loop->iteration }}</td>
 				<td>{{ $table->field_delivery }}</td>
-				<td>{{ $table->view_rs_nama }}</td>
+				<td>{{ $table->rs_nama }}</td>
 				<td>{{ $table->total_rfid ?? 0 }}</td>
-				<td>{{ formatDate($table->transaksi_delivery_at) }}</td>
-				<td>{{ $table->user_delivery ?? '' }}</td>
+				<td>{{ formatDate($table->bersih_report) }}</td>
+				<td>{{ $table->name ?? '' }}</td>
 			</tr>
 			@empty
 			@endforelse

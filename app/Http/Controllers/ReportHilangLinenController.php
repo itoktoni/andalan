@@ -3,14 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Dao\Enums\CuciType;
+use App\Dao\Enums\HilangType;
 use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\RegisterType;
 use App\Dao\Models\JenisLinen;
+use App\Dao\Models\Outstanding;
 use App\Dao\Models\Rs;
 use App\Dao\Models\Ruangan;
 use App\Dao\Models\ViewDetailLinen;
 use App\Dao\Models\ViewLog;
+use App\Dao\Models\ViewOutstanding;
 use App\Dao\Repositories\DetailRepository;
+use App\Dao\Repositories\OutstandingRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -18,7 +22,7 @@ class ReportHilangLinenController extends MinimalController
 {
     public $data;
 
-    public function __construct(DetailRepository $repository)
+    public function __construct(OutstandingRepository $repository)
     {
         self::$repository = self::$repository ?? $repository;
     }
@@ -43,16 +47,14 @@ class ReportHilangLinenController extends MinimalController
     private function getQuery($request)
     {
         $query = self::$repository->getPrint()
-            ->addSelect([DB::raw('view_detail_linen.*'), ViewLog::field_status()])
-            ->leftJoinRelationship(HAS_LOG)
-            ->where(ViewDetailLinen::field_status_process(), ProcessType::Hilang);
+            ->where('outstanding.'.ViewOutstanding::field_status_hilang(), HilangType::HILANG);
 
         if ($start_date = $request->start_hilang) {
-            $query = $query->whereDate(ViewDetailLinen::field_hilang_create(), '>=', $start_date);
+            $query = $query->whereDate(ViewOutstanding::field_hilang_created_at(), '>=', $start_date);
         }
 
         if ($end_date = $request->end_hilang) {
-            $query = $query->whereDate(ViewDetailLinen::field_hilang_create(), '<=', $end_date);
+            $query = $query->whereDate(ViewOutstanding::field_hilang_created_at(), '<=', $end_date);
         }
 
         return $query->get();

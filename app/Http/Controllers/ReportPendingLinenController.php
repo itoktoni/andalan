@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Dao\Enums\CuciType;
+use App\Dao\Enums\HilangType;
 use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\RegisterType;
 use App\Dao\Models\JenisLinen;
@@ -45,8 +46,7 @@ class ReportPendingLinenController extends MinimalController
     private function getQuery($request)
     {
         $query = self::$repository->getPrint()
-            // ->leftJoinRelationship(HAS_LOG)
-            ->where(ViewOutstanding::field_status_process(), ProcessType::PENDING);
+            ->where('outstanding.'.ViewOutstanding::field_status_hilang(), HilangType::PENDING);
 
         if ($start_date = $request->start_pending) {
             $query = $query->whereDate(ViewOutstanding::field_pending_created_at(), '>=', $start_date);

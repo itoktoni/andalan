@@ -3,6 +3,7 @@
 namespace App\Http\Services;
 
 use App\Dao\Enums\BooleanType;
+use App\Dao\Enums\HilangType;
 use App\Dao\Enums\LogType;
 use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\TransactionType;
@@ -49,12 +50,14 @@ class CaptureOpnameService
 
                     $status_transaksi = $item->outstanding_status_transaksi ?? TransactionType::BERSIH;
                     $status_proses = $item->outstanding_status_proses ?? TransactionType::BERSIH;
+                    $status_hilang = $item->outstanding_status_hilang ?? HilangType::NORMAL;
 
                     $ketemu = $this->checkKetemu($item);
                     $data[] = [
                         OpnameDetail::field_rfid() => $item->detail_rfid,
                         OpnameDetail::field_transaksi() => $status_transaksi,
                         OpnameDetail::field_proses() => $status_proses,
+                        OpnameDetail::field_status_hilang() => $status_hilang,
                         OpnameDetail::field_created_at() => $tgl,
                         OpnameDetail::field_created_by() => $id,
                         OpnameDetail::field_updated_at() => ! empty($item->detail_updated_at) ? Carbon::make($item->detail_updated_at)->format('Y-m-d H:i:s') : null,
@@ -64,14 +67,6 @@ class CaptureOpnameService
                         OpnameDetail::field_opname() => $opname_id,
                         OpnameDetail::field_pending() => ! empty($item->outstanding_pending_created_at) ? Carbon::make($item->outstanding_pending_created_at)->format('Y-m-d H:i:s') : null,
                         OpnameDetail::field_hilang() => ! empty($item->outstanding_hilang_created_at) ? Carbon::make($item->outstanding_hilang_created_at)->format('Y-m-d H:i:s') : null,
-                    ];
-
-                    $log[] = [
-                        ModelsHistory::field_name() => $item,
-                        ModelsHistory::field_status() => LogType::OPNAME,
-                        ModelsHistory::field_created_by() => auth()->user()->name ?? 'System',
-                        ModelsHistory::field_created_at() => $tgl,
-                        ModelsHistory::field_description() => 'Opname',
                     ];
                 }
 
@@ -102,7 +97,7 @@ class CaptureOpnameService
 
     private function checkKetemu($item)
     {
-        if (in_array($item->outstanding_status_proses, [ProcessType::PENDING, ProcessType::HILANG])) {
+        if (in_array($item->outstanding_status_hilang, [HilangType::PENDING, HilangType::HILANG])) {
             return BooleanType::YES;
         }
 

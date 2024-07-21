@@ -22,13 +22,7 @@
 		<td></td>
 		<td colspan="10">
             <h3>
-                @php
-                $start_tanggal_bersih = \Carbon\Carbon::parse(request()->get('start_rekap'))->addDay(+1);
-                $end_tanggal_bersih = \Carbon\Carbon::parse(request()->get('end_rekap'))->addDay(+1);
-                @endphp
 				Tanggal Kotor : {{ formatDate(request()->get('start_rekap')) }} - {{ formatDate(request()->get('end_rekap')) }}
-				<br>
-                Tanggal Bersih : {{ formatDate($start_tanggal_bersih) }} - {{ formatDate($end_tanggal_bersih) }}
 			</h3>
 		</td>
 	</tr>
@@ -40,13 +34,11 @@
             <tr>
                 <th style="width: 10px" width="1">No. </th>
                 <th style="width: 200px" width="20">Nama Linen</th>
-                @foreach($location as $loc)
-                    <th>{{ $loc->field_name }}</th>
+                @foreach($location as $loc_id => $loc_name)
+                    <th>{{ $loc_name ?? 'Belum Register' }}</th>
                 @endforeach
-                <th>Beda RS</th>
                 <th>Total Kotor (Pcs)</th>
                 <th>(Kg) Kotor</th>
-                <th>Total Bersih (Pcs)</th>
             </tr>
         </thead>
 		<tbody>
@@ -55,30 +47,28 @@
                 $total_number = $selisih = 0;
                 $total_lawan = 0;
             @endphp
-            @forelse($linen->sortBy('jenis_nama') as $jenis)
+            @forelse($linen as $jenis_id => $jenis_name)
                 @php
-                $name = $jenis->jenis_nama;
                 $total_number++;
                 @endphp
                 <tr>
                     <td>{{ $total_number }}</td>
-                    <td>{{ $name }}</td>
-                    @foreach($location as $loc)
+                    <td>{{ $jenis_name }}</td>
+                    @foreach($location as $loc_id => $loc_name)
                         <td>
                             @php
                             $total_ruangan = $kotor
-                            ->where('view_ruangan_id', $loc->ruangan_id)
-                            ->where('view_linen_id', $jenis->jenis_id)
+                            ->where('view_ruangan_id', $loc_id)
+                            ->where('view_linen_id', $jenis_id)
                             ->sum('view_qty');
                             @endphp
                             {{ $total_ruangan > 0 ? $total_ruangan : '0' }}
                         </td>
                     @endforeach
-                    <td><!-- tempat beda rs --></td>
                     <td>
                         @php
                         $total_kotor = $kotor
-                        ->where('view_linen_id', $jenis->jenis_id)
+                        ->where('view_linen_id', $jenis_id)
                         ->sum('view_qty');
                         @endphp
                         {{ $total_kotor > 0 ? $total_kotor : '0' }}
@@ -86,39 +76,14 @@
                     <td>
                         @php
                         $total_kg = $kotor
-                        ->where('view_linen_id', $jenis->jenis_id)
+                        ->where('view_linen_id', $jenis_id)
                         ->sum('view_kg');
                         @endphp
                         {{ $total_kg > 0 ? $total_kg : '0' }}
                     </td>
-                    <td>
-                        @php
-                        $total_bersih = $bersih
-                        ->where('view_linen_id', $jenis->jenis_id)
-                        ->sum('view_qty');
-                        @endphp
-                        {{ $total_bersih > 0 ? $total_bersih : '0' }}
-                    </td>
                 </tr>
 			@empty
 			@endforelse
-            <tr>
-                <td>{{ $total_number + 1 }}</td>
-                <td>Linen Lain</td>
-                @foreach($location as $loc)
-                <td></td>
-                @endforeach
-                <td></td>
-                <td>
-                @php
-                $total_beda_rs = $kotor->whereNull('view_ruangan_id')->sum('view_qty');
-                @endphp
-                {{ $total_beda_rs }}
-                </td>
-                <td>{{ $total_beda_rs }}</td>
-                <td></td>
-                <td></td>
-            </tr>
 		</tbody>
 	</table>
 </div>

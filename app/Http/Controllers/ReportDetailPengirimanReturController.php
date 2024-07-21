@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Dao\Enums\TransactionType;
+use App\Dao\Models\Bersih;
 use App\Dao\Models\Rs;
 use App\Dao\Models\Transaksi;
 use App\Dao\Models\User;
+use App\Dao\Repositories\BersihRepository;
 use App\Dao\Repositories\TransaksiRepository;
 use App\Http\Requests\DeliveryReportRequest;
 use Illuminate\Support\Facades\DB;
@@ -14,7 +16,7 @@ class ReportDetailPengirimanReturController extends MinimalController
 {
     public $data;
 
-    public function __construct(TransaksiRepository $repository)
+    public function __construct(BersihRepository $repository)
     {
         self::$repository = self::$repository ?? $repository;
     }
@@ -33,20 +35,17 @@ class ReportDetailPengirimanReturController extends MinimalController
 
     private function getQuery($request)
     {
-        $query = self::$repository->getDetailBersih(TransactionType::BersihRetur)
-            ->addSelect(['*', DB::raw('user_delivery.name as user_delivery')])
-            ->leftJoinRelationship(HAS_RETUR)
-            ->leftJoinRelationship('has_created_delivery', 'user_delivery');
+        $query = self::$repository->getReport()->where(Bersih::field_status(), TransactionType::REJECT);
 
         if ($start_date = $request->start_delivery) {
-            $query = $query->where(Transaksi::field_report(), '>=', $start_date);
+            $query = $query->where(Bersih::field_report(), '>=', $start_date);
         }
 
         if ($end_date = $request->end_delivery) {
-            $query = $query->where(Transaksi::field_report(), '<=', $end_date);
+            $query = $query->where(Bersih::field_report(), '<=', $end_date);
         }
 
-        return $query->orderBy('view_linen_nama', 'ASC')->get();
+        return $query->get();
     }
 
     public function getPrint(DeliveryReportRequest $request)

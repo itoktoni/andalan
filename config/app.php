@@ -5,6 +5,7 @@ use App\Dao\Enums\BedaRsType;
 use App\Dao\Enums\BooleanType;
 use App\Dao\Enums\CuciType;
 use App\Dao\Enums\FilterType;
+use App\Dao\Enums\HilangType;
 use App\Dao\Enums\MenuType;
 use App\Dao\Enums\ObsesimanType;
 use App\Dao\Enums\OwnershipType;
@@ -272,6 +273,7 @@ return [
         'UserLevel' => UserLevel::class,
         'RoleType' => RoleType::class,
         'YesNoType' => YesNoType::class,
+        'HilangType' => HilangType::class,
         // 'SharedData' => SharedData::class,
         'SharedData' => SharedData::class,
         'Query' => Query::class,

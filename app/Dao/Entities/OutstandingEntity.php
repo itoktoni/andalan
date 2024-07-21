@@ -3,6 +3,7 @@
 namespace App\Dao\Entities;
 
 use App\Dao\Enums\CuciType;
+use App\Dao\Enums\HilangType;
 use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\RegisterType;
 use App\Dao\Enums\TransactionType;
@@ -160,6 +161,21 @@ trait OutstandingEntity
     public function getFieldStatusProcessNameAttribute()
     {
         return ProcessType::getDescription($this->getFieldStatusProcessAttribute());
+    }
+
+    public static function field_status_hilang()
+    {
+        return 'outstanding_status_hilang';
+    }
+
+    public function getFieldStatusHilangAttribute()
+    {
+        return $this->{$this->field_status_hilang()};
+    }
+
+    public function getFieldStatusHilangNameAttribute()
+    {
+        return HilangType::getDescription($this->getFieldStatusProcessAttribute());
     }
 
     public static function field_created_at()

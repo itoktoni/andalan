@@ -32,9 +32,7 @@ class ReportDetailRewashController extends MinimalController
     private function getQuery($request)
     {
         return self::$repository
-            ->getDetailKotor(TransactionType::Rewash)
-            ->leftJoinRelationship(HAS_REWASH)
-            ->leftJoinRelationship(HAS_CUCI)
+            ->getDetailKotor(TransactionType::REWASH)
             ->get();
     }
 

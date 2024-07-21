@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Dao\Enums\TransactionType;
 use App\Dao\Models\Rs;
 use App\Dao\Models\User;
 use App\Dao\Repositories\TransaksiRepository;
@@ -30,7 +31,7 @@ class ReportDetailKotorController extends MinimalController
 
     private function getQuery($request)
     {
-        return self::$repository->getDetailKotor()->get();
+        return self::$repository->getDetailKotor(TransactionType::KOTOR)->get();
     }
 
     public function getPrint(TransactionReportRequest $request)

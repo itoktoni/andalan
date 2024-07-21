@@ -4,13 +4,14 @@ namespace App\Dao\Repositories;
 
 use App\Dao\Interfaces\CrudInterface;
 use App\Dao\Models\Kotor;
+use App\Dao\Models\Transaksi;
 use Plugins\Notes;
 
 class KotorRepository extends MasterRepository implements CrudInterface
 {
     public function __construct()
     {
-        $this->model = empty($this->model) ? new Kotor() : $this->model;
+        $this->model = empty($this->model) ? new Transaksi() : $this->model;
     }
 
     public function dataRepository()

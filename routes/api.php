@@ -3,6 +3,7 @@
 use App\Dao\Enums\BedaRsType;
 use App\Dao\Enums\CetakType;
 use App\Dao\Enums\CuciType;
+use App\Dao\Enums\HilangType;
 use App\Dao\Enums\LogType;
 use App\Dao\Enums\OwnershipType;
 use App\Dao\Enums\ProcessType;
@@ -340,6 +341,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     Outstanding::field_updated_at() => date('Y-m-d H:i:s'),
                     Outstanding::field_created_by() => auth()->user()->id,
                     Outstanding::field_updated_by() => auth()->user()->id,
+                    Outstanding::field_status_hilang() => HilangType::NORMAL,
                     Outstanding::field_hilang_created_at() => null,
                     Outstanding::field_pending_created_at() => null,
                 ];
@@ -556,6 +558,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 Outstanding::field_rs_ori() => $detail->field_rs_id,
                 Outstanding::field_rs_scan() => $detail->field_rs_id,
                 Outstanding::field_ruangan_id() => $detail->field_ruangan_id,
+                Outstanding::field_status_hilang() => HilangType::NORMAL,
                 Outstanding::field_hilang_created_at() => null,
                 Outstanding::field_pending_created_at() => null,
             ];

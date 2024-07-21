@@ -20,4 +20,14 @@ class ViewOutstanding extends Outstanding
         'outstanding_hilang_created_at' => 'datetime',
         'outstanding_hilang_updated_at' => 'datetime',
     ];
+
+    public function has_outstanding()
+    {
+        return $this->hasOne(Outstanding::class, Outstanding::field_primary(), $this->field_primary());
+    }
+
+    public function has_detail()
+    {
+        return $this->hasOne(ViewDetailLinen::class, ViewDetailLinen::field_primary(), $this->field_primary());
+    }
 }

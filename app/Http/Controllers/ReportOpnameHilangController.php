@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Dao\Enums\BooleanType;
+use App\Dao\Enums\HilangType;
 use App\Dao\Models\Opname;
 use App\Dao\Models\OpnameDetail;
 use App\Dao\Repositories\OpnameRepository;
@@ -29,7 +30,8 @@ class ReportOpnameHilangController extends MinimalController
     private function getQuery($opname_id)
     {
         $query = self::$repository->getOpnameByID($opname_id)
-            ->where(OpnameDetail::field_ketemu(), BooleanType::No);
+            ->where(OpnameDetail::field_status_hilang(), HilangType::HILANG)
+            ->where(OpnameDetail::field_ketemu(), BooleanType::NO);
 
         return $query;
     }

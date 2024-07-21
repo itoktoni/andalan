@@ -170,10 +170,6 @@ class Handler extends ExceptionHandler
             return Notes::error($e->getMessage(), 'Error '.$e->getCode());
         }
 
-        if(env('APP_ENV') == 'local'){
-            return response()->view('errors.custom', ['exception' => $e]);
-        }
-
         if ($this->isHttpException($e)) {
             return response()->view('errors.custom', ['exception' => $e]);
         } else {

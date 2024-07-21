@@ -40,10 +40,7 @@
 				<th>LINEN </th>
 				<th>RUMAH SAKIT</th>
 				<th>RUANGAN</th>
-				<th>JUMLAH PEMAKAIAN LINEN</th>
-				<th>JUMLAH REWASH</th>
 				<th>TANGGAL PENGIRIMAN BERSIH</th>
-				<th>TANGGAL REGISTER</th>
 				<th>OPERATOR</th>
 			</tr>
 		</thead>
@@ -53,15 +50,12 @@
 				<td>{{ $loop->iteration }}</td>
 				<td>{{ $table->field_delivery }}</td>
 				<td>{{ $table->field_barcode }}</td>
-				<td>{{ $table->field_rfid }}</td>
-				<td>{{ $table->view_linen_nama }}</td>
-				<td>{{ $table->view_rs_nama }}</td>
-				<td>{{ $table->view_ruangan_nama }}</td>
-				<td>{{ $table->view_transaksi_cuci_total ?? 0 }}</td>
-				<td>{{ $table->view_transaksi_rewash_total ?? 0 }}</td>
-				<td>{{ formatDate($table->transaksi_delivery_at) }}</td>
-				<td>{{ formatDate($table->view_tanggal_create) }}</td>
-				<td>{{ $table->user_delivery ?? '' }}</td>
+				<td>{{ $table->bersih_rfid }}</td>
+				<td>{{ $table->jenis_nama }}</td>
+				<td>{{ $table->rs_nama }}</td>
+				<td>{{ $table->ruangan_nama }}</td>
+				<td>{{ formatDate($table->bersih_report) }}</td>
+				<td>{{ $table->name ?? '' }}</td>
 			</tr>
 			@empty
 			@endforelse

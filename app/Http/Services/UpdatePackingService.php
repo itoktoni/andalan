@@ -3,6 +3,7 @@
 namespace App\Http\Services;
 
 use App\Dao\Enums\CetakType;
+use App\Dao\Enums\HilangType;
 use App\Dao\Enums\LogType;
 use App\Dao\Enums\ProcessType;
 use App\Dao\Models\Bersih;
@@ -30,6 +31,7 @@ class UpdatePackingService
                     Outstanding::field_ruangan_id() => $data->ruangan_id,
                     Outstanding::field_status_process() => ProcessType::PACKING,
                     Outstanding::field_updated_at() => date('Y-m-d H:i:s'),
+                    Outstanding::field_status_hilang() => HilangType::NORMAL,
                     Outstanding::field_hilang_created_at() => null,
                     Outstanding::field_pending_created_at() => null,
                 ]);

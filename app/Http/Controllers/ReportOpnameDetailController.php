@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Dao\Enums\BooleanType;
 use App\Dao\Enums\FilterType;
+use App\Dao\Enums\HilangType;
 use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\TransactionType;
 use App\Dao\Models\Opname;
@@ -35,39 +36,35 @@ class ReportOpnameDetailController extends MinimalController
     private function getQuery($opname_id)
     {
         $query = self::$repository->getOpnameByID($opname_id)
-            ->where(OpnameDetail::field_ketemu(), BooleanType::Yes);
+            ->where(OpnameDetail::field_ketemu(), BooleanType::YES);
 
         if ($status = request()->get('status')) {
 
             if ($status == FilterType::Kotor) {
-                $query->where(OpnameDetail::field_transaksi(), TransactionType::Kotor)
-                    ->whereNotIn(OpnameDetail::field_proses(), [ProcessType::Pending, ProcessType::Hilang]);
+                $query->where(OpnameDetail::field_transaksi(), TransactionType::KOTOR)
+                    ->where(OpnameDetail::field_status_hilang(), HilangType::NORMAL);
             }
 
-            if ($status == FilterType::Retur) {
-                $query->where(OpnameDetail::field_transaksi(), TransactionType::Retur)
-                    ->whereNotIn(OpnameDetail::field_proses(), [ProcessType::Pending, ProcessType::Hilang]);
+            if ($status == FilterType::Reject) {
+                $query->where(OpnameDetail::field_transaksi(), TransactionType::REJECT)
+                    ->where(OpnameDetail::field_status_hilang(), HilangType::NORMAL);
             }
 
             if ($status == FilterType::Rewash) {
-                $query->where(OpnameDetail::field_transaksi(), TransactionType::Rewash)
-                    ->whereNotIn(OpnameDetail::field_proses(), [ProcessType::Pending, ProcessType::Hilang]);
+                $query->where(OpnameDetail::field_transaksi(), TransactionType::REWASH)
+                    ->where(OpnameDetail::field_status_hilang(), HilangType::NORMAL);
             }
 
             if ($status == FilterType::Pending) {
-                $query->where(OpnameDetail::field_proses(), ProcessType::Pending);
+                $query->where(OpnameDetail::field_status_hilang(), HilangType::PENDING);
             }
 
             if ($status == FilterType::Hilang) {
-                $query->where(OpnameDetail::field_proses(), ProcessType::Hilang);
+                $query->where(OpnameDetail::field_status_hilang(), HilangType::HILANG);
             }
 
             if ($status == FilterType::ScanRs) {
-                $query->where(OpnameDetail::field_scan_rs(), BooleanType::Yes);
-            }
-
-            if ($status == FilterType::BelumRegister) {
-                $query->where(OpnameDetail::field_transaksi(), BooleanType::No);
+                $query->where(OpnameDetail::field_scan_rs(), BooleanType::YES);
             }
         }
 

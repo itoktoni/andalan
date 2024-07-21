@@ -41,7 +41,6 @@
 				<th>JUMLAH PEMAKAIAN LINEN</th>
 				<th>TANGGAL REGISTER</th>
 				<th>LAMA HILANG</th>
-				<th>TANGGAL PENERIMAAN</th>
 				<th>STATUS</th>
 				<th>PROSES TERAKHIR</th>
 			</tr>
@@ -56,14 +55,13 @@
 				<td>{{ $loop->iteration }}</td>
 				<td>{{ $table->field_primary }}</td>
 				<td>{{ $table->field_name }}</td>
-				<td>{{ $table->field_rs_name }}</td>
+				<td>{{ $table->field_rs_ori_name }}</td>
 				<td>{{ $table->field_ruangan_name }}</td>
-				<td class="text-right">{{ $table->view_pemakaian ?? 0 }}</td>
-				<td>{{ formatDate($table->field_tanggal_create) }}</td>
-				<td>{{ $table->view_hilang_create ? \Carbon\Carbon::createFromFormat('Y-m-d H:s:i', $table->view_hilang_create)->diff(now())->format('%a') : '0' }} Hari</td>
-				<td>{{ formatDate($table->field_tanggal_update, true) }}</td>
-				<td>{{ TransactionType::getDescription($table->view_status_transaksi) }}</td>
-				<td>{{ ProcessType::getDescription($table->view_log_status) }}</td>
+				<td class="text-right">{{ $table->view_transaksi_bersih_total ?? 0 }}</td>
+				<td>{{ formatDate($table->view_tanggal_create) }}</td>
+				<td>{{ $table->outstanding_hilang_created_at ? \Carbon\Carbon::createFromFormat('Y-m-d H:s:i', $table->outstanding_hilang_created_at)->diff(now())->format('%a') : '0' }} Hari</td>
+				<td>{{ TransactionType::getDescription($table->outstanding_status_transaksi) }}</td>
+				<td>{{ ($table->view_status_proses) }}</td>
 			</tr>
 			@empty
 			@endforelse

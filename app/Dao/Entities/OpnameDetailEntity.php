@@ -65,7 +65,7 @@ trait OpnameDetailEntity
 
     public function getFieldTransaksiAttribute()
     {
-        return TransactionType::getDescription($this->{$this->field_transaksi()});
+        return $this->{$this->field_transaksi()};
     }
 
     public static function field_proses()
@@ -75,7 +75,17 @@ trait OpnameDetailEntity
 
     public function getFieldProsesAttribute()
     {
-        return ProcessType::getDescription($this->{$this->field_proses()});
+        return $this->{$this->field_proses()};
+    }
+
+    public static function field_status_hilang()
+    {
+        return 'opname_detail_hilang';
+    }
+
+    public function getFieldStatusHilangAttribute()
+    {
+        return $this->{$this->field_status_hilang()};
     }
 
     public static function field_name()

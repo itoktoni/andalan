@@ -3,7 +3,7 @@
 		<td></td>
 		<td colspan="6">
 			<h3>
-				<b>DETAIL TRANSAKSI RETUR </b>
+				<b>DETAIL TRANSAKSI REJECT </b>
 			</h3>
 		</td>
 		<td rowspan="3">
@@ -63,7 +63,7 @@
 				<td>{{ $table->field_status_transaction_name }}</td>
 				<td>{{ empty($table->view_status_proses) ? 'Belum Register' : ProcessType::getDescription($table->view_status_proses) }}</td>
 				<td>{{ empty($table->view_status_cuci) ? '' : CuciType::getDescription($table->view_status_cuci) }}</td>
-				<td>{{ $table->view_transaksi_cuci_total ?? 0 }}</td>
+				<td>{{ $table->view_transaksi_bersih_total ?? 0 }}</td>
 				<td>{{ $table->view_transaksi_retur_total ?? 0 }}</td>
 				<td>{{ formatDate($table->transaksi_created_at) }}</td>
 				<td>{{ formatDate($table->view_tanggal_create) }}</td>

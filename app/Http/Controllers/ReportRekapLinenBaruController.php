@@ -6,9 +6,11 @@ use App\Dao\Enums\TransactionType;
 use App\Dao\Models\Rs;
 use App\Dao\Models\Transaksi;
 use App\Dao\Models\User;
+use App\Dao\Models\ViewDetailLinen;
 use App\Dao\Repositories\TransaksiRepository;
 use App\Http\Requests\RekapReportRequest;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class ReportRekapLinenBaruController extends MinimalController
 {
@@ -33,7 +35,7 @@ class ReportRekapLinenBaruController extends MinimalController
 
     private function getQueryBersih($request)
     {
-        $query = self::$repository->getDetailAllBersih([TransactionType::Register]);
+        $query = self::$repository->getDetailAllBersih([TransactionType::REGISTER]);
 
         if ($start_date = $request->start_rekap) {
             $query = $query->whereDate(Transaksi::field_report(), '>=', $start_date);
@@ -48,21 +50,19 @@ class ReportRekapLinenBaruController extends MinimalController
 
     private function getQueryKotor($request)
     {
-        $query = self::$repository->getDetailAllKotor([TransactionType::Kotor]);
+        $query = DB::table('view_rekap_kotor')
+        ->where('view_rs_id', $request->rs_id)
+        ->where('view_status', TransactionType::REGISTER)
+        ;
 
         if ($start_date = $request->start_rekap) {
-            $bersih_from = Carbon::createFromFormat('Y-m-d', $start_date) ?? false;
-            if ($bersih_from) {
-                $query = $query->whereDate(Transaksi::field_created_at(), '>=', $bersih_from->addDay(-1)->format('Y-m-d'));
-            }
+            $query = $query->where('view_tanggal', '>=', $start_date);
         }
 
         if ($end_date = $request->end_rekap) {
-            $bersih_to = Carbon::createFromFormat('Y-m-d', $end_date) ?? false;
-            if ($bersih_to) {
-                $query = $query->whereDate(Transaksi::field_created_at(), '<=', $bersih_to->addDay(-1)->format('Y-m-d'));
-            }
+            $query = $query->where('view_tanggal', '<=', $end_date);
         }
+
 
         return $query->get();
     }
@@ -73,31 +73,16 @@ class ReportRekapLinenBaruController extends MinimalController
         ini_set('memory_limit', '512M');
         $location = $linen = $lawan = [];
 
-        $rs = Rs::with([HAS_RUANGAN, HAS_JENIS])->find(request()->get(Rs::field_primary()));
-        $location = $rs->has_ruangan;
-        $linen = $rs->has_jenis;
-
+        $rs = Rs::find(request()->get(Rs::field_primary()));
         $kotor = $this->getQueryKotor($request);
-        $bersih = $this->getQueryBersih($request);
-
-        $this->data = $kotor->merge($bersih);
-
-        if ($this->data) {
-            $location = $this->data->mapWithKeys(function ($item) {
-                return [$item->view_ruangan_id => strtoupper($item->view_ruangan_nama)];
-            })->sort();
-
-            $linen = $this->data->mapWithKeys(function ($item) {
-                return [$item->view_linen_id => strtoupper($item->view_linen_nama)];
-            })->sort();
-        }
+        $linen = $kotor->sortBy(ViewDetailLinen::field_name())->pluck(ViewDetailLinen::field_name(), ViewDetailLinen::field_id());
+        $location = $kotor->sortBy(ViewDetailLinen::field_ruangan_name())->pluck(ViewDetailLinen::field_ruangan_name(), ViewDetailLinen::field_ruangan_id());
 
         return moduleView(modulePathPrint(), $this->share([
             'data' => $this->data,
             'rs' => $rs,
             'location' => $location,
             'linen' => $linen,
-            'bersih' => $bersih,
             'kotor' => $kotor,
         ]));
     }

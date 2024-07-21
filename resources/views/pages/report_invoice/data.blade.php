@@ -3,7 +3,7 @@
         <td></td>
         <td colspan="6">
             <h3>
-                <b>REKAP INVOICE </b>
+                <b>REPORT INVOICE </b>
             </h3>
         </td>
         <td rowspan="3">
@@ -51,18 +51,19 @@
             $total_berat = 0;
             @endphp
 
-            @forelse($linen as $item)
+            @forelse($linen as $linen_id => $linen_nama)
             @php
             $total_number = $total_number + $loop->iteration;
 
-            $linen_id = $item->jenis_id;
-            $nama = $item->jenis_nama;
-            $berat = $item->jenis_berat;
+            $linen_id = $linen_id;
+            $nama = $linen_nama;
 
             $data_linen = $data->where('view_linen_id', $linen_id);
 
             $qty = $data_linen->sum('view_qty');
-            $total = $data_linen->sum('view_total');
+            $kg = $data_linen->sum('view_kg');
+
+            $total = $qty * $kg;
 
             @endphp
             <tr>
@@ -82,7 +83,7 @@
                 <td class="text-right">
                     {{ $qty ?? 0 }}
                 </td>
-                <td class="text-right">{{ $berat }}</td>
+                <td class="text-right">{{ $kg }}</td>
                 <td class="text-right">{{ $total }}</td>
             </tr>
             @empty

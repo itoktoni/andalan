@@ -3,7 +3,7 @@
 		<td></td>
 		<td colspan="6">
 			<h3>
-				<b>REKAP LINEN BARU</b>
+				<b>REKAP REGISTER </b>
 			</h3>
 		</td>
 		<td rowspan="3">
@@ -21,20 +21,12 @@
 	<tr>
 		<td></td>
 		<td colspan="10">
-			<h3>
-                @php
-                $start_tanggal_kotor = \Carbon\Carbon::parse(request()->get('start_rekap'))->addDay(-1);
-                $end_tanggal_kotor = \Carbon\Carbon::parse(request()->get('end_rekap'))->addDay(-1);
-                @endphp
-
-                Tanggal Kotor : {{ formatDate($start_tanggal_kotor) }} - {{ formatDate($end_tanggal_kotor) }}
-				<br>
-				Tanggal Bersih : {{ formatDate(request()->get('start_rekap')) }} - {{ formatDate(request()->get('end_rekap')) }}
+            <h3>
+				Tanggal Kotor : {{ formatDate(request()->get('start_rekap')) }} - {{ formatDate(request()->get('end_rekap')) }}
 			</h3>
 		</td>
 	</tr>
 </table>
-
 <div class="table-responsive" id="table_data">
 	<table id="export" border="1" style="border-collapse: collapse !important; border-spacing: 0 !important;"
 		class="table table-bordered table-striped table-responsive-stack">
@@ -43,9 +35,10 @@
                 <th style="width: 10px" width="1">No. </th>
                 <th style="width: 200px" width="20">Nama Linen</th>
                 @foreach($location as $loc_id => $loc_name)
-                    <th>{{ $loc_name }}</th>
+                    <th>{{ $loc_name ?? 'Belum Register' }}</th>
                 @endforeach
-                <th>Total Linen Baru (Pcs)</th>
+                <th>Total Register (Pcs)</th>
+                <th>(Kg) Register</th>
             </tr>
         </thead>
 		<tbody>
@@ -54,62 +47,43 @@
                 $total_number = $selisih = 0;
                 $total_lawan = 0;
             @endphp
-            @forelse($linen as $linen_id => $name)
-                @if(!empty($name))
+            @forelse($linen as $jenis_id => $jenis_name)
                 @php
-                    $total_number++;
-                    $total_per_linen = $bersih
-                        ->where('view_linen_id', $linen_id)
-                        ->where(Transaksi::field_status_bersih(), TransactionType::Register)
-                        ->count();
-
-                    $total_per_linen_kanan = $total_per_linen ?? 0;
-
-                    $sum_per_linen = $sum_per_linen + $total_per_linen_kanan;
+                $total_number++;
                 @endphp
                 <tr>
                     <td>{{ $total_number }}</td>
-                    <td>{{ Str::ucfirst($name) }}</td>
+                    <td>{{ $jenis_name }}</td>
                     @foreach($location as $loc_id => $loc_name)
                         <td>
                             @php
-                            $total_lokasi = $bersih
-                                ->where('view_linen_id', $linen_id)
-                                ->where('view_ruangan_id', $loc_id)
-                                ->where(Transaksi::field_status_bersih(), TransactionType::Register)
-                                ->count();
+                            $total_ruangan = $kotor
+                            ->where('view_ruangan_id', $loc_id)
+                            ->where('view_linen_id', $jenis_id)
+                            ->sum('view_qty');
                             @endphp
-                            {{ $total_lokasi > 0 ? $total_lokasi : '' }}
+                            {{ $total_ruangan > 0 ? $total_ruangan : '0' }}
                         </td>
                     @endforeach
-                    <td>{{ $total_per_linen_kanan }}</td>
+                    <td>
+                        @php
+                        $total_kotor = $kotor
+                        ->where('view_linen_id', $jenis_id)
+                        ->sum('view_qty');
+                        @endphp
+                        {{ $total_kotor > 0 ? $total_kotor : '0' }}
+                    </td>
+                    <td>
+                        @php
+                        $total_kg = $kotor
+                        ->where('view_linen_id', $jenis_id)
+                        ->sum('view_kg');
+                        @endphp
+                        {{ $total_kg > 0 ? $total_kg : '0' }}
+                    </td>
                 </tr>
-                @endif
 			@empty
 			@endforelse
 		</tbody>
-		<tr>
-            <td colspan="2">Total</td>
-            @foreach($location as $loc_id => $loc_name)
-            @php
-            $sum_lokasi = $bersih->where('view_ruangan_id', $loc_id)->count();
-            @endphp
-                <td>
-                    {{ $sum_lokasi }}
-                </td>
-            @endforeach
-            <td>
-                {{ $sum_per_linen }}
-            </td>
-        </tr>
 	</table>
 </div>
-
-<table class="footer">
-	<tr>
-		<td colspan="2" class="print-date">{{ env('APP_LOCATION') }}, {{ date('d F Y') }}</td>
-	</tr>
-	<tr>
-		<td colspan="2" class="print-person">{{ auth()->user()->name ?? '' }}</td>
-	</tr>
-</table>

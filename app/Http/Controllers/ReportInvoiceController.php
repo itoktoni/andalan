@@ -3,19 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Dao\Enums\CuciType;
+use App\Dao\Enums\TransactionType;
 use App\Dao\Models\JenisLinen;
 use App\Dao\Models\Rs;
 use App\Dao\Models\User;
+use App\Dao\Models\ViewDetailLinen;
 use App\Dao\Models\ViewInvoice;
+use App\Dao\Repositories\TransaksiRepository;
 use App\Dao\Repositories\ViewInvoiceRepository;
 use App\Http\Requests\InvoiceReportRequest;
 use Carbon\CarbonPeriod;
+use Illuminate\Support\Facades\DB;
 
 class ReportInvoiceController extends MinimalController
 {
     public $data;
 
-    public function __construct(ViewInvoiceRepository $repository)
+    public function __construct(TransaksiRepository $repository)
     {
         self::$repository = self::$repository ?? $repository;
     }
@@ -24,13 +28,8 @@ class ReportInvoiceController extends MinimalController
     {
         $rs = Rs::getOptions();
         $user = User::getOptions();
-        $status = CuciType::getOptions([
-            CuciType::Cuci,
-            CuciType::Sewa,
-        ]);
 
         self::$share = [
-            'status' => $status,
             'user' => $user,
             'rs' => $rs,
         ];
@@ -38,18 +37,16 @@ class ReportInvoiceController extends MinimalController
 
     private function getQueryBersih($request)
     {
-        $query = self::$repository->getPrint();
+        $query = DB::table('view_rekap_bersih')
+            ->where('view_rs_id', $request->rs_id)
+            ->where('view_status', TransactionType::BERSIH);
 
         if ($start_date = $request->start_rekap) {
-            $query = $query->where(ViewInvoice::field_tanggal(), '>=', $start_date);
+            $query = $query->whereDate('view_tanggal', '>=', $start_date);
         }
 
         if ($end_date = $request->end_rekap) {
-            $query = $query->where(ViewInvoice::field_tanggal(), '<=', $end_date);
-        }
-
-        if ($rs_id = $request->rs_id) {
-            $query = $query->where(ViewInvoice::field_rs_id(), $rs_id);
+            $query = $query->whereDate('view_tanggal', '<=', $end_date);
         }
 
         return $query->get();
@@ -61,23 +58,15 @@ class ReportInvoiceController extends MinimalController
         ini_set('memory_limit', '512M');
         $tanggal = $linen = $lawan = $nama = [];
 
-        $rs_id = request()->get(Rs::field_primary());
-        $linen = JenisLinen::select([
-            JenisLinen::field_primary(),
-            JenisLinen::field_name(),
-            JenisLinen::field_weight(),
-        ])
-            ->where(JenisLinen::field_rs_id(), $rs_id)
-            ->orderBy(JenisLinen::field_name(), 'ASC')->get() ?? [];
+        $bersih = $this->getQueryBersih($request);
 
-        $rs = Rs::find($rs_id);
-
-        $this->data = $this->getQueryBersih($request);
+        $rs = Rs::find(request()->get(Rs::field_primary()));
+        $linen = $bersih->sortBy(ViewDetailLinen::field_name())->pluck(ViewDetailLinen::field_name(), ViewDetailLinen::field_id());
 
         $tanggal = CarbonPeriod::create($request->start_rekap, $request->end_rekap);
 
         return moduleView(modulePathPrint(), $this->share([
-            'data' => $this->data,
+            'data' => $bersih,
             'rs' => $rs,
             'tanggal' => $tanggal,
             'linen' => $linen,

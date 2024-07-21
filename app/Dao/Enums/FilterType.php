@@ -10,17 +10,16 @@ class FilterType extends Enum implements LocalizedEnum
 {
     use StatusTrait;
 
-    const Kotor = 1;
+    const Kotor = 'KOTOR';
 
-    const Retur = 2;
+    const Reject = 'REJECT';
 
-    const Rewash = 3;
+    const Rewash = 'REWASH';
 
-    const ScanRs = 20;
+    const ScanRs = 'SCAN';
 
-    const Pending = 70;
+    const Pending = 'PENDING';
 
-    const Hilang = 80;
+    const Hilang = 'HILANG';
 
-    const BelumRegister = 100;
 }
