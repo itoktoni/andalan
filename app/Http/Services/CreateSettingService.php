@@ -21,7 +21,7 @@ class CreateSettingService
 
             EnvEditor::editKey('CODE_BERSIH', $data->code_bersih);
             EnvEditor::editKey('CODE_KOTOR', $data->code_kotor);
-            EnvEditor::editKey('CODE_RETUR', $data->code_retur);
+            EnvEditor::editKey('CODE_REJECT', $data->CODE_REJECT);
             EnvEditor::editKey('CODE_REWASH', $data->code_rewash);
 
             EnvEditor::editKey('TELESCOPE_ENABLED', $data->telescope_enable);

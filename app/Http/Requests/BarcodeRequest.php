@@ -86,7 +86,7 @@ class BarcodeRequest extends FormRequest
                 $code = env('CODE_KOTOR', 'KTR');
                 break;
             case TransactionType::BersihRetur:
-                $code = env('CODE_RETUR', 'RTR');
+                $code = env('CODE_REJECT', 'RTR');
                 break;
             case TransactionType::BersihRewash:
                 $code = env('CODE_REWASH', 'WSH');
@@ -95,7 +95,7 @@ class BarcodeRequest extends FormRequest
                 $code = env('CODE_KOTOR', 'KTR');
                 break;
             case TransactionType::Retur:
-                $code = env('CODE_RETUR', 'RTR');
+                $code = env('CODE_REJECT', 'RTR');
                 break;
             case TransactionType::Rewash:
                 $code = env('CODE_REWASH', 'WSH');

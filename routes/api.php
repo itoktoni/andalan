@@ -547,6 +547,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
             if($detail->field_status_linen == TransactionType::REGISTER){
                 $code = env('CODE_REGISTER', 'REG');
             }
+            else if($detail->field_status_linen == TransactionType::REJECT){
+                $code = env('CODE_REJECT', 'RJK');
+            }
+            else if($detail->field_status_linen == TransactionType::REWASH){
+                $code = env('CODE_REWASH', 'WSH');
+            }
             $autoNumber = Query::autoNumber(Outstanding::getTableName(), Outstanding::field_key(), $code . date('ymd'), env('AUTO_NUMBER', 15));
 
             // CHECK OUTSTANDING DATA
