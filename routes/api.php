@@ -635,7 +635,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
             ];
 
             $detail->update([
-                Detail::field_status_linen() => TransactionType::KOTOR,
+                Detail::field_status_linen() => $detail->field_status_linen,
             ]);
 
             DB::commit();
