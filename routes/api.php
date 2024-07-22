@@ -498,8 +498,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
                         'status_cuci' => $data->detail_status_cuci,
                         'status_transaksi' => $data->outstanding_status_transaksi ?? TransactionType::BERSIH,
                         'status_proses' => $data->outstanding_status_proses ?? TransactionType::BERSIH,
-                        'tanggal_create' => $data->outstanding_created_at ? Carbon::make($data->outstanding_created_at)->format('Y-m-d') : null,
-                        'tanggal_update' => $data->outstanding_updated_at ? Carbon::make($data->outstanding_updated_at)->format('Y-m-d') : null,
+                        'tanggal_create' => $data->detail_created_at ? Carbon::make($data->detail_created_at)->format('Y-m-d') : null,
+                        'tanggal_update' => $data->detail_updated_at ? Carbon::make($data->detail_updated_at)->format('Y-m-d') : null,
                         'pemakaian' => $data->detail_total_bersih ?? 0,
                         'user_nama' => $data->name ?? null,
                     ];
