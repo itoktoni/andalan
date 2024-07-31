@@ -60,6 +60,7 @@ class TransaksiRepository extends MasterRepository implements CrudInterface
     {
         return Transaksi::query()
             ->addSelect(['*'])
+            ->leftJoinRelationship(HAS_RUANGAN)
             ->leftJoinRelationship(HAS_DETAIL)
             ->leftJoinRelationship(HAS_USER)
             ->filter();
