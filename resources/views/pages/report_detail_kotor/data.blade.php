@@ -55,7 +55,7 @@
 				<td>{{ $table->field_rfid }}</td>
 				<td>{{ $table->view_linen_nama }}</td>
 				<td>{{ $table->view_rs_nama }}</td>
-				<td>{{ $table->view_ruangan_nama }}</td>
+				<td>{{ $table->ruangan_nama }}</td>
 				<td>{{ $table->field_rs_name }}</td>
 				<td>{{ empty($table->view_status_cuci) ? '' : CuciType::getDescription($table->view_status_cuci) }}</td>
 				<td>{{ $table->view_transaksi_bersih_total ?? 0 }}</td>
