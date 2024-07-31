@@ -29,7 +29,6 @@ class TransaksiDetailController extends MasterController
     public function getData()
     {
         $query = self::$repository->getTransactionDetail()
-            ->leftJoinRelationship(HAS_RS)
             ->orderBy('transaksi_created_at', 'DESC');
 
         return $query->fastPaginate(200);

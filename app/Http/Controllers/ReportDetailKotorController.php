@@ -31,7 +31,13 @@ class ReportDetailKotorController extends MinimalController
 
     private function getQuery($request)
     {
-        return self::$repository->getDetailKotor(TransactionType::KOTOR)->get();
+        $query = self::$repository->getDetailKotor(TransactionType::KOTOR);
+
+        if($rs = $request->get('rs_ori_id')){
+            $query->where('ori.rs_id', $rs);
+        }
+
+        return $query->get();
     }
 
     public function getPrint(TransactionReportRequest $request)

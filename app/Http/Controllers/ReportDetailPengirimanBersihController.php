@@ -43,6 +43,10 @@ class ReportDetailPengirimanBersihController extends MinimalController
             $query = $query->where(Bersih::field_report(), '<=', $end_date);
         }
 
+        if ($rs = $request->rs_id) {
+            $query = $query->where(Rs::field_primary(), $rs);
+        }
+
         return $query->get();
     }
 

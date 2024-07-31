@@ -59,19 +59,22 @@ class TransaksiRepository extends MasterRepository implements CrudInterface
     public function getTransactionDetail()
     {
         return Transaksi::query()
-            ->addSelect(['*'])
+            ->addSelect(['*', 'ori.rs_id as rs_ori_id', 'ori.rs_nama as rs_ori_nama', 'scan.rs_id as rs_scan_id', 'scan.rs_nama as rs_scan_nama'])
             ->leftJoinRelationship(HAS_RUANGAN)
             ->leftJoinRelationship(HAS_DETAIL)
             ->leftJoinRelationship(HAS_USER)
+            ->leftJoin(Rs::getTableName() . ' as ori', function ($join) {
+                $join->on('transaksi.transaksi_rs_ori', '=', 'ori.rs_id');
+            })
+            ->leftJoin(Rs::getTableName() . ' as scan', function ($join) {
+                $join->on('transaksi.transaksi_rs_scan', '=', 'scan.rs_id');
+            })
             ->filter();
     }
 
     public function getDetailKotor($status = false)
     {
         $query = $this->getTransactionDetail()
-            ->leftJoin(Rs::getTableName() . ' as scan', function ($join) {
-                $join->on('transaksi.transaksi_rs_scan', '=', 'scan.rs_id');
-            })
             ->sortable();
 
         if($status){

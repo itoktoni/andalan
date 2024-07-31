@@ -57,9 +57,9 @@
 				<td>{{ $table->field_key }}</td>
 				<td>{{ $table->field_rfid }}</td>
 				<td>{{ $table->view_linen_nama }}</td>
-				<td>{{ $table->view_rs_nama }}</td>
+				<td>{{ $table->rs_ori_nama }}</td>
 				<td>{{ $table->ruangan_nama }}</td>
-				<td>{{ $table->field_rs_name }}</td>
+				<td>{{ $table->rs_scan_nama }}</td>
 				<td>{{ $table->field_status_transaction_name }}</td>
 				<td>{{ empty($table->view_status_proses) ? 'Belum Register' : ProcessType::getDescription($table->view_status_proses) }}</td>
 				<td>{{ empty($table->view_status_cuci) ? '' : CuciType::getDescription($table->view_status_cuci) }}</td>
