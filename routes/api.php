@@ -498,8 +498,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
                         'status_cuci' => $data->detail_status_cuci,
                         'status_transaksi' => $data->outstanding_status_transaksi ?? TransactionType::BERSIH,
                         'status_proses' => $data->outstanding_status_proses ?? TransactionType::BERSIH,
-                        'tanggal_create' => $data->outstanding_created_at ? Carbon::make($data->outstanding_created_at)->format('Y-m-d') : null,
-                        'tanggal_update' => $data->outstanding_updated_at ? Carbon::make($data->outstanding_updated_at)->format('Y-m-d') : null,
+                        'tanggal_create' => $data->detail_created_at ? Carbon::make($data->detail_created_at)->format('Y-m-d') : null,
+                        'tanggal_update' => $data->detail_updated_at ? Carbon::make($data->detail_updated_at)->format('Y-m-d') : null,
                         'pemakaian' => $data->detail_total_bersih ?? 0,
                         'user_nama' => $data->name ?? null,
                     ];
@@ -546,6 +546,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
             $code = env('CODE_KOTOR', 'KTR');
             if($detail->field_status_linen == TransactionType::REGISTER){
                 $code = env('CODE_REGISTER', 'REG');
+            }
+            else if($detail->field_status_linen == TransactionType::REJECT){
+                $code = env('CODE_REJECT', 'RJK');
+            }
+            else if($detail->field_status_linen == TransactionType::REWASH){
+                $code = env('CODE_REWASH', 'WSH');
             }
             $autoNumber = Query::autoNumber(Outstanding::getTableName(), Outstanding::field_key(), $code . date('ymd'), env('AUTO_NUMBER', 15));
 
@@ -635,7 +641,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
             ];
 
             $detail->update([
-                Detail::field_status_linen() => TransactionType::KOTOR,
+                Detail::field_status_linen() => $detail->field_status_linen,
             ]);
 
             DB::commit();

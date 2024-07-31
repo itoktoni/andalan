@@ -20,7 +20,7 @@
 
                 <x-form-input col="6" value="{{ env('CODE_BERSIH') }}" label="Kode Bersih" name="code_bersih" />
                 <x-form-input col="6" value="{{ env('CODE_KOTOR') }}" label="Kode Kotor" name="code_kotor" />
-                <x-form-input col="6" value="{{ env('CODE_RETUR') }}" label="Kode Retur" name="code_retur" />
+                <x-form-input col="6" value="{{ env('CODE_REJECT') }}" label="Kode Retur" name="CODE_REJECT" />
                 <x-form-input col="6" value="{{ env('CODE_REWASH') }}" label="Kode Rewash" name="code_rewash" />
             @endbind
 
