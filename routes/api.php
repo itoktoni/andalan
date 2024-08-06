@@ -720,9 +720,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
             'view_status' => "",
         ];
 
-        if($transaksi == TransactionType::KOTOR)
+        if($transaksi == TransactionType::BERSIH)
         {
-            $transaksi = TransactionType::BERSIH;
+            $transaksi = TransactionType::KOTOR;
         }
 
         $data = DB::table('view_total_transaksi')
