@@ -720,6 +720,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
             'view_status' => "",
         ];
 
+        if($transaksi == TransactionType::KOTOR)
+        {
+            $transaksi = TransactionType::BERSIH;
+        }
+
         $data = DB::table('view_total_transaksi')
             ->where('view_rs_id', $rsid)
             ->where('view_jenis_id', $jenis)
