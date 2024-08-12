@@ -16,8 +16,6 @@ class JenisRequest extends FormRequest
             JenisLinen::field_name() => 'required',
             JenisLinen::field_category_id() => 'required',
             JenisLinen::field_rs_id() => 'required',
-            JenisLinen::field_weight() => 'required|numeric',
-            UPLOAD => 'image',
         ];
     }
 }
