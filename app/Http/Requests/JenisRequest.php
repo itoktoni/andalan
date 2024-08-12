@@ -15,7 +15,6 @@ class JenisRequest extends FormRequest
         return [
             JenisLinen::field_name() => 'required',
             JenisLinen::field_category_id() => 'required',
-            JenisLinen::field_rs_id() => 'required',
         ];
     }
 }
