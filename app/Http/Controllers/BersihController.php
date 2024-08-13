@@ -82,7 +82,7 @@ class BersihController extends MasterController
         if (request()->exists('delete')) {
             $code = array_unique(request()->get('code'));
             $where = Bersih::whereIn(Bersih::field_primary(), $code)
-                ->showSql()->get()->pluck(Bersih::field_rfid())
+                ->get()->pluck(Bersih::field_rfid())
                 ->toArray();
 
             Outstanding::whereIn(Outstanding::field_primary(), $where)->update([
