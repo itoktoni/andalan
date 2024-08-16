@@ -29,7 +29,7 @@ class PackingRequest extends FormRequest
     {
         $total = count($this->rfid);
         // CASE KETIKA RFID TIDAK DITEMUKAN
-        $status_transaksi = TransactionType::REGISTER;
+        $status_transaksi = $this->status_transaksi;
 
         /*
         notes : status transaksi berasal dari menu desktop
