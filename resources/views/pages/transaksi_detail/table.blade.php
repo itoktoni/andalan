@@ -75,9 +75,9 @@
                                     <td>{{ formatDate($table->transaksi_created_at) }}</td>
                                     <td>{{ $table->field_rfid }}</td>
                                     <td>{{ $table->view_linen_nama }}</td>
-                                    <td>{{ $table->view_rs_nama }}</td>
-                                    <td>{{ $table->view_ruangan_nama }}</td>
-                                    <td>{{ $table->rs_nama }}</td>
+                                    <td>{{ $table->rs_ori_nama }}</td>
+                                    <td>{{ $table->ruangan_nama }}</td>
+                                    <td>{{ $table->rs_scan_nama }}</td>
                                     <td>{{ TransactionType::getDescription($table->transaksi_status) }}</td>
                                     <td>{{ $table->name }}</td>
                                 </tr>

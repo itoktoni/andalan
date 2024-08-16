@@ -14,7 +14,7 @@ class TransactionReportRequest extends FormRequest
         return [
             'start_date' => 'required',
             'end_date' => 'required',
-            'transaksi_rs_ori' => 'required',
+            'rs_ori_id' => 'required',
         ];
     }
 }

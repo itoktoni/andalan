@@ -84,4 +84,9 @@ class ViewTransaksi extends Transaksi
     {
         return $this->hasOne(Rs::class, Rs::field_primary(), self::field_rs_id());
     }
+
+    public function has_ruangan()
+    {
+        return $this->hasOne(Ruangan::class, Ruangan::field_primary(), self::field_ruangan_id());
+    }
 }
