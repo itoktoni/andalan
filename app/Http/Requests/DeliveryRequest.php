@@ -23,7 +23,7 @@ class DeliveryRequest extends FormRequest
     public function withValidator($validator)
     {
         // CASE KETIKA RFID TIDAK DITEMUKAN
-        $status_transaksi = TransactionType::REGISTER;
+        $status_transaksi = $this->status_transaksi;
 
         /*
         notes : status transaksi berasal dari menu desktop
