@@ -153,6 +153,19 @@ Route::middleware(['auth:sanctum'])->group(function () {
         $data_jenis_rs = [];
         $ruangan = [];
 
+        $ruangan = Ruangan::select([
+            'ruangan.ruangan_id',
+            'ruangan_nama',
+            'rs_id',
+        ])->leftJoin('rs_dan_ruangan', 'rs_dan_ruangan.ruangan_id', '=', 'ruangan.ruangan_id')->get();
+
+        $data_jenis_rs = JenisLinen::select([
+            'jenis_linen.jenis_id',
+            'jenis_linen.jenis_nama',
+            'rs_id',
+        ])->leftJoin('rs_dan_jenis', 'rs_dan_jenis.jenis_id', '=', 'jenis_linen.jenis_id')->get() ?? [];
+
+
         if(empty($type) || $type == "register")
         {
             foreach (RegisterType::getInstances() as $key => $value) {
