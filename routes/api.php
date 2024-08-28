@@ -165,7 +165,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
             'rs_id',
         ])->leftJoin('rs_dan_jenis', 'rs_dan_jenis.jenis_id', '=', 'jenis_linen.jenis_id')->get() ?? [];
 
-
         if(empty($type) || $type == "register")
         {
             foreach (RegisterType::getInstances() as $key => $value) {
