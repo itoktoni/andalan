@@ -2,8 +2,10 @@
     <x-card>
         <x-form :model="$model">
             <x-action form="form">
+                @if($model)
                 <x-button :module="'getJenis'" :key="$model->field_primary" color="success" label="Update Jenis" />
-            </x-action>
+                @endif
+                </x-action>
 
             @bind($model)
 
