@@ -49,13 +49,9 @@ class ReportSummaryPengirimanLinenBaruController extends MinimalController
             $query = $query->where(Bersih::field_report(), '<=', $end_date);
         }
 
-        $query = $query->get();
+        $query = $query->groupBy('rs_id', 'ruangan_id', 'jenis_id', 'bersih_report')->get();
 
-        if ($query->sum('total_rfid') > 0) {
-            return $query;
-        }
-
-        return [];
+        return $query;
     }
 
     public function getPrint(DeliveryReportRequest $request)
