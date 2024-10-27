@@ -3,7 +3,7 @@
 		<td></td>
 		<td colspan="6">
 			<h3>
-				<b>REKAP REJECT </b>
+				<b>REKAP RETUR REJECT </b>
 			</h3>
 		</td>
 		<td rowspan="3">
