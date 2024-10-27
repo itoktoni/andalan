@@ -7,6 +7,7 @@ use App\Dao\Models\Bersih;
 use App\Dao\Models\Rs;
 use App\Dao\Models\Transaksi;
 use App\Dao\Models\User;
+use App\Dao\Repositories\BersihRepository;
 use App\Dao\Repositories\TransaksiRepository;
 use App\Http\Requests\DeliveryReportRequest;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +16,7 @@ class ReportSummaryPengirimanRewashController extends MinimalController
 {
     public $data;
 
-    public function __construct(TransaksiRepository $repository)
+    public function __construct(BersihRepository $repository)
     {
         self::$repository = self::$repository ?? $repository;
     }
