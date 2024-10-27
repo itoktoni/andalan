@@ -240,6 +240,11 @@ function formatDate($value, $datetime = false)
     return $value ?: null;
 }
 
+function formatRupiah($value)
+{
+    return !empty($value) ? number_format($value, 0, ',', '.') : '0';
+}
+
 function iteration($model, $key)
 {
     return $model->firstItem() + $key;
