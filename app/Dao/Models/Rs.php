@@ -64,7 +64,6 @@ class Rs extends Model
             DataBuilder::build($this->field_primary())->name('ID')->width(20)->sort(),
             DataBuilder::build($this->field_code())->name('Kode RS')->show()->sort(),
             DataBuilder::build($this->field_name())->name('Nama Rumah Sakit')->show()->sort(),
-            DataBuilder::build($this->field_status())->name('Status')->show()->sort(),
             DataBuilder::build($this->field_alamat())->name('Alamat')->show()->sort(),
             DataBuilder::build($this->field_description())->name('Deskripsi')->show()->sort(),
         ];
