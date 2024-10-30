@@ -40,7 +40,7 @@ class ReportRegisterLinenController extends MinimalController
 
     private function getQuery($request)
     {
-        return self::$repository->getConfig()->get();
+        return self::$repository->getConfig()->orderBy('view_linen_nama', 'ASC')->get();
     }
 
     public function getPrint(Request $request)
