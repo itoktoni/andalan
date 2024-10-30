@@ -3,7 +3,7 @@
 		<td></td>
 		<td colspan="6">
 			<h3>
-				<b>REKAP LINEN PENDING</b>
+				<b>REKAP PENDING LINEN</b>
 			</h3>
 		</td>
 		<td rowspan="3">

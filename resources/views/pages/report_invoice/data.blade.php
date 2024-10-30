@@ -39,10 +39,11 @@
                 @foreach($tanggal as $tgl)
                 <th>{{ formatDate($tgl, 'd') }}</th>
                 @endforeach
+                <th>Type</th>
+                <th>Harga</th>
                 <th>QTY</th>
                 <th>Berat (KG)</th>
                 <th>Total (Kg)</th>
-            </tr>
         </thead>
         <tbody>
             @php
@@ -59,6 +60,7 @@
             $nama = $linen_nama;
 
             $data_linen = $data->where('view_linen_id', $linen_id);
+            $single = $data_linen->first();
 
             $qty = $data_linen->sum('view_qty');
             $kg = $data_linen->sum('view_kg');
@@ -80,6 +82,8 @@
                     {{ $total_tanggal > 0 ? $total_tanggal : '0' }}
                 </td>
                 @endforeach
+                <td>{{ $single->view_cuci }}</td>
+                <td class="text-right">{{ $single->view_price }}</td>
                 <td class="text-right">
                     {{ $qty ?? 0 }}
                 </td>
@@ -88,6 +92,19 @@
             </tr>
             @empty
             @endforelse
+
+            @php
+            $sum_qty = $data->sum('view_qty');
+            $sum_kg = $data->sum('view_kg');
+            $sum_total = $sum_qty * $sum_kg;
+            @endphp
+
+            <tr>
+                <td colspan="{{ $tanggal->count() + 4 }}">TOTAL DATA</td>
+                <td class="text-right">{{ $sum_qty }}</td>
+                <td class="text-right">{{ $sum_kg }}</td>
+                <td class="text-right">{{ $sum_total }}</td>
+            </tr>
         </tbody>
 
     </table>

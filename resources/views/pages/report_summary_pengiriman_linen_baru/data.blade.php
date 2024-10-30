@@ -34,10 +34,11 @@
 		<thead>
 			<tr>
 				<th width="1">No. </th>
-				<th>NO. DO</th>
 				<th>RUMAH SAKIT</th>
+				<th>RUANGAN</th>
+				<th>NAMA LINEN</th>
 				<th>TOTAL</th>
-				<th>TANGGAL PENGIRIMAN LINEN BARU</th>
+				<th>TANGGAL PENGIRIMAN</th>
 				<th>OPERATOR</th>
 			</tr>
 		</thead>
@@ -45,8 +46,9 @@
 			@forelse($data as $table)
 			<tr>
 				<td>{{ $loop->iteration }}</td>
-				<td>{{ $table->field_delivery }}</td>
 				<td>{{ $table->rs_nama }}</td>
+				<td>{{ $table->ruangan_nama }}</td>
+				<td>{{ $table->jenis_nama }}</td>
 				<td>{{ $table->total_rfid ?? 0 }}</td>
 				<td>{{ formatDate($table->bersih_report) }}</td>
 				<td>{{ $table->name ?? '' }}</td>

@@ -101,7 +101,7 @@ class DetailController extends MasterController
             ->addSelect('*')
             ->leftJoinRelationship('has_rs')
             ->orderBy(History::field_created_at(), 'DESC')
-            ->limit(10)->showSql()->get();
+            ->limit(10)->get();
 
         return moduleView(modulePathForm('history'), $this->share([
             'model' => $model,

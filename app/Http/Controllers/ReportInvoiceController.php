@@ -37,7 +37,7 @@ class ReportInvoiceController extends MinimalController
 
     private function getQueryBersih($request)
     {
-        $query = DB::table('view_rekap_bersih')
+        $query = DB::table('view_invoice')
             ->where('view_rs_id', $request->rs_id)
             ->where('view_status', TransactionType::BERSIH);
 

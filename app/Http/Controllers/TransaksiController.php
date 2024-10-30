@@ -167,6 +167,19 @@ class TransaksiController extends MasterController
                     return [$item[Detail::field_primary()] => $item];
                 });
 
+            $outstanding_data = Outstanding::select([
+                Outstanding::field_primary(),
+                Outstanding::field_status_transaction(),
+                Outstanding::field_status_process(),
+            ])
+                ->whereIn(Outstanding::field_primary(), $request->rfid)
+                ->get()
+                ->mapWithKeys(function ($item) {
+                    return [$item[Outstanding::field_primary()] => $item];
+            });
+
+            sleep(5);
+
             $status_transaksi = $request->{STATUS_TRANSAKSI};
             $status_process = $request->{STATUS_PROCESS};
             $status_sync = SyncType::No;
@@ -179,6 +192,7 @@ class TransaksiController extends MasterController
 
                 if (isset($data[$item])) {
                     $detail = $data[$item];
+
                     if (empty($detail->outstanding_status_transaksi) and $this->rfidCanSyncToServer($status_transaksi, $detail->field_status_linen, $detail->field_updated_at)) {
                         $status_sync = SyncType::Yes;
 
@@ -252,7 +266,7 @@ class TransaksiController extends MasterController
                     }
                 } else {
 
-                    if (!empty($item)) {
+                    if (!empty($item) and !isset($outstanding_data[$item])) {
                         $transaksi[] = [
 
                             Transaksi::field_key() => $request->key,
@@ -288,14 +302,30 @@ class TransaksiController extends MasterController
                         ];
                     }
 
-                    $return[] = [
-                        KEY => $request->key,
-                        STATUS_SYNC => SyncType::Unknown,
-                        STATUS_TRANSAKSI => TransactionType::UNKNOWN,
-                        STATUS_PROCESS => ProcessType::UNKNOWN,
-                        RFID => $item,
-                        TANGGAL_UPDATE => $date,
-                    ];
+                    if(isset($outstanding_data[$item]))
+                    {
+                        $transaksi_status = $outstanding_data[$item];
+                        $return[] = [
+                            KEY => $request->key,
+                            STATUS_SYNC => SyncType::No,
+                            STATUS_TRANSAKSI => $transaksi_status->outstanding_status_transaksi,
+                            STATUS_PROCESS => $transaksi_status->outstanding_status_proses,
+                            RFID => $item,
+                            TANGGAL_UPDATE => $date,
+                        ];
+                    }
+                    else
+                    {
+                        $return[] = [
+                            KEY => $request->key,
+                            STATUS_SYNC => SyncType::Unknown,
+                            STATUS_TRANSAKSI => TransactionType::UNKNOWN,
+                            STATUS_PROCESS => ProcessType::UNKNOWN,
+                            RFID => $item,
+                            TANGGAL_UPDATE => $date,
+                        ];
+                    }
+
                 }
             }
 
@@ -344,7 +374,7 @@ class TransaksiController extends MasterController
 
         $preventif = collect($return);
         if ($preventif->where('status_sync', '!=', 0)->count() == 0) {
-            return Notes::error('Data gagal di sync !');
+            return Notes::error('Tidak Ada RFID yang di Sync !');
         }
 
         $return = $preventif->unique(RFID)->values()->all();

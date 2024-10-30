@@ -3,7 +3,7 @@
 		<td></td>
 		<td colspan="6">
 			<h3>
-				<b>REKAP REGISTER </b>
+				<b>REKAP LINEN BARU </b>
 			</h3>
 		</td>
 		<td rowspan="3">
