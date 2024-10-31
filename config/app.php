@@ -13,6 +13,7 @@ use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\RoleType;
 use App\Dao\Enums\TransactionType;
 use App\Dao\Enums\UserLevel;
+use App\Dao\Enums\YesNoType;
 use App\Dao\Models\Transaksi;
 use App\Providers\CacheableAuthUserServiceProvider;
 use Coderello\SharedData\Facades\SharedData;
@@ -258,7 +259,6 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'Enum' => BenSampo\Enum\EnumServiceProvider::class,
-        'PDF' => Barryvdh\DomPDF\Facade::class,
         'Template' => Template::class,
         'Views' => Views::class,
         'BooleanType' => BooleanType::class,
