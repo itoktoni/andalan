@@ -17,4 +17,22 @@ class ViewBersih extends Bersih
         'bersih_created_at' => 'datetime',
         'bersih_updated_at' => 'datetime',
     ];
+
+    protected $filters = [
+        'view_rs_id',
+        'view_ruangan_id',
+        'view_linen_id',
+    ];
+
+    public function view_rs_id($query, $value) {
+        return $query->where('rs_id', $value);
+    }
+
+    public function view_ruangan_id($query, $value) {
+        return $query->where('ruangan_id', $value);
+    }
+
+    public function view_linen_id($query, $value) {
+        return $query->where('jenis_id', $value);
+    }
 }
