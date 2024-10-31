@@ -29,10 +29,19 @@ class ViewBersih extends Bersih
     }
 
     public function view_ruangan_id($query, $value) {
-        return $query->where('ruangan_id', $value);
+
+        if(!empty($value)){
+            return $query->where('ruangan_id', $value);
+        }
+
+        return $query;
     }
 
     public function view_linen_id($query, $value) {
-        return $query->where('jenis_id', $value);
+        if(!empty($value)){
+            return $query->where('jenis_id', $value);
+        }
+
+        return $query;
     }
 }
