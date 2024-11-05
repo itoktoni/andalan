@@ -42,7 +42,7 @@ class ReportDetailKotorController extends MinimalController
     public function getPrint(TransactionReportRequest $request)
     {
         set_time_limit(0);
-        $rs = Rs::find(request()->get(Rs::field_primary()));
+        $rs = Rs::find(request()->get('rs_ori_id'));
 
         $this->data = $this->getQuery($request);
 
