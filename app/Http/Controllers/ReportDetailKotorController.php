@@ -19,7 +19,6 @@ class ReportDetailKotorController extends MinimalController
 
     protected function beforeForm()
     {
-
         $rs = Rs::getOptions();
         $user = User::getOptions();
 
@@ -37,7 +36,7 @@ class ReportDetailKotorController extends MinimalController
             $query->where('ori.rs_id', $rs);
         }
 
-        return $query->get();
+        return $query->orderBy('view_linen_nama', 'ASC')->get();
     }
 
     public function getPrint(TransactionReportRequest $request)
