@@ -13,6 +13,7 @@ use App\Http\Services\UpdateService;
 use Illuminate\Support\Facades\Hash;
 use Plugins\Notes;
 use Plugins\Response;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends MasterController
 {
@@ -79,6 +80,15 @@ class UserController extends MasterController
         $user->api_token = $string_token;
         $user->save();
 
-        return Notes::token($user->toArray());
+
+        $menu = DB::table('menu')->where('menu_role', $user->role)->get()->map(function($item){
+            return $item->menu_name;
+        });
+
+        $data = $user->toArray();
+
+        $data['menu'] = $menu;
+
+        return Notes::token($data);
     }
 }
