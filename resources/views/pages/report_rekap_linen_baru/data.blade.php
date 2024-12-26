@@ -22,7 +22,7 @@
 		<td></td>
 		<td colspan="10">
             <h3>
-				Tanggal Kotor : {{ formatDate(request()->get('start_rekap')) }} - {{ formatDate(request()->get('end_rekap')) }}
+				Tanggal Register : {{ formatDate(request()->get('start_rekap')) }} - {{ formatDate(request()->get('end_rekap')) }}
 			</h3>
 		</td>
 	</tr>
