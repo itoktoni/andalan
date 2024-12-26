@@ -21,16 +21,9 @@ File: Main Js File
         $('.large-only').hide();
     }
 
-    $(".search").selectize({
-        allowEmptyOption:true,
-        create: false
-    });
+    $(".search").select2();
 
-    $(".tag").selectize({
-        allowEmptyOption:false,
-        create: false,
-        plugins: ["remove_button"],
-    });
+    $(".tag").select2();
 
     var language = localStorage.getItem('language');
     // Default Language
