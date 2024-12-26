@@ -163,7 +163,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
             'jenis_linen.jenis_id',
             'jenis_linen.jenis_nama',
             'rs_id',
-        ])->leftJoin('rs_dan_jenis', 'rs_dan_jenis.jenis_id', '=', 'jenis_linen.jenis_id')->get() ?? [];
+        ])->leftJoin('rs_dan_jenis', 'rs_dan_jenis.jenis_id', '=', 'jenis_linen.jenis_id')
+        ->orderBy('jenis_nama', 'ASC')
+        ->get() ?? [];
 
         if(empty($type) || $type == "register")
         {
@@ -213,7 +215,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 $collection = RsResource::collection($rs);
                 $data_supplier = Supplier::select(Supplier::field_primary(), Supplier::field_name())->get() ?? [];
                 $data_bahan = JenisBahan::select(JenisBahan::field_primary(), JenisBahan::field_name())->get() ?? [];
-                $data_jenis = JenisLinen::select(JenisLinen::field_primary(), JenisLinen::field_name())->get() ?? [];
+                $data_jenis = JenisLinen::select(JenisLinen::field_primary(), JenisLinen::field_name())->orderBy('jenis_nama', 'ASC')->get() ?? [];
             }
             else if($type == "register")
             {
@@ -221,13 +223,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 $collection = RsSingleResource::collection($rs);
 
                 $data_supplier = Supplier::select(Supplier::field_primary(), Supplier::field_name())->get() ?? [];
-                $data_bahan = JenisBahan::select(JenisBahan::field_primary(), JenisBahan::field_name())->get() ?? [];
-                $data_jenis = JenisLinen::select(JenisLinen::field_primary(), JenisLinen::field_name())->get() ?? [];
+                $data_bahan = JenisBahan::select(JenisBahan::field_primary(), JenisBahan::field_name())->orderBy(JenisBahan::field_name(), 'ASC')->get() ?? [];
+                $data_jenis = JenisLinen::select(JenisLinen::field_primary(), JenisLinen::field_name())->orderBy(JenisLinen::field_name(), 'ASC')->get() ?? [];
                 $data_jenis_rs = JenisLinen::select([
                     'jenis_linen.jenis_id',
                     'jenis_linen.jenis_nama',
                     'rs_id',
-                ])->leftJoin('rs_dan_jenis', 'rs_dan_jenis.jenis_id', '=', 'jenis_linen.jenis_id')->get() ?? [];
+                ])->leftJoin('rs_dan_jenis', 'rs_dan_jenis.jenis_id', '=', 'jenis_linen.jenis_id')->orderBy('jenis_nama', 'ASC')->get() ?? [];
 
                 $ruangan = Ruangan::select([
                     'ruangan.ruangan_id',
@@ -245,7 +247,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
                         'jenis_linen.jenis_id',
                         'jenis_linen.jenis_nama',
                         'rs_id',
-                    ])->leftJoin('rs_dan_jenis', 'rs_dan_jenis.jenis_id', '=', 'jenis_linen.jenis_id')->get() ?? [];
+                    ])->leftJoin('rs_dan_jenis', 'rs_dan_jenis.jenis_id', '=', 'jenis_linen.jenis_id')
+                    ->orderBy('jenis_nama', 'ASC')
+                    ->get() ?? [];
 
                     $rs = $rs->where(Rs::field_status(), OwnershipType::FREE);
                 }
