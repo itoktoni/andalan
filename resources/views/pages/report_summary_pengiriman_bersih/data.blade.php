@@ -37,7 +37,7 @@
 				<th>NO. DO</th>
 				<th>RUMAH SAKIT</th>
 				<th>TOTAL</th>
-				<th>TANGGAL PENGIRIMAN BERSIH</th>
+				<th>TANGGAL DO BERSIH</th>
 				<th>OPERATOR</th>
 			</tr>
 		</thead>
