@@ -1,5 +1,5 @@
 /*
-Template Name: Minia - Bootstrap 5 Admin & Dashboard Template
+Template Name: Minia - Bootstrap 5 Admin & Dashboard Template 1
 Author: Themesbrand
 Version: 1.0.0
 Website: https://themesbrand.com/
@@ -22,13 +22,12 @@ File: Main Js File
     }
 
     $(".search").select2({
-         theme: 'bootstrap-5'
-    });
+        theme: 'bootstrap-5'
+   });
 
-    $(".tag").select2({
-         theme: 'bootstrap-5'
-    });
-
+   $(".tag").select2({
+        theme: 'bootstrap-5'
+   });
 
     var language = localStorage.getItem('language');
     // Default Language
