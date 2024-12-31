@@ -29,6 +29,7 @@ File: Main Js File
          theme: 'bootstrap-5'
     });
 
+
     var language = localStorage.getItem('language');
     // Default Language
     var default_lang = 'en';
