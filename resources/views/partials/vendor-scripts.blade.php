@@ -12,14 +12,3 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
 
 <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script>
-
-<style>
-    .select2-container--bootstrap-5 .select2-selection{
-        font-size: .875rem !important;
-    }
-
-    .select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option{
-        font-size: .875rem !important;
-    }
-
-</style>
