@@ -60,13 +60,6 @@ class ConfigLinen extends Model
             DataBuilder::build($this->field_name())->name('Nama Rumah Sakit')->show()->sort(),
         ];
 
-        if (level(UserLevel::Finance)) {
-            $data = array_merge($data, [
-                DataBuilder::build($this->field_harga_cuci())->name('Harga Cuci')->show()->sort(),
-                DataBuilder::build($this->field_harga_sewa())->name('Harga Rental')->show()->sort(),
-            ]);
-        }
-
         return $data;
     }
 
