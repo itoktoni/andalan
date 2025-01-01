@@ -40,7 +40,7 @@
 				<th>LINEN </th>
 				<th>RUMAH SAKIT</th>
 				<th>RUANGAN</th>
-				<th>TANGGAL PENGIRIMAN BERSIH</th>
+				<th>TANGGAL DO BERSIH</th>
 				<th>TANGGAL REGISTER</th>
 				<th>OPERATOR</th>
 			</tr>

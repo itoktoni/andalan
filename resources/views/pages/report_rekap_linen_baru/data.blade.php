@@ -37,7 +37,7 @@
                 @foreach($location as $loc_id => $loc_name)
                     <th>{{ $loc_name ?? 'Belum Register' }}</th>
                 @endforeach
-                <th>Total Register (Pcs)</th>
+                <th>Total Linen (Pcs)</th>
                 <th>(Kg) Register</th>
             </tr>
         </thead>

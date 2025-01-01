@@ -37,7 +37,7 @@
 				<th>NO. DO</th>
 				<th>RUMAH SAKIT</th>
 				<th>TOTAL</th>
-				<th>TANGGAL PENGIRIMAN REWASH</th>
+				<th>TANGGAL DO REWASH</th>
 				<th>OPERATOR</th>
 			</tr>
 		</thead>

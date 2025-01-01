@@ -98,6 +98,15 @@
         vertical-align: sub;
     }
 
+    .select2-container--bootstrap-5 .select2-selection{
+        font-size: .875rem !important;
+    }
+
+    .select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option{
+        font-size: .875rem !important;
+    }
+
+
     @media (max-width: 800px) {
         .page-action {
             left: 0px;

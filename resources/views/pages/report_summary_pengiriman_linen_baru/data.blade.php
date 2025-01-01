@@ -38,7 +38,7 @@
 				<th>RUANGAN</th>
 				<th>NAMA LINEN</th>
 				<th>TOTAL</th>
-				<th>TANGGAL PENGIRIMAN</th>
+				<th>TANGGAL DO</th>
 				<th>OPERATOR</th>
 			</tr>
 		</thead>

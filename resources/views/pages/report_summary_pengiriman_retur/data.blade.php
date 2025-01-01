@@ -37,7 +37,7 @@
 				<th>NO. DO</th>
 				<th>RUMAH SAKIT</th>
 				<th>TOTAL</th>
-				<th>TANGGAL PENGIRIMAN REJECT</th>
+				<th>TANGGAL DO REJECT</th>
 				<th>OPERATOR</th>
 			</tr>
 		</thead>

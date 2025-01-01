@@ -157,7 +157,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
             'ruangan.ruangan_id',
             'ruangan_nama',
             'rs_id',
-        ])->leftJoin('rs_dan_ruangan', 'rs_dan_ruangan.ruangan_id', '=', 'ruangan.ruangan_id')->get();
+        ])->leftJoin('rs_dan_ruangan', 'rs_dan_ruangan.ruangan_id', '=', 'ruangan.ruangan_id')
+        ->orderBy('ruangan_nama', 'ASC')
+        ->get();
 
         $data_jenis_rs = JenisLinen::select([
             'jenis_linen.jenis_id',
@@ -235,7 +237,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     'ruangan.ruangan_id',
                     'ruangan_nama',
                     'rs_id',
-                ])->leftJoin('rs_dan_ruangan', 'rs_dan_ruangan.ruangan_id', '=', 'ruangan.ruangan_id')->get();
+                ])->leftJoin('rs_dan_ruangan', 'rs_dan_ruangan.ruangan_id', '=', 'ruangan.ruangan_id')
+                ->orderBy('ruangan_nama', 'ASC')
+                ->get();
             }
             else{
 
@@ -263,7 +267,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     'ruangan.ruangan_id',
                     'ruangan_nama',
                     'rs_id',
-                ])->leftJoin('rs_dan_ruangan', 'rs_dan_ruangan.ruangan_id', '=', 'ruangan.ruangan_id')->get();
+                ])->leftJoin('rs_dan_ruangan', 'rs_dan_ruangan.ruangan_id', '=', 'ruangan.ruangan_id')
+                ->orderBy('ruangan_nama', 'ASC')
+                ->get();
             }
 
             $add = [
