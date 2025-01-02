@@ -131,7 +131,7 @@ trait DetailEntity
 
     public static function field_status_transaction()
     {
-        return 'detail_status_transaksi';
+        return 'detail_status_linen';
     }
 
     public function getFieldStatusTransactionAttribute()

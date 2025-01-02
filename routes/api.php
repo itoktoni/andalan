@@ -636,6 +636,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
                         Transaksi::field_updated_at() => $date,
                         Transaksi::field_updated_by() => $user,
                     ]);
+
+                    $detail->update([
+                        Detail::field_status_linen() => $transaksi_status,
+                    ]);
                 }
 
                 $outstanding = Outstanding::create(array_merge($data_outstanding, [

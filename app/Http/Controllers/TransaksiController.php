@@ -178,8 +178,6 @@ class TransaksiController extends MasterController
                     return [$item[Outstanding::field_primary()] => $item];
             });
 
-            sleep(5);
-
             $status_transaksi = $request->{STATUS_TRANSAKSI};
             $status_process = $request->{STATUS_PROCESS};
             $status_sync = SyncType::No;
