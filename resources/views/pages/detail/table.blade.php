@@ -16,6 +16,10 @@
                     <x-form-select prepend="Status Transaksi" col="4" class="search" :label=false name="detail_status_transaksi" :options="$transaction" />
                     <x-form-select prepend="Posisi Terakhir" col="4" class="search" :label=false name="detail_status_proses" :options="$process" />
                 </div>
+
+                <div class="row mb-2">
+                    <select class="form-control rfid" name="rfid[]" multiple="multiple" placeholder="test"></select>
+                </div>
             </div>
 
             <x-filter toggle="Filter" hide="true" :fields="$fields" />

@@ -73,6 +73,10 @@ class DetailController extends MasterController
             $query = $query->whereDate(Detail::field_created_at(), '<=', $end);
         }
 
+        if($rfid = request()->get('rfid')) {
+            $query = $query->whereIn(Detail::field_primary(), $rfid);
+        }
+
         return $query->paginate(100);
     }
 

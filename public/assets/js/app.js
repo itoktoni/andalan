@@ -29,6 +29,13 @@ File: Main Js File
         theme: 'bootstrap-5'
    });
 
+   $(".rfid").select2({
+        tags : true,
+        placeholder: "Masukan RFID, kemudian tekan enter",
+        allowClear: true,
+    });
+
+
     var language = localStorage.getItem('language');
     // Default Language
     var default_lang = 'en';

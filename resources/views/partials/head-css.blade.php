@@ -19,4 +19,8 @@
         font-size: .875rem !important;
     }
 
+    .select2-container--default.select2-container--focus .select2-selection--multiple{
+        border: 1px solid #ced4da !important;
+    }
+
 </style>
