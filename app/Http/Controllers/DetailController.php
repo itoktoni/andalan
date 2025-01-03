@@ -86,9 +86,11 @@ class DetailController extends MasterController
         $transaction = TransactionType::getOptions();
         $process = ProcessType::getOptions();
         $register = RegisterType::getOptions();
+        $rfid = request()->get('rfid');
 
         return moduleView(modulePathTable(), [
             'data' => $data,
+            'rfid' => $rfid,
             'register' => $register,
             'process' => $process,
             'transaction' => $transaction,

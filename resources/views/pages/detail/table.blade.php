@@ -18,7 +18,13 @@
                 </div>
 
                 <div class="row mb-2">
-                    <select class="form-control rfid" name="rfid[]" multiple="multiple" placeholder="test"></select>
+                    <select class="form-control rfid" name="rfid[]" multiple="multiple" placeholder="test">
+                        @if($rfid)
+                            @foreach($rfid as $value)
+                                <option selected value="{{ $value }}">{{ $value }}</option>
+                            @endforeach
+                        @endif
+                    </select>
                 </div>
             </div>
 
