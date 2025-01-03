@@ -7,6 +7,7 @@ use App\Dao\Enums\DetailType;
 use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\RegisterType;
 use App\Dao\Enums\TransactionType;
+use App\Dao\Models\Bersih;
 use App\Dao\Models\ConfigLinen;
 use App\Dao\Models\Detail;
 use App\Dao\Models\History;
@@ -74,7 +75,7 @@ class DetailController extends MasterController
         }
 
         if($rfid = request()->get('rfid')) {
-            $explode = array_map('trim', explode(',', $rfid));
+            $explode = array_map('trim', explode(' ', $rfid));
             $query = $query->whereIn(Detail::field_primary(), $explode);
         }
 
@@ -156,5 +157,6 @@ class DetailController extends MasterController
         Transaksi::whereIn(Transaksi::field_rfid(), $code)->delete();
         ConfigLinen::whereIn(Detail::field_primary(), $code)->delete();
         Outstanding::whereIn(Outstanding::field_primary(), $code)->delete();
+        Bersih::whereIn(Bersih::field_rfid(), $code)->delete();
     }
 }
