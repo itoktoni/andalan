@@ -33,6 +33,7 @@ File: Main Js File
         tags : true,
         placeholder: "Masukan RFID, kemudian tekan enter",
         allowClear: true,
+        tokenSeparators: [',', ' ']
     });
 
 
