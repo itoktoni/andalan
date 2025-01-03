@@ -74,7 +74,8 @@ class DetailController extends MasterController
         }
 
         if($rfid = request()->get('rfid')) {
-            $query = $query->whereIn(Detail::field_primary(), $rfid);
+            $explode = explode(',', $rfid);
+            $query = $query->whereIn(Detail::field_primary(), $explode);
         }
 
         return $query->paginate(100);
