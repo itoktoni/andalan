@@ -623,19 +623,27 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
                 } else {
                     // CHECK TRANSACTION DATA IF NOT PRESENT
-                    Transaksi::create([
-                        Transaksi::field_key() => $autoNumber,
-                        Transaksi::field_rfid() => $rfid,
-                        Transaksi::field_rs_ori() => $detail->detail_id_rs,
-                        Transaksi::field_rs_scan() => $detail->detail_id_rs,
-                        Transaksi::field_beda_rs() => BedaRsType::NO,
-                        Transaksi::field_ruangan_id() => $detail->detail_id_ruangan,
-                        Transaksi::field_status_transaction() => TransactionType::KOTOR,
-                        Transaksi::field_created_at() => $date,
-                        Transaksi::field_created_by() => $user,
-                        Transaksi::field_updated_at() => $date,
-                        Transaksi::field_updated_by() => $user,
-                    ]);
+
+                    $transaksi = Transaksi::where(Transaksi::field_rfid(), $rfid)
+                        ->whereDate(Transaksi::field_created_at(), date('Y-m-d'))
+                        ->count();
+
+                    if($transaksi == 0)
+                    {
+                        Transaksi::create([
+                            Transaksi::field_key() => $autoNumber,
+                            Transaksi::field_rfid() => $rfid,
+                            Transaksi::field_rs_ori() => $detail->detail_id_rs,
+                            Transaksi::field_rs_scan() => $detail->detail_id_rs,
+                            Transaksi::field_beda_rs() => BedaRsType::NO,
+                            Transaksi::field_ruangan_id() => $detail->detail_id_ruangan,
+                            Transaksi::field_status_transaction() => TransactionType::KOTOR,
+                            Transaksi::field_created_at() => $date,
+                            Transaksi::field_created_by() => $user,
+                            Transaksi::field_updated_at() => $date,
+                            Transaksi::field_updated_by() => $user,
+                        ]);
+                    }
 
                     $detail->update([
                         Detail::field_status_linen() => $transaksi_status,
