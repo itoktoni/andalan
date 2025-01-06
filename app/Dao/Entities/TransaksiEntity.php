@@ -293,4 +293,14 @@ trait TransaksiEntity
     {
         return $this->{$this->field_uuid_delivery()};
     }
+
+    public static function field_grouping()
+    {
+        return 'transaksi_grouping';
+    }
+
+    public function getFieldGroupingAttribute()
+    {
+        return $this->{$this->field_grouping()};
+    }
 }
