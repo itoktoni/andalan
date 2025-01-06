@@ -16,6 +16,10 @@
                     <x-form-select prepend="Status Transaksi" col="4" class="search" :label=false name="detail_status_transaksi" :options="$transaction" />
                     <x-form-select prepend="Posisi Terakhir" col="4" class="search" :label=false name="detail_status_proses" :options="$process" />
                 </div>
+
+                <div class="row mb-2">
+                    <x-form-input type="text" prepend="RFID" :label=false col="12" name="rfid" />
+                </div>
             </div>
 
             <x-filter toggle="Filter" hide="true" :fields="$fields" />
@@ -33,7 +37,7 @@
                                 <th width="9" class="center">
                                     <input class="btn-check-d" type="checkbox">
                                 </th>
-                                <th style="width: 100px" class="text-center column-action">{{ __('Action') }}</th>
+                                <th style="width: 150px" class="text-center column-action">{{ __('Action') }}</th>
                                 <th class="text-center column-checkbox">{{ __('No.') }}</th>
                                 <th class="text-left">NO. RFID</th>
                                 <th class="text-left">RUMAH SAKIT</th>

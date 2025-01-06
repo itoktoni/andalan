@@ -7,14 +7,17 @@ use App\Dao\Enums\DetailType;
 use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\RegisterType;
 use App\Dao\Enums\TransactionType;
+use App\Dao\Models\Bersih;
 use App\Dao\Models\ConfigLinen;
 use App\Dao\Models\Detail;
 use App\Dao\Models\History;
+use App\Dao\Models\JenisBahan;
 use App\Dao\Models\JenisLinen;
 use App\Dao\Models\OpnameDetail;
 use App\Dao\Models\Outstanding;
 use App\Dao\Models\Rs;
 use App\Dao\Models\Ruangan;
+use App\Dao\Models\Supplier;
 use App\Dao\Models\Transaksi;
 use App\Dao\Models\ViewDetailLinen;
 use App\Dao\Repositories\DetailRepository;
@@ -22,6 +25,7 @@ use App\Http\Requests\DeleteRequest;
 use App\Http\Requests\GeneralRequest;
 use App\Http\Services\DeleteService;
 use App\Http\Services\SingleService;
+use App\Http\Services\UpdateDetailService;
 use App\Http\Services\UpdateService;
 use Plugins\Response;
 
@@ -33,11 +37,10 @@ class DetailController extends MasterController
         self::$service = self::$service ?? $service;
     }
 
-    public function postUpdate($code, GeneralRequest $request, UpdateService $service)
+    public function postUpdate($code, GeneralRequest $request, UpdateDetailService $service)
     {
         $data = $service->update(self::$repository, $request, $code);
-
-        return Response::redirectBack($data);
+        return Response::redirectToRoute('detail.getUpdate', ['code' => $data['data']->field_primary]);
     }
 
     protected function beforeForm()
@@ -45,8 +48,10 @@ class DetailController extends MasterController
         $rs = Rs::getOptions();
         $ruangan = Ruangan::getOptions();
         $jenis = JenisLinen::getOptions();
+        $bahan = JenisBahan::getOptions();
+        $supplier = Supplier::getOptions();
         $cuci = CuciType::getOptions();
-        $transaction = DetailType::getOptions();
+        $transaction = TransactionType::getOptions();
         $process = ProcessType::getOptions();
         $register = RegisterType::getOptions();
 
@@ -56,6 +61,8 @@ class DetailController extends MasterController
             'transaction' => $transaction,
             'cuci' => $cuci,
             'jenis' => $jenis,
+            'supplier' => $supplier,
+            'bahan' => $bahan,
             'ruangan' => $ruangan,
             'rs' => $rs,
         ];
@@ -73,6 +80,11 @@ class DetailController extends MasterController
             $query = $query->whereDate(Detail::field_created_at(), '<=', $end);
         }
 
+        if($rfid = request()->get('rfid')) {
+            $explode = array_map('trim', explode(' ', $rfid));
+            $query = $query->whereIn(Detail::field_primary(), $explode);
+        }
+
         return $query->paginate(100);
     }
 
@@ -82,9 +94,11 @@ class DetailController extends MasterController
         $transaction = TransactionType::getOptions();
         $process = ProcessType::getOptions();
         $register = RegisterType::getOptions();
+        $rfid = request()->get('rfid');
 
         return moduleView(modulePathTable(), [
             'data' => $data,
+            'rfid' => $rfid,
             'register' => $register,
             'process' => $process,
             'transaction' => $transaction,
@@ -149,5 +163,6 @@ class DetailController extends MasterController
         Transaksi::whereIn(Transaksi::field_rfid(), $code)->delete();
         ConfigLinen::whereIn(Detail::field_primary(), $code)->delete();
         Outstanding::whereIn(Outstanding::field_primary(), $code)->delete();
+        Bersih::whereIn(Bersih::field_rfid(), $code)->delete();
     }
 }
