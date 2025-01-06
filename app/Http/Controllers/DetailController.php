@@ -11,11 +11,13 @@ use App\Dao\Models\Bersih;
 use App\Dao\Models\ConfigLinen;
 use App\Dao\Models\Detail;
 use App\Dao\Models\History;
+use App\Dao\Models\JenisBahan;
 use App\Dao\Models\JenisLinen;
 use App\Dao\Models\OpnameDetail;
 use App\Dao\Models\Outstanding;
 use App\Dao\Models\Rs;
 use App\Dao\Models\Ruangan;
+use App\Dao\Models\Supplier;
 use App\Dao\Models\Transaksi;
 use App\Dao\Models\ViewDetailLinen;
 use App\Dao\Repositories\DetailRepository;
@@ -23,6 +25,7 @@ use App\Http\Requests\DeleteRequest;
 use App\Http\Requests\GeneralRequest;
 use App\Http\Services\DeleteService;
 use App\Http\Services\SingleService;
+use App\Http\Services\UpdateDetailService;
 use App\Http\Services\UpdateService;
 use Plugins\Response;
 
@@ -34,11 +37,10 @@ class DetailController extends MasterController
         self::$service = self::$service ?? $service;
     }
 
-    public function postUpdate($code, GeneralRequest $request, UpdateService $service)
+    public function postUpdate($code, GeneralRequest $request, UpdateDetailService $service)
     {
         $data = $service->update(self::$repository, $request, $code);
-
-        return Response::redirectBack($data);
+        return Response::redirectToRoute('detail.getUpdate', ['code' => $data['data']->field_primary]);
     }
 
     protected function beforeForm()
@@ -46,8 +48,10 @@ class DetailController extends MasterController
         $rs = Rs::getOptions();
         $ruangan = Ruangan::getOptions();
         $jenis = JenisLinen::getOptions();
+        $bahan = JenisBahan::getOptions();
+        $supplier = Supplier::getOptions();
         $cuci = CuciType::getOptions();
-        $transaction = DetailType::getOptions();
+        $transaction = TransactionType::getOptions();
         $process = ProcessType::getOptions();
         $register = RegisterType::getOptions();
 
@@ -57,6 +61,8 @@ class DetailController extends MasterController
             'transaction' => $transaction,
             'cuci' => $cuci,
             'jenis' => $jenis,
+            'supplier' => $supplier,
+            'bahan' => $bahan,
             'ruangan' => $ruangan,
             'rs' => $rs,
         ];

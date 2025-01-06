@@ -37,7 +37,7 @@
                                 <th width="9" class="center">
                                     <input class="btn-check-d" type="checkbox">
                                 </th>
-                                <th style="width: 100px" class="text-center column-action">{{ __('Action') }}</th>
+                                <th style="width: 150px" class="text-center column-action">{{ __('Action') }}</th>
                                 <th class="text-center column-checkbox">{{ __('No.') }}</th>
                                 <th class="text-left">NO. RFID</th>
                                 <th class="text-left">RUMAH SAKIT</th>
