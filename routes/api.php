@@ -9,6 +9,7 @@ use App\Dao\Enums\OwnershipType;
 use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\RegisterType;
 use App\Dao\Enums\TransactionType;
+use App\Dao\Enums\YesNoType;
 use App\Dao\Models\Bersih;
 use App\Dao\Models\Cetak;
 use App\Dao\Models\ConfigLinen;

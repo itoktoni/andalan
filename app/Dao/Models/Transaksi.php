@@ -49,7 +49,8 @@ class Transaksi extends Model
         'transaksi_delivery_by',
         'transaksi_bersih',
         'transaksi_uuid_barcode',
-        'transaksi_uuid_delviery',
+        'transaksi_uuid_delivery',
+        'transaksi_grouping',
     ];
 
     public $sortable = [
