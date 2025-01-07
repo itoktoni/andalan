@@ -9,6 +9,7 @@ use App\Dao\Enums\HilangType;
 use App\Dao\Enums\MenuType;
 use App\Dao\Enums\ObsesimanType;
 use App\Dao\Enums\OwnershipType;
+use App\Dao\Enums\PendingType;
 use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\RoleType;
 use App\Dao\Enums\TransactionType;
@@ -269,6 +270,7 @@ return [
         'BedaRsType' => BedaRsType::class,
         'CuciType' => CuciType::class,
         'MenuType' => MenuType::class,
+        'PendingType' => PendingType::class,
         'OwnershipType' => OwnershipType::class,
         'UserLevel' => UserLevel::class,
         'RoleType' => RoleType::class,
