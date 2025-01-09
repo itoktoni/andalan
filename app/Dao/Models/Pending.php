@@ -4,6 +4,7 @@ namespace App\Dao\Models;
 
 use App\Dao\Builder\DataBuilder;
 use App\Dao\Entities\OutstandingEntity;
+use App\Dao\Entities\PendingEntity;
 use App\Dao\Enums\UserLevel;
 use App\Dao\Traits\ActiveTrait;
 use App\Dao\Traits\ApiTrait;
@@ -16,43 +17,38 @@ use Kyslik\ColumnSortable\Sortable;
 use Mehradsadeghi\FilterQueryString\FilterQueryString as FilterQueryString;
 use Touhidurabir\ModelSanitize\Sanitizable as Sanitizable;
 
-class Outstanding extends Model
+class Pending extends Model
 {
-    use ActiveTrait, ApiTrait, DataTableTrait, FilterQueryString, OptionTrait, OutstandingEntity, PowerJoins, Sanitizable, Sortable;
+    use ActiveTrait, ApiTrait, DataTableTrait, FilterQueryString, OptionTrait, PendingEntity, PowerJoins, Sanitizable, Sortable;
 
-    protected $table = 'outstanding';
+    protected $table = 'pending';
 
-    protected $primaryKey = 'outstanding_rfid';
+    protected $primaryKey = 'pending_rfid';
 
     protected $fillable = [
-        'outstanding_rfid',
-        'outstanding_key',
-        'outstanding_rs_ori',
-        'outstanding_rs_scan',
-        'outstanding_id_ruangan',
-        'outstanding_id_jenis',
-        'outstanding_status_transaksi',
-        'outstanding_status_proses',
-        'outstanding_status_hilang',
-        'outstanding_created_at',
-        'outstanding_updated_at',
-        'outstanding_pending_created_at',
-        'outstanding_pending_updated_at',
-        'outstanding_hilang_created_at',
-        'outstanding_hilang_updated_at',
-        'outstanding_created_by',
-        'outstanding_updated_by',
+        'pending_id',
+        'pending_rfid',
+        'pending_key',
+        'pending_id_ruangan',
+        'pending_id_jenis',
+        'pending_id_rs',
+        'pending_kotor',
+        'pending_tanggal',
+        'pending_status_transaksi',
+        'pending_status_proses',
     ];
 
     public $sortable = [
-        'outstanding_rfid',
-        'outstanding_key',
+        'pending_rfid',
+        'pending_key',
     ];
 
     protected $casts = [
-        'outstanding_rs_ori' => 'integer',
-        'outstanding_rs_scan' => 'integer',
-        'outstanding_created_at' => 'date',
+        'pending_id_rs' => 'integer',
+        'pending_id_jenis' => 'integer',
+        'pending_id_ruangan' => 'integer',
+        'pending_kotor' => 'date',
+        'pending_tanggal' => 'date',
     ];
 
     protected $filters = [
@@ -61,9 +57,7 @@ class Outstanding extends Model
 
     public $timestamps = false;
 
-    public $incrementing = false;
-
-    protected $keyType = 'string';
+    public $incrementing = true;
 
     public function fieldSearching()
     {
@@ -101,11 +95,12 @@ class Outstanding extends Model
 
     public function has_detail()
     {
-        return $this->hasOne(Detail::class, Detail::field_primary(), self::field_primary());
+        return $this->hasOne(Detail::class, Detail::field_primary(), self::field_rfid());
     }
 
     public function has_view()
     {
         return $this->hasOne(ViewDetailLinen::class, ViewDetailLinen::field_primary(), self::field_rfid());
     }
+
 }

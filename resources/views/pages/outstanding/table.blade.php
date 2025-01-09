@@ -51,7 +51,6 @@
                                 <th>STATUS TRANSAKSI</th>
                                 <th>STATUS PROSES</th>
                                 <th>PENDING</th>
-                                <th>HILANG</th>
                                 <th>OPERATOR</th>
                             </tr>
                         </thead>
@@ -76,7 +75,6 @@
                                     <td>{{ $table->field_status_transaction }}</td>
                                     <td>{{ $table->field_status_process }}</td>
                                     <td>{{ $table->field_pending_at }}</td>
-                                    <td>{{ $table->field_hilang_at }}</td>
                                     <td>{{ $table->field_operator }}</td>
                                 </tr>
                             @empty

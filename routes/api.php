@@ -554,7 +554,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
             DB::beginTransaction();
 
-            $detail = Detail::with([HAS_OUTSTANDING, HAS_VIEW])->findOrFail($rfid);
+            $detail = Detail::with([HAS_VIEW])->addSelect([Outstanding::field_status_transaction()])->leftJoinRelationship('has_outstanding')->findOrFail($rfid);
             $view = $detail->has_view;
 
             ModelsHistory::create([
@@ -567,22 +567,16 @@ Route::middleware(['auth:sanctum'])->group(function () {
             ]);
 
             $code = env('CODE_KOTOR', 'KTR');
-            if($detail->field_status_linen == TransactionType::REGISTER){
+            if($detail->{Outstanding::field_status_transaction()} == TransactionType::REGISTER){
                 $code = env('CODE_REGISTER', 'REG');
             }
-            else if($detail->field_status_linen == TransactionType::REJECT){
-                $code = env('CODE_REJECT', 'RJK');
-            }
-            else if($detail->field_status_linen == TransactionType::REWASH){
-                $code = env('CODE_REWASH', 'WSH');
-            }
+
             $autoNumber = Query::autoNumber(Outstanding::getTableName(), Outstanding::field_key(), $code . date('ymd'), env('AUTO_NUMBER', 15));
 
             // CHECK OUTSTANDING DATA
             $data_outstanding = [
                 Outstanding::field_primary() => $rfid,
                 Outstanding::field_status_process() => ProcessType::QC,
-                Outstanding::field_updated_at() => $date,
                 Outstanding::field_updated_by() => $user,
                 Outstanding::field_rs_ori() => $detail->field_rs_id,
                 Outstanding::field_rs_scan() => $detail->field_rs_id,
@@ -647,6 +641,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 $outstanding = Outstanding::create(array_merge($data_outstanding, [
                     Outstanding::field_key() => $autoNumber,
                     Outstanding::field_status_transaction() => $transaksi_status,
+                    Outstanding::field_updated_at() => $date,
                     Outstanding::field_created_at() => $date,
                     Outstanding::field_created_by() => $user,
                 ]));

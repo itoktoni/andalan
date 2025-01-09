@@ -41,6 +41,7 @@
 			@endphp
 
 			@forelse($data as $table)
+			{{ dd($table) }}
 			<tr>
 				<td>{{ $loop->iteration }}</td>
 				<td>{{ $table->jenis_nama }}</td>
@@ -48,7 +49,7 @@
 				<td>{{ $table->qty }}</td>
 				<td>{{ $table->jenis_berat }}</td>
 				<td>{{ $table->qty * $table->jenis_berat }}</td>
-				<td>{{ $table->jenis_parstok }}</td>
+				<td>{{ $table->view_parstock }}</td>
 				<td>{{ $table->qty - $table->jenis_parstok }}</td>
 			</tr>
 			@empty

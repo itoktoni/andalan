@@ -30,7 +30,7 @@ class UpdatePackingService
                     Outstanding::field_rs_ori() => $data->rs_id,
                     Outstanding::field_ruangan_id() => $data->ruangan_id,
                     Outstanding::field_status_process() => ProcessType::PACKING,
-                    Outstanding::field_updated_at() => date('Y-m-d H:i:s'),
+                    // Outstanding::field_updated_at() => date('Y-m-d H:i:s'),
                     Outstanding::field_status_hilang() => HilangType::NORMAL,
                     Outstanding::field_hilang_created_at() => null,
                     Outstanding::field_pending_created_at() => null,

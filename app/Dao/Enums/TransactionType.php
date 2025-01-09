@@ -22,6 +22,10 @@ class TransactionType extends Enum implements LocalizedEnum
 
     const REGISTER = 'REGISTER';
 
+    const WAREHOUSE = 'WAREHOUSE';
+
+    const HUB = 'HUB';
+
     public static function getDescription($value): string
     {
         if ($value === self::UNKNOWN) {
