@@ -10,7 +10,6 @@ use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\SyncType;
 use App\Dao\Enums\TransactionType;
 use App\Dao\Enums\YesNoType;
-use App\Dao\Enums\YesType;
 use App\Dao\Models\Bersih;
 use App\Dao\Models\Detail;
 use App\Dao\Models\History;
@@ -21,7 +20,6 @@ use App\Dao\Repositories\TransaksiRepository;
 use App\Http\Requests\GeneralRequest;
 use App\Http\Requests\TransactionRequest;
 use App\Http\Services\CreateService;
-use App\Http\Services\SaveTransaksiService;
 use App\Http\Services\SingleService;
 use App\Http\Services\UpdateService;
 use Illuminate\Support\Facades\DB;
@@ -70,7 +68,7 @@ class TransaksiController extends MasterController
     public function getUpdate($code)
     {
         $transaksi = $this->getTransaksi($code);
-        if (! $transaksi) {
+        if (!$transaksi) {
             return Response::redirectTo(moduleRoute('getTable'));
         }
 
@@ -85,7 +83,7 @@ class TransaksiController extends MasterController
         $transaksi = Transaksi::with([HAS_DETAIL])->findOrFail($code);
         if ($transaksi) {
 
-            PluginsHistory::log($transaksi->field_rfid, LogType::DELETE_TRANSAKSI, 'Data di delete dari transaksi '.$transaksi->field_primary);
+            PluginsHistory::log($transaksi->field_rfid, LogType::DELETE_TRANSAKSI, 'Data di delete dari transaksi ' . $transaksi->field_primary);
             Notes::delete($transaksi->get()->toArray());
             Alert::delete();
 
@@ -164,19 +162,20 @@ class TransaksiController extends MasterController
                 ])
                 ->whereIn(Detail::field_primary(), $rfid)
                 ->get()->mapWithKeys(function ($item) {
-                    return [$item[Detail::field_primary()] => $item];
-                });
+                return [$item[Detail::field_primary()] => $item];
+            });
 
             $outstanding_data = Outstanding::select([
                 Outstanding::field_primary(),
                 Outstanding::field_status_transaction(),
                 Outstanding::field_status_process(),
+                Outstanding::field_created_at(),
             ])
                 ->whereIn(Outstanding::field_primary(), $request->rfid)
                 ->get()
                 ->mapWithKeys(function ($item) {
                     return [$item[Outstanding::field_primary()] => $item];
-            });
+                });
 
             $status_transaksi = $request->{STATUS_TRANSAKSI};
             $status_process = $request->{STATUS_PROCESS};
@@ -264,7 +263,15 @@ class TransaksiController extends MasterController
                     }
                 } else {
 
-                    if (!empty($item) and !isset($outstanding_data[$item])) {
+                    $transaction_outstanding = $outstanding_data[$item] ?? false;
+                    $transaction_exists = Transaksi::select(Transaksi::field_rfid())
+                        ->where(Transaksi::field_rfid(), $item)
+                        ->whereDate(Transaksi::field_created_at(), date('Y-m-d'))
+                        ->count();
+
+                    // transaksi nya gak boleh dibikin di hari yang sama
+                    if ($transaction_exists == 0) {
+
                         $transaksi[] = [
 
                             Transaksi::field_key() => $request->key,
@@ -279,6 +286,10 @@ class TransaksiController extends MasterController
                             Transaksi::field_updated_at() => $date,
                             Transaksi::field_updated_by() => $user,
                         ];
+
+                    }
+
+                    if (($transaction_outstanding == false)) { //if outstanding null
 
                         $outstanding[] = [
 
@@ -300,8 +311,7 @@ class TransaksiController extends MasterController
                         ];
                     }
 
-                    if(isset($outstanding_data[$item]))
-                    {
+                    if (isset($outstanding_data[$item]) && ($transaction_outstanding->field_created_at == date('Y-m-d'))) {
                         $transaksi_status = $outstanding_data[$item];
                         $return[] = [
                             KEY => $request->key,
@@ -311,9 +321,7 @@ class TransaksiController extends MasterController
                             RFID => $item,
                             TANGGAL_UPDATE => $date,
                         ];
-                    }
-                    else
-                    {
+                    } else {
                         $return[] = [
                             KEY => $request->key,
                             STATUS_SYNC => SyncType::Unknown,
@@ -330,22 +338,22 @@ class TransaksiController extends MasterController
             /*
             cleansing duplicate rfid
             ketika transaksi dikirim 2x rfid
-            */
+             */
             $transaksi = collect($transaksi)->unique('transaksi_rfid')->values()->all();
 
-            if (! empty($transaksi)) {
+            if (!empty($transaksi)) {
                 foreach (array_chunk($transaksi, env('TRANSACTION_CHUNK')) as $save_transaksi) {
                     Transaksi::insert($save_transaksi);
                 }
             }
 
-            if (! empty($outstanding)) {
+            if (!empty($outstanding)) {
                 foreach (array_chunk($outstanding, env('TRANSACTION_CHUNK')) as $save_transaksi) {
                     Outstanding::insert($save_transaksi);
                 }
             }
 
-            if (! empty($log)) {
+            if (!empty($log)) {
                 foreach (array_chunk($log, env('TRANSACTION_CHUNK')) as $save_log) {
                     History::insert($save_log);
                 }
@@ -361,9 +369,9 @@ class TransaksiController extends MasterController
         } catch (\Throwable $th) {
             DB::rollBack();
 
-            if($th->getCode() == 23000){
+            if ($th->getCode() == 23000) {
                 $message = explode('for key', $th->getMessage());
-                $clean = str_replace('SQLSTATE[23000]: Integrity constraint violation: 1062','RFID', $message[0]);
+                $clean = str_replace('SQLSTATE[23000]: Integrity constraint violation: 1062', 'RFID', $message[0]);
                 return Notes::error($clean);
             }
 
