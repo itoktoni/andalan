@@ -289,6 +289,16 @@ trait DetailEntity
         return $this->{$this->field_cek()};
     }
 
+    public static function field_report()
+    {
+        return 'detail_report';
+    }
+
+    public function getFieldReportAttribute()
+    {
+        return $this->{$this->field_report()};
+    }
+
     public static function field_status_kepemilikan()
     {
         return 'detail_status_kepemilikan';

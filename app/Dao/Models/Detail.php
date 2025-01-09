@@ -50,6 +50,7 @@ class Detail extends Model
         'detail_total_retur',
         'detail_total_bersih',
         'detail_tgl_cek',
+        'detail_report',
     ];
 
     public $sortable = [
@@ -59,6 +60,7 @@ class Detail extends Model
 
     protected $casts = [
         'detail_rfid' => 'string',
+        'detail_report' => 'date',
         'detail_status_linen' => 'string',
     ];
 
