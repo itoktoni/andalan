@@ -80,6 +80,8 @@ class UpdateDeliveryService
                 $detail = [
                     Detail::field_rs_id() => $data->rs_id,
                     Detail::field_status_linen() => TransactionType::BERSIH,
+                    Detail::field_updated_at() => date('Y-m-d H:i:s'),
+                    Detail::field_report() => $report_date->format('Y-m-d'),
                     Detail::field_updated_by() => auth()->user()->id,
                 ];
 

@@ -599,43 +599,61 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 $outstanding->update($data_outstanding);
             } else {
 
-                $transaksi_status = TransactionType::KOTOR;
-                if($detail->field_status_linen == TransactionType::REGISTER){
-                    $transaksi_status = TransactionType::REGISTER;
+                if(!empty($detail->field_report) ? ($detail->field_report->format('Y-m-d') != date('Y-m-d')) : ($detail->field_updated_at->format('Y-m-d') != date('Y-m-d'))) {
 
-                    Transaksi::create([
-                        Transaksi::field_key() => $autoNumber,
-                        Transaksi::field_rfid() => $rfid,
-                        Transaksi::field_rs_ori() => $detail->detail_id_rs,
-                        Transaksi::field_rs_scan() => $detail->detail_id_rs,
-                        Transaksi::field_beda_rs() => BedaRsType::NO,
-                        Transaksi::field_ruangan_id() => $detail->detail_id_ruangan,
-                        Transaksi::field_status_transaction() => $transaksi_status,
-                        Transaksi::field_created_by() => $user,
-                        Transaksi::field_updated_at() => $date,
-                        Transaksi::field_updated_by() => $user,
-                    ]);
+                    $transaksi_status = TransactionType::KOTOR;
+                    if($detail->field_status_linen == TransactionType::REGISTER){
+                        $transaksi_status = TransactionType::REGISTER;
 
-                } else {
-                    // CHECK TRANSACTION DATA IF NOT PRESENT
-                    Transaksi::create([
-                        Transaksi::field_key() => $autoNumber,
-                        Transaksi::field_rfid() => $rfid,
-                        Transaksi::field_rs_ori() => $detail->detail_id_rs,
-                        Transaksi::field_rs_scan() => $detail->detail_id_rs,
-                        Transaksi::field_beda_rs() => BedaRsType::NO,
-                        Transaksi::field_ruangan_id() => $detail->detail_id_ruangan,
-                        Transaksi::field_status_transaction() => TransactionType::KOTOR,
-                        Transaksi::field_created_at() => $date,
-                        Transaksi::field_created_by() => $user,
-                        Transaksi::field_updated_at() => $date,
-                        Transaksi::field_updated_by() => $user,
-                        Transaksi::field_grouping() => YesNoType::YES,
-                    ]);
+                        Transaksi::create([
+                            Transaksi::field_key() => $autoNumber,
+                            Transaksi::field_rfid() => $rfid,
+                            Transaksi::field_rs_ori() => $detail->detail_id_rs,
+                            Transaksi::field_rs_scan() => $detail->detail_id_rs,
+                            Transaksi::field_beda_rs() => BedaRsType::NO,
+                            Transaksi::field_ruangan_id() => $detail->detail_id_ruangan,
+                            Transaksi::field_status_transaction() => $transaksi_status,
+                            Transaksi::field_created_by() => $user,
+                            Transaksi::field_updated_at() => $date,
+                            Transaksi::field_updated_by() => $user,
+                        ]);
 
-                    $detail->update([
-                        Detail::field_status_linen() => $transaksi_status,
-                    ]);
+                    } else {
+                        // CHECK TRANSACTION DATA IF NOT PRESENT
+
+                        $transaksi = Transaksi::where(Transaksi::field_rfid(), $rfid)
+                            ->whereDate(Transaksi::field_created_at(), date('Y-m-d'))
+                            ->count();
+
+                        if($transaksi == 0)
+                        {
+                            Transaksi::create([
+                                Transaksi::field_key() => $autoNumber,
+                                Transaksi::field_rfid() => $rfid,
+                                Transaksi::field_rs_ori() => $detail->detail_id_rs,
+                                Transaksi::field_rs_scan() => $detail->detail_id_rs,
+                                Transaksi::field_beda_rs() => BedaRsType::NO,
+                                Transaksi::field_ruangan_id() => $detail->detail_id_ruangan,
+                                Transaksi::field_status_transaction() => TransactionType::KOTOR,
+                                Transaksi::field_created_at() => $date,
+                                Transaksi::field_created_by() => $user,
+                                Transaksi::field_updated_at() => $date,
+                                Transaksi::field_updated_by() => $user,
+                            ]);
+                        }
+
+                        $detail->update([
+                            Detail::field_status_linen() => $transaksi_status,
+                        ]);
+                    }
+
+                    $outstanding = Outstanding::create(array_merge($data_outstanding, [
+                        Outstanding::field_key() => $autoNumber,
+                        Outstanding::field_status_transaction() => $transaksi_status,
+                        Outstanding::field_created_at() => $date,
+                        Outstanding::field_created_by() => $user,
+                    ]));
+
                 }
 
                 $outstanding = Outstanding::create(array_merge($data_outstanding, [
@@ -655,11 +673,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 'rs_nama' => $view->view_rs_nama ?? '',
                 'ruangan_id' => $view->view_ruangan_id ?? '',
                 'ruangan_nama' => $view->view_ruangan_nama ?? '',
-                'status_transaksi' => $outstanding->outstanding_status_transaksi,
-                'status_proses' => $outstanding->outstanding_status_proses,
+                'status_transaksi' => $outstanding->outstanding_status_transaksi ?? '',
+                'status_proses' => $outstanding->outstanding_status_proses ?? '',
                 'status_kepemilikan' => $detail->detail_status_kepemilikan ?? null,
-                'tanggal_create' => $outstanding->outstanding_created_at ? Carbon::make($outstanding->outstanding_created_at)->format('Y-m-d') : null,
-                'tanggal_update' => $outstanding->outstanding_updated_at ? Carbon::make($outstanding->outstanding_updated_at)->format('Y-m-d') : null,
+                'tanggal_create' => !empty($outstanding->outstanding_created_at) ? Carbon::make($outstanding->outstanding_created_at)->format('Y-m-d') : null,
+                'tanggal_update' => !empty($outstanding->outstanding_updated_at) ? Carbon::make($outstanding->outstanding_updated_at)->format('Y-m-d') : null,
                 'user_nama' => $view->view_created_name ?? null,
             ];
 

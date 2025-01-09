@@ -50,6 +50,7 @@ class Outstanding extends Model
     ];
 
     protected $casts = [
+        'outstanding_created_at' => 'datetime',
         'outstanding_rs_ori' => 'integer',
         'outstanding_rs_scan' => 'integer',
         'outstanding_created_at' => 'date',
