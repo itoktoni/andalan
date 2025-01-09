@@ -62,6 +62,8 @@ class Detail extends Model
         'detail_rfid' => 'string',
         'detail_report' => 'date',
         'detail_status_linen' => 'string',
+        'detail_created_at' => 'datetime',
+        'detail_updated_at' => 'datetime',
     ];
 
     protected $filters = [
@@ -95,7 +97,7 @@ class Detail extends Model
 
     const DELETED_BY = 'detail_deleted_by';
 
-    public $timestamps = true;
+    public $timestamps = false;
 
     public $incrementing = false;
     protected $keyType = 'string';

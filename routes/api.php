@@ -554,7 +554,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
             DB::beginTransaction();
 
-            $detail = Detail::with([HAS_VIEW])->addSelect([Outstanding::field_status_transaction()])->leftJoinRelationship('has_outstanding')->findOrFail($rfid);
+            $detail = Detail::with([HAS_VIEW])->addSelect(['*', Outstanding::field_status_transaction()])->leftJoinRelationship('has_outstanding')->findOrFail($rfid);
             $view = $detail->has_view;
 
             ModelsHistory::create([
@@ -598,7 +598,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
             if ($outstanding) {
                 $outstanding->update($data_outstanding);
             } else {
-
                 if(!empty($detail->field_report) ? ($detail->field_report->format('Y-m-d') != date('Y-m-d')) : ($detail->field_updated_at->format('Y-m-d') != date('Y-m-d'))) {
 
                     $transaksi_status = TransactionType::KOTOR;
@@ -655,14 +654,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     ]));
 
                 }
-
-                $outstanding = Outstanding::create(array_merge($data_outstanding, [
-                    Outstanding::field_key() => $autoNumber,
-                    Outstanding::field_status_transaction() => $transaksi_status,
-                    Outstanding::field_updated_at() => $date,
-                    Outstanding::field_created_at() => $date,
-                    Outstanding::field_created_by() => $user,
-                ]));
             }
 
             $collection = [
