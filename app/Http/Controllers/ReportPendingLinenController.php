@@ -12,8 +12,7 @@ use App\Dao\Models\Ruangan;
 use App\Dao\Models\ViewDetailLinen;
 use App\Dao\Models\ViewLog;
 use App\Dao\Models\ViewOutstanding;
-use App\Dao\Repositories\DetailRepository;
-use App\Dao\Repositories\OutstandingRepository;
+use App\Dao\Repositories\PendingRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -21,7 +20,7 @@ class ReportPendingLinenController extends MinimalController
 {
     public $data;
 
-    public function __construct(OutstandingRepository $repository)
+    public function __construct(PendingRepository $repository)
     {
         self::$repository = self::$repository ?? $repository;
     }
