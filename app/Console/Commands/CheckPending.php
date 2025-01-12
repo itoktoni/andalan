@@ -51,7 +51,7 @@ class CheckPending extends Command
             ->whereDate(Outstanding::field_updated_at(), '>=', Carbon::now()->subMinutes(1440)->toDateString())
             ->whereDate(Outstanding::field_updated_at(), '<', Carbon::now()->toDateString())
             ->where(Outstanding::field_status_hilang(), HilangType::NORMAL)
-            ->showSql()->get();
+            ->get();
 
         if ($outstanding) {
 
