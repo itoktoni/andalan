@@ -51,7 +51,7 @@ class CheckPending extends Command
             ->whereDate(Outstanding::field_updated_at(), '>=', Carbon::now()->subMinutes(1440)->toDateString())
             ->whereDate(Outstanding::field_updated_at(), '<', Carbon::now()->toDateString())
             ->where(Outstanding::field_status_hilang(), HilangType::NORMAL)
-            ->get();
+            ->showSql()->get();
 
         if ($outstanding) {
 
@@ -59,7 +59,7 @@ class CheckPending extends Command
 
             PluginsHistory::bulk($rfid, LogType::PENDING, 'RFID Pending');
             Outstanding::whereIn(Outstanding::field_primary(), $rfid)->update([
-                Outstanding::field_status_hilang() => ProcessType::PENDING,
+                Outstanding::field_status_hilang() => HilangType::PENDING,
                 Outstanding::field_pending_created_at() => date('Y-m-d H:i:s'),
                 Outstanding::field_pending_updated_at() => date('Y-m-d H:i:s'),
             ]);
