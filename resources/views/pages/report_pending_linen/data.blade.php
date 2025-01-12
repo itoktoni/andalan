@@ -39,7 +39,7 @@
 				<th>RUMAH SAKIT</th>
 				<th>RUANGAN</th>
 				<th>JUMLAH PEMAKAIAN LINEN</th>
-				<th>TANGGAL REGISTER</th>
+				<th>TANGGAL KOTOR</th>
 				<th>STATUS</th>
 				<th>PROSES TERAKHIR</th>
 			</tr>
@@ -53,11 +53,11 @@
 			<tr>
 				<td>{{ $loop->iteration }}</td>
 				<td>{{ $table->field_primary }}</td>
-				<td>{{ $table->field_name }}</td>
+				<td>{{ $table->jenis_nama }}</td>
 				<td>{{ $table->field_rs_ori_name }}</td>
 				<td>{{ $table->field_ruangan_name }}</td>
 				<td class="text-right">{{ $table->view_transaksi_bersih_total ?? 0 }}</td>
-				<td>{{ formatDate($table->view_tanggal_create) }}</td>
+				<td>{{ formatDate($table->outstanding_created_at) }}</td>
 				<td>{{ TransactionType::getDescription($table->outstanding_status_transaksi) }}</td>
 				<td>{{ ($table->view_status_proses) }}</td>
 			</tr>
