@@ -22,11 +22,13 @@ File: Main Js File
     }
 
     $(".search").select2({
-        theme: 'bootstrap-5'
+        theme: 'bootstrap-5',
+        allowClear: true
    });
 
    $(".tag").select2({
-        theme: 'bootstrap-5'
+        theme: 'bootstrap-5',
+        allowClear: true
    });
 
    $(".rfid").select2({

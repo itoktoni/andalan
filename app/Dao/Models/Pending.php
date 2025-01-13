@@ -44,6 +44,7 @@ class Pending extends Model
     ];
 
     protected $casts = [
+        'pending_rfid' => 'string',
         'pending_id_rs' => 'integer',
         'pending_id_jenis' => 'integer',
         'pending_id_ruangan' => 'integer',
@@ -53,6 +54,9 @@ class Pending extends Model
 
     protected $filters = [
         'filter',
+        'view_rs_id',
+        'view_ruangan_id',
+        'view_linen_id',
     ];
 
     public $timestamps = false;

@@ -41,15 +41,9 @@ class PendingRepository extends MasterRepository implements CrudInterface
     public function getPrint()
     {
         $query = Pending::query()
-            ->joinRelationship('has_outstanding')
-            ->leftJoinRelationship('has_detail')
+            ->leftJoinRelationship('has_view')
             ->addSelect([
-                'view_outstanding.*',
-                'outstanding_pending_created_at',
-                'outstanding_hilang_created_at',
-                'view_tanggal_create',
-                'view_transaksi_bersih_total',
-                'view_status_proses',
+                'view_detail_linen.*',
             ])
             ->sortable()->filter();
 

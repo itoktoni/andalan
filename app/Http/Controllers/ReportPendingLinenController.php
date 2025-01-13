@@ -44,16 +44,16 @@ class ReportPendingLinenController extends MinimalController
 
     private function getQuery($request)
     {
-        $query = self::$repository->getPrint()
-            ->where('outstanding.'.ViewOutstanding::field_status_hilang(), HilangType::PENDING);
+        $query = self::$repository->getPrint();
 
-        if ($start_date = $request->start_pending) {
-            $query = $query->whereDate(ViewOutstanding::field_pending_created_at(), '>=', $start_date);
-        }
 
-        if ($end_date = $request->end_pending) {
-            $query = $query->whereDate(ViewOutstanding::field_pending_created_at(), '<=', $end_date);
-        }
+        // if ($start_date = $request->start_pending) {
+        //     $query = $query->whereDate(ViewOutstanding::field_pending_created_at(), '>=', $start_date);
+        // }
+
+        // if ($end_date = $request->end_pending) {
+        //     $query = $query->whereDate(ViewOutstanding::field_pending_created_at(), '<=', $end_date);
+        // }
 
         return $query->get();
     }
