@@ -598,7 +598,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
             if ($outstanding) {
                 $outstanding->update($data_outstanding);
             } else {
-                if(!empty($detail->field_report) ? ($detail->field_report->format('Y-m-d') != date('Y-m-d')) : ($detail->field_updated_at->format('Y-m-d') != date('Y-m-d'))) {
+
+                if((!empty($detail->field_report) && $detail->field_report->format('Y-m-d') != date('Y-m-d')) || empty($detail->field_report)) {
 
                     $transaksi_status = TransactionType::KOTOR;
                     if($detail->field_status_linen == TransactionType::REGISTER){
