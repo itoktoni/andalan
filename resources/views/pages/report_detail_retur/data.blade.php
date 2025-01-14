@@ -3,7 +3,7 @@
 		<td></td>
 		<td colspan="6">
 			<h3>
-				<b>DETAIL TRANSAKSI REJECT </b>
+				<b>DETAIL PENERIMAAN REJECT </b>
 			</h3>
 		</td>
 		<td rowspan="3">
@@ -42,7 +42,7 @@
 				<th>LOKASI SCAN RUMAH SAKIT</th>
 				<th>CUCI/RENTAL</th>
 				<th>JUMLAH PEMAKAIAN LINEN</th>
-				<th>JUMLAH RETUR</th>
+				<th>JUMLAH REJECT</th>
 				<th>TANGGAL PENERIMAAN</th>
 				<th>TANGGAL REGISTER</th>
 				<th>OPERATOR</th>
