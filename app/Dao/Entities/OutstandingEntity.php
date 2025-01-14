@@ -7,6 +7,7 @@ use App\Dao\Enums\HilangType;
 use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\RegisterType;
 use App\Dao\Enums\TransactionType;
+use App\Dao\Enums\WarehouseType;
 use App\Dao\Models\JenisLinen;
 use App\Dao\Models\Rs;
 use App\Dao\Models\Ruangan;
@@ -176,6 +177,21 @@ trait OutstandingEntity
     public function getFieldStatusHilangNameAttribute()
     {
         return HilangType::getDescription($this->getFieldStatusProcessAttribute());
+    }
+
+    public static function field_status_warehouse()
+    {
+        return 'outstanding_status_gudang';
+    }
+
+    public function getFieldStatusWarehouseAttribute()
+    {
+        return $this->{$this->field_status_warehouse()};
+    }
+
+    public function getFieldStatusWarehouseNameAttribute()
+    {
+        return WarehouseType::getDescription($this->getFieldStatusTempatAttribute());
     }
 
     public static function field_created_at()

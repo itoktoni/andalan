@@ -34,6 +34,7 @@ class Outstanding extends Model
         'outstanding_status_transaksi',
         'outstanding_status_proses',
         'outstanding_status_hilang',
+        'outstanding_status_gudang',
         'outstanding_created_at',
         'outstanding_updated_at',
         'outstanding_pending_created_at',

@@ -4,6 +4,7 @@ namespace App\Dao\Entities;
 
 use App\Dao\Enums\BedaRsType;
 use App\Dao\Enums\TransactionType;
+use App\Dao\Models\JenisLinen;
 use App\Dao\Models\Rs;
 use App\Dao\Models\User;
 
@@ -67,6 +68,21 @@ trait BersihEntity
     public function getFieldRuanganIdAttribute()
     {
         return $this->{$this->field_ruangan_id()};
+    }
+
+    public static function field_jenis_id()
+    {
+        return 'bersih_id_jenis';
+    }
+
+    public function getFieldJenisIdAttribute()
+    {
+        return $this->{$this->field_jenis_id()};
+    }
+
+    public function getFieldJenisNameAttribute()
+    {
+        return $this->{JenisLinen::field_name()};
     }
 
     public function getFieldRsNameAttribute()

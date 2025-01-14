@@ -9,6 +9,7 @@ use App\Dao\Enums\OwnershipType;
 use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\RegisterType;
 use App\Dao\Enums\TransactionType;
+use App\Dao\Enums\WarehouseType;
 use App\Dao\Enums\YesNoType;
 use App\Dao\Models\Bersih;
 use App\Dao\Models\Cetak;
@@ -649,6 +650,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
                     $outstanding = Outstanding::create(array_merge($data_outstanding, [
                         Outstanding::field_key() => $autoNumber,
+                        Outstanding::field_status_warehouse() => WarehouseType::WORKSHOP,
                         Outstanding::field_status_transaction() => $transaksi_status,
                         Outstanding::field_created_at() => $date,
                         Outstanding::field_created_by() => $user,

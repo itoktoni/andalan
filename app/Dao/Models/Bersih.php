@@ -29,6 +29,7 @@ class Bersih extends Model
         'bersih_status',
         'bersih_id_rs',
         'bersih_id_ruangan',
+        'bersih_id_jenis',
         'bersih_barcode',
         'bersih_delivery',
         'bersih_created_at',
@@ -83,6 +84,11 @@ class Bersih extends Model
     public function has_ruangan()
     {
         return $this->hasOne(Ruangan::class, Ruangan::field_primary(), self::field_ruangan_id());
+    }
+
+    public function has_jenis()
+    {
+        return $this->hasOne(JenisLinen::class, JenisLinen::field_primary(), self::field_jenis_id());
     }
 
     public function has_rs()

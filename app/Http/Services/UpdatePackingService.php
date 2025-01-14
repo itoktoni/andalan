@@ -6,6 +6,7 @@ use App\Dao\Enums\CetakType;
 use App\Dao\Enums\HilangType;
 use App\Dao\Enums\LogType;
 use App\Dao\Enums\ProcessType;
+use App\Dao\Enums\WarehouseType;
 use App\Dao\Models\Bersih;
 use App\Dao\Models\Cetak;
 use App\Dao\Models\Outstanding;
@@ -30,10 +31,11 @@ class UpdatePackingService
                     Outstanding::field_rs_ori() => $data->rs_id,
                     Outstanding::field_ruangan_id() => $data->ruangan_id,
                     Outstanding::field_status_process() => ProcessType::PACKING,
-                    // Outstanding::field_updated_at() => date('Y-m-d H:i:s'),
                     Outstanding::field_status_hilang() => HilangType::NORMAL,
+                    Outstanding::field_status_tempat() => WarehouseType::WORKSHOP,
                     Outstanding::field_hilang_created_at() => null,
                     Outstanding::field_pending_created_at() => null,
+                    // Outstanding::field_updated_at() => date('Y-m-d H:i:s'),
                 ]);
 
             History::bulk($data->rfid, LogType::PACKING, 'Assign to Rs '.$data->rs_name, $data->rs_id);

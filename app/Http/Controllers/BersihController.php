@@ -40,7 +40,7 @@ class BersihController extends MasterController
         $ruangan = Ruangan::getOptions();
         $rs = Rs::getOptions();
         $linen = JenisLinen::getOptions();
-        $status = DetailType::getOptions();
+        $status = TransactionType::getOptions();
         $user = User::getOptions();
 
         return moduleView(modulePathTable(), [

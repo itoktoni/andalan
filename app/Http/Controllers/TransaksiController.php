@@ -9,6 +9,7 @@ use App\Dao\Enums\LogType;
 use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\SyncType;
 use App\Dao\Enums\TransactionType;
+use App\Dao\Enums\WarehouseType;
 use App\Dao\Enums\YesNoType;
 use App\Dao\Models\Bersih;
 use App\Dao\Models\Detail;
@@ -218,6 +219,7 @@ class TransaksiController extends MasterController
                             Outstanding::field_ruangan_id() => $detail->field_ruangan_id,
                             Outstanding::field_status_transaction() => $status_transaksi,
                             Outstanding::field_status_process() => $status_process,
+                            Outstanding::field_status_warehouse() => WarehouseType::WORKSHOP,
                             Outstanding::field_created_at() => date('Y-m-d H:i:s'),
                             Outstanding::field_updated_at() => date('Y-m-d H:i:s'),
                             Outstanding::field_created_by() => auth()->user()->id,
