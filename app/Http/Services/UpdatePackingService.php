@@ -32,7 +32,7 @@ class UpdatePackingService
                     Outstanding::field_ruangan_id() => $data->ruangan_id,
                     Outstanding::field_status_process() => ProcessType::PACKING,
                     Outstanding::field_status_hilang() => HilangType::NORMAL,
-                    Outstanding::field_status_tempat() => WarehouseType::WORKSHOP,
+                    Outstanding::field_status_warehouse() => $data->status_gudang,
                     Outstanding::field_hilang_created_at() => null,
                     Outstanding::field_pending_created_at() => null,
                     // Outstanding::field_updated_at() => date('Y-m-d H:i:s'),

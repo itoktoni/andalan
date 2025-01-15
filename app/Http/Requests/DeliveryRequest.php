@@ -34,8 +34,14 @@ class DeliveryRequest extends FormRequest
 
         $outstanding = Outstanding::where(Outstanding::field_rs_ori(), $this->rs_id)
             ->where(Outstanding::field_status_process(), ProcessType::PACKING)
-            ->where(Outstanding::field_status_transaction(), $status_transaksi)
-            ->count();
+            ->where(Outstanding::field_status_transaction(), $status_transaksi);
+
+        if(!empty($this->status_gudang))
+        {
+            $outstanding = $outstanding->where(Outstanding::field_status_warehouse(), $this->status_gudang);
+        }
+
+        $outstanding = $outstanding->count();
 
         $validator->after(function ($validator) use ($outstanding) {
             if ($outstanding == 0) {
