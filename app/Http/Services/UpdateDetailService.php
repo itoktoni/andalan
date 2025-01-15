@@ -8,6 +8,7 @@ use App\Dao\Models\ConfigLinen;
 use App\Dao\Models\Detail;
 use App\Dao\Models\History;
 use App\Dao\Models\OpnameDetail;
+use App\Dao\Models\Outstanding;
 use App\Dao\Models\Rs;
 use App\Dao\Models\Transaksi;
 use Illuminate\Support\Facades\DB;
@@ -28,8 +29,14 @@ class UpdateDetailService
                 Detail::field_primary() => $data[Detail::field_primary()],
             ]);
 
+            Outstanding::where(Outstanding::field_primary(), $code)->update([
+                Outstanding::field_primary() => $data[Detail::field_primary()],
+                Outstanding::field_ruangan_id() => $data[Detail::field_ruangan_id()],
+            ]);
+
             Transaksi::where(Transaksi::field_rfid(), $code)->update([
                 Transaksi::field_rfid() => $data[Detail::field_primary()],
+                Transaksi::field_ruangan_id() => $data[Detail::field_ruangan_id()],
             ]);
 
             ConfigLinen::where(Detail::field_primary(), $code)
@@ -40,6 +47,7 @@ class UpdateDetailService
 
             Bersih::where(Bersih::field_rfid(), $code)->update([
                 Bersih::field_rfid() => $data[Detail::field_primary()],
+                Bersih::field_ruangan_id() => $data[Detail::field_ruangan_id()],
             ]);
 
             History::where(History::field_name(), $code)->update([
