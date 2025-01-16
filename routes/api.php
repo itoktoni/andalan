@@ -326,6 +326,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
             $code = env('CODE_REGISTER', 'REG');
             $autoNumber = Query::autoNumber(Outstanding::getTableName(), Outstanding::field_key(), $code . date('ymd'), env('AUTO_NUMBER', 15));
             $rsid = $request->rs_id;
+            $userId = auth()->user()->id;
+            $date = date('Y-m-d H:i:s');
 
             if ($request->status_register == RegisterType::GANTI_CHIP) {
                 $transaksi_status = TransactionType::KOTOR;
@@ -349,24 +351,38 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     Detail::field_status_linen() => $transaksi_status,
                     Detail::field_status_cuci() => $request->status_cuci,
                     Detail::field_status_register() => $request->status_register ? $request->status_register : RegisterType::REGISTER,
-                    Detail::field_created_at() => date('Y-m-d H:i:s'),
-                    Detail::field_updated_at() => date('Y-m-d H:i:s'),
-                    Detail::field_created_by() => auth()->user()->id,
-                    Detail::field_updated_by() => auth()->user()->id,
+                    Detail::field_created_at() => $date,
+                    Detail::field_updated_at() => $date,
+                    Detail::field_created_by() => $userId,
+                    Detail::field_updated_by() => $userId,
                 ];
 
-                $outstanding = [
+                $data_outstanding = [
                     Outstanding::field_key() => $autoNumber,
                     Outstanding::field_primary() => $item,
                     Outstanding::field_status_transaction() => $transaksi_status,
                     Outstanding::field_status_process() => $proses_status,
-                    Outstanding::field_created_at() => date('Y-m-d H:i:s'),
-                    Outstanding::field_updated_at() => date('Y-m-d H:i:s'),
-                    Outstanding::field_created_by() => auth()->user()->id,
-                    Outstanding::field_updated_by() => auth()->user()->id,
+                    Outstanding::field_created_at() => $date,
+                    Outstanding::field_updated_at() => $date,
+                    Outstanding::field_created_by() => $userId,
+                    Outstanding::field_updated_by() => $userId,
                     Outstanding::field_status_hilang() => HilangType::NORMAL,
                     Outstanding::field_hilang_created_at() => null,
                     Outstanding::field_pending_created_at() => null,
+                ];
+
+                $data_transaksi = [
+                    Transaksi::field_key() => $autoNumber,
+                    Transaksi::field_rfid() => $item,
+                    Transaksi::field_rs_ori() => $rsid,
+                    Transaksi::field_rs_scan() => $rsid,
+                    Transaksi::field_beda_rs() => BedaRsType::NO,
+                    Transaksi::field_jenis_id() => $request->jenis_id,
+                    Transaksi::field_status_transaction() => $transaksi_status,
+                    Transaksi::field_created_at() => $date,
+                    Transaksi::field_created_by() => $userId,
+                    Transaksi::field_updated_at() => $date,
+                    Transaksi::field_updated_by() => $userId,
                 ];
 
                 if ($request->has('ruangan_id')) {
@@ -376,10 +392,14 @@ Route::middleware(['auth:sanctum'])->group(function () {
                         Detail::field_rs_id() => $rsid,
                     ]);
 
-                    $outstanding = array_merge($outstanding, [
+                    $data_outstanding = array_merge($data_outstanding, [
                         Outstanding::field_rs_ori() => $rsid,
                         Outstanding::field_rs_scan() => $rsid,
                         Outstanding::field_ruangan_id() => $request->ruangan_id,
+                    ]);
+
+                    $data_transaksi = array_merge($data_transaksi, [
+                        Transaksi::field_ruangan_id() => $request->ruangan_id,
                     ]);
 
                     //ConfigLinen::updateOrCreate(
@@ -407,19 +427,16 @@ Route::middleware(['auth:sanctum'])->group(function () {
                                 ConfigLinen::field_rs_id() => $id_rs,
                             ]
                         );
-
-                        // $merge = array_merge($merge, [
-                        //     Detail::field_rs_id() => $id_rs,
-                        // ]);
                     }
                 }
 
                 $detail[] = $merge;
-                $transaksi[] = $outstanding;
+                $transaksi[] = $data_transaksi;
+                $outstanding[] = $data_outstanding;
             }
 
-            //Detail::upsert($detail, Detail::field_primary());
             Detail::insert($detail);
+            Transaksi::insert($transaksi);
             if($request->status_register == RegisterType::GANTI_CHIP){
                 Outstanding::upsert($transaksi, Outstanding::field_primary());
             }
