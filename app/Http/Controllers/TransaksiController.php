@@ -203,6 +203,7 @@ class TransaksiController extends MasterController
                             Transaksi::field_rs_scan() => $request->rs_id,
                             Transaksi::field_beda_rs() => $beda_rs,
                             Transaksi::field_ruangan_id() => $detail->field_ruangan_id,
+                            Transaksi::field_jenis_id() => $detail->field_jenis_id,
                             Transaksi::field_status_transaction() => $status_transaksi,
                             Transaksi::field_created_at() => $date,
                             Transaksi::field_created_by() => $user,
