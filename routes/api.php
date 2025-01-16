@@ -436,21 +436,34 @@ Route::middleware(['auth:sanctum'])->group(function () {
             }
 
             Detail::insert($detail);
-            Transaksi::insert($transaksi);
             if($request->status_register == RegisterType::GANTI_CHIP){
+                Transaksi::insert($transaksi);
                 Outstanding::upsert($transaksi, Outstanding::field_primary());
+
+                $history = collect($request->rfid)->map(function ($item, $rsid) {
+                    return [
+                        ModelsHistory::field_rs_id() => $rsid,
+                        ModelsHistory::field_name() => $item,
+                        ModelsHistory::field_status() => LogType::REG_TRANSACTION,
+                        ModelsHistory::field_created_by() => auth()->user()->name,
+                        ModelsHistory::field_created_at() => date('Y-m-d H:i:s'),
+                        ModelsHistory::field_description() => json_encode([ModelsHistory::field_name() => $item]),
+                    ];
+                });
             }
 
-            $history = collect($request->rfid)->map(function ($item, $rsid) {
-                return [
-                    ModelsHistory::field_rs_id() => $rsid,
-                    ModelsHistory::field_name() => $item,
-                    ModelsHistory::field_status() => LogType::REGISTER,
-                    ModelsHistory::field_created_by() => auth()->user()->name,
-                    ModelsHistory::field_created_at() => date('Y-m-d H:i:s'),
-                    ModelsHistory::field_description() => json_encode([ModelsHistory::field_name() => $item]),
-                ];
-            });
+            else{
+                $history = collect($request->rfid)->map(function ($item, $rsid) {
+                    return [
+                        ModelsHistory::field_rs_id() => $rsid,
+                        ModelsHistory::field_name() => $item,
+                        ModelsHistory::field_status() => LogType::REGISTER,
+                        ModelsHistory::field_created_by() => auth()->user()->name,
+                        ModelsHistory::field_created_at() => date('Y-m-d H:i:s'),
+                        ModelsHistory::field_description() => json_encode([ModelsHistory::field_name() => $item]),
+                    ];
+                });
+            }
 
             ModelsHistory::insert($history->toArray());
 
