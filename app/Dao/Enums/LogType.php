@@ -22,6 +22,8 @@ class LogType extends Enum implements LocalizedEnum
 
     const QC_TRANSACTION = 'QC_WITH_INSERT_TO_TRANSACTION';
 
+    const REG_TRANSACTION = 'REG_WITH_INSERT_TO_TRANSACTION';
+
     const PACKING = 'PACKING';
 
     const PENDING = 'PENDING';
