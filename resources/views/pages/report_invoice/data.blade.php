@@ -41,15 +41,17 @@
                 @endforeach
                 <th>Type</th>
                 <th>Harga</th>
-                <th>QTY</th>
                 <th>Berat (KG)</th>
+                <th>QTY</th>
                 <th>Total (Kg)</th>
+                <th>Total (Rupiah)</th>
         </thead>
         <tbody>
             @php
             $sum_kurang = $sum_lebih = $sum_per_linen = $sum_harga = $sum_berat = $sum_kg = $sum_lawan = 0;
             $total_number = $selisih = 0;
             $total_berat = 0;
+            $sum_total = 0;
             @endphp
 
             @forelse($linen as $linen_id => $linen_nama)
@@ -65,7 +67,8 @@
             $qty = $data_linen->sum('view_qty');
             $kg = $data_linen->sum('view_kg');
 
-            $total = $qty * $kg;
+            $total = $single->view_price * $kg;
+            $sum_total = $sum_total + $total;
 
             @endphp
             <tr>
@@ -84,6 +87,7 @@
                 @endforeach
                 <td>{{ $single->view_cuci }}</td>
                 <td class="text-right">{{ $single->view_price }}</td>
+                <td class="text-right">{{ $single->view_berat }}</td>
                 <td class="text-right">
                     {{ $qty ?? 0 }}
                 </td>
@@ -96,11 +100,10 @@
             @php
             $sum_qty = $data->sum('view_qty');
             $sum_kg = $data->sum('view_kg');
-            $sum_total = $sum_qty * $sum_kg;
             @endphp
 
             <tr>
-                <td colspan="{{ $tanggal->count() + 4 }}">TOTAL DATA</td>
+                <td colspan="{{ $tanggal->count() + 5 }}">TOTAL DATA</td>
                 <td class="text-right">{{ $sum_qty }}</td>
                 <td class="text-right">{{ $sum_kg }}</td>
                 <td class="text-right">{{ $sum_total }}</td>
