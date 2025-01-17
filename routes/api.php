@@ -377,7 +377,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     Transaksi::field_rs_ori() => $rsid,
                     Transaksi::field_rs_scan() => $rsid,
                     Transaksi::field_beda_rs() => BedaRsType::NO,
-                    Transaksi::field_jenis_id() => $request->jenis_id,
                     Transaksi::field_status_transaction() => $transaksi_status,
                     Transaksi::field_created_at() => $date,
                     Transaksi::field_created_by() => $userId,
