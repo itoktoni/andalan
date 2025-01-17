@@ -436,23 +436,36 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 $outstanding[] = $data_outstanding;
             }
 
-            //Detail::upsert($detail, Detail::field_primary());
             Detail::insert($detail);
             Transaksi::insert($transaksi);
             if($request->status_register == RegisterType::GANTI_CHIP){
+                Transaksi::insert($transaksi);
                 Outstanding::upsert($transaksi, Outstanding::field_primary());
+
+                $history = collect($request->rfid)->map(function ($item, $rsid) {
+                    return [
+                        ModelsHistory::field_rs_id() => $rsid,
+                        ModelsHistory::field_name() => $item,
+                        ModelsHistory::field_status() => LogType::REG_TRANSACTION,
+                        ModelsHistory::field_created_by() => auth()->user()->name,
+                        ModelsHistory::field_created_at() => date('Y-m-d H:i:s'),
+                        ModelsHistory::field_description() => json_encode([ModelsHistory::field_name() => $item]),
+                    ];
+                });
             }
 
-            $history = collect($request->rfid)->map(function ($item, $rsid) {
-                return [
-                    ModelsHistory::field_rs_id() => $rsid,
-                    ModelsHistory::field_name() => $item,
-                    ModelsHistory::field_status() => LogType::REGISTER,
-                    ModelsHistory::field_created_by() => auth()->user()->name,
-                    ModelsHistory::field_created_at() => date('Y-m-d H:i:s'),
-                    ModelsHistory::field_description() => json_encode([ModelsHistory::field_name() => $item]),
-                ];
-            });
+            else{
+                $history = collect($request->rfid)->map(function ($item, $rsid) {
+                    return [
+                        ModelsHistory::field_rs_id() => $rsid,
+                        ModelsHistory::field_name() => $item,
+                        ModelsHistory::field_status() => LogType::REGISTER,
+                        ModelsHistory::field_created_by() => auth()->user()->name,
+                        ModelsHistory::field_created_at() => date('Y-m-d H:i:s'),
+                        ModelsHistory::field_description() => json_encode([ModelsHistory::field_name() => $item]),
+                    ];
+                });
+            }
 
             ModelsHistory::insert($history->toArray());
 
@@ -568,6 +581,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('grouping/{rfid}', function ($rfid) {
         try {
 
+            $flag = 'Normal';
+
             $date = date('Y-m-d H:i:s');
             $user = auth()->user()->id;
 
@@ -605,8 +620,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 Outstanding::field_pending_created_at() => null,
             ];
 
-            if ($detail->field_status_kepemilikan == OwnershipType::FREE) {
-
+            if ($detail->field_status_kepemilikan == OwnershipType::FREE)
+            {
                 $data_outstanding = array_merge($data_outstanding, [
                     Outstanding::field_rs_ori() => null,
                     Outstanding::field_ruangan_id() => null,
@@ -614,14 +629,21 @@ Route::middleware(['auth:sanctum'])->group(function () {
             }
 
             $outstanding = $detail->has_outstanding;
-            if ($outstanding) {
+            if ($outstanding)
+            {
                 $outstanding->update($data_outstanding);
-            } else {
+            }
+            else
+            {
 
-                if((!empty($detail->field_report) && $detail->field_report->format('Y-m-d') != date('Y-m-d')) || empty($detail->field_report)) {
-
+                if((!empty($detail->field_report) && $detail->field_report->format('Y-m-d') != date('Y-m-d')) || empty($detail->field_report))
+                {
+                    $flag = 'KOTOR';
                     $transaksi_status = TransactionType::KOTOR;
-                    if($detail->field_status_linen == TransactionType::REGISTER){
+
+                    if($detail->field_status_linen == TransactionType::REGISTER)
+                    {
+                        $flag = 'REGISTER';
                         $transaksi_status = TransactionType::REGISTER;
 
                         Transaksi::create([
@@ -691,6 +713,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 'tanggal_create' => !empty($outstanding->outstanding_created_at) ? Carbon::make($outstanding->outstanding_created_at)->format('Y-m-d') : null,
                 'tanggal_update' => !empty($outstanding->outstanding_updated_at) ? Carbon::make($outstanding->outstanding_updated_at)->format('Y-m-d') : null,
                 'user_nama' => $view->view_created_name ?? null,
+                'status_linen' => $flag ?? null,
             ];
 
             $detail->update([

@@ -12,7 +12,8 @@ use App\Dao\Models\Ruangan;
 use App\Dao\Models\ViewDetailLinen;
 use App\Dao\Models\ViewLog;
 use App\Dao\Models\ViewOutstanding;
-use App\Dao\Repositories\PendingRepository;
+use App\Dao\Repositories\DetailRepository;
+use App\Dao\Repositories\OutstandingRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -20,7 +21,7 @@ class ReportDetailPendingLinenController extends MinimalController
 {
     public $data;
 
-    public function __construct(PendingRepository $repository)
+    public function __construct(OutstandingRepository $repository)
     {
         self::$repository = self::$repository ?? $repository;
     }
@@ -44,16 +45,16 @@ class ReportDetailPendingLinenController extends MinimalController
 
     private function getQuery($request)
     {
-        $query = self::$repository->getPrint();
+        $query = self::$repository->getPrint()
+            ->where('outstanding.'.ViewOutstanding::field_status_hilang(), HilangType::PENDING);
 
+        if ($start_date = $request->start_pending) {
+            $query = $query->whereDate(ViewOutstanding::field_pending_created_at(), '>=', $start_date);
+        }
 
-        // if ($start_date = $request->start_pending) {
-        //     $query = $query->whereDate(ViewOutstanding::field_pending_created_at(), '>=', $start_date);
-        // }
-
-        // if ($end_date = $request->end_pending) {
-        //     $query = $query->whereDate(ViewOutstanding::field_pending_created_at(), '<=', $end_date);
-        // }
+        if ($end_date = $request->end_pending) {
+            $query = $query->whereDate(ViewOutstanding::field_pending_created_at(), '<=', $end_date);
+        }
 
         return $query->get();
     }

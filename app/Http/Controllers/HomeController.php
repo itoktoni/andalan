@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use Alkhachatryan\LaravelWebConsole\LaravelWebConsole;
 use App\Charts\DashboardBersihHarian;
 use App\Charts\DashboardKotorHarian;
+use App\Dao\Enums\HilangType;
 use App\Dao\Enums\TransactionType;
 use App\Dao\Models\Bersih;
+use App\Dao\Models\Outstanding;
 use App\Dao\Models\Transaksi;
 
 class HomeController extends Controller
@@ -46,36 +48,39 @@ class HomeController extends Controller
         $date = date('Y-m-d');
 
         $rs_id = auth()->user()->rs_id;
-        if ($rs_id) {
 
-            $bersih = Bersih::where(Bersih::field_rs_id(), $rs_id)
-                ->where(Bersih::field_report(), $date)
-                ->where(Bersih::field_status(), TransactionType::BERSIH)
-                ->count();
+        $bersih = Bersih::select(Bersih::field_rfid())
+            ->where(Bersih::field_report(), $date)
+            ->where(Bersih::field_status(), TransactionType::BERSIH);
 
-            $kotor = Transaksi::where(Transaksi::field_rs_ori(), $rs_id)
-                ->whereDate(Transaksi::field_created_at(), $date)
-                ->where(Transaksi::field_status_transaction(), TransactionType::KOTOR)
-                ->count();
+        $transaksi = Transaksi::select(Transaksi::field_rfid())
+            ->whereDate(Transaksi::field_created_at(), $date);
 
-            $reject = Transaksi::where(Transaksi::field_rs_ori(), $rs_id)
-                ->whereDate(Transaksi::field_created_at(), $date)
-                ->where(Transaksi::field_status_transaction(), TransactionType::REJECT)
-                ->count();
+            $reject = clone $transaksi;
+            $rewash = clone $transaksi;
 
-            $rewash = Transaksi::where(Transaksi::field_rs_ori(), $rs_id)
-                ->whereDate(Transaksi::field_created_at(), $date)
-                ->where(Transaksi::field_status_transaction(), TransactionType::REWASH)
-                ->count();
+        if (!empty($rs_id))
+        {
+            $bersih = $bersih->where(Bersih::field_rs_id(), $rs_id);
+            $transaksi = $transaksi->where(Transaksi::field_rs_ori(), $rs_id);
         }
+
+        $kotor = $transaksi->where(Transaksi::field_status_transaction(), TransactionType::KOTOR);
+        $reject = $reject->where(Transaksi::field_status_transaction(), TransactionType::REJECT);
+        $rewash = $rewash->where(Transaksi::field_status_transaction(), TransactionType::REWASH);
+
+        $pending = Outstanding::where(Outstanding::field_status_hilang(), HilangType::PENDING);
+        $hilang = Outstanding::where(Outstanding::field_status_hilang(), HilangType::HILANG);
 
         return view('pages.home.home', [
             'sebaran' => $sebaran->build(),
             'perbandingan' => $perbandingan->build(),
-            'kotor' => $kotor,
-            'bersih' => $bersih,
-            'reject' => $reject,
-            'rewash' => $rewash
+            'kotor' => $kotor->count(),
+            'bersih' => $bersih->count(),
+            'reject' => $reject->count(),
+            'rewash' => $rewash->count(),
+            'hilang' => $hilang->count(),
+            'pending' => $pending->count(),
         ]);
     }
 

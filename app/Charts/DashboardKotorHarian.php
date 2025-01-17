@@ -22,11 +22,10 @@ class DashboardKotorHarian
         $ruangan = $total = [];
         $rs_id = auth()->user()->rs_id;
 
-        $data_detail = ViewDetailLinen::select([ViewDetailLinen::field_ruangan_name(), DB::raw('count(view_linen_rfid) as total')])
+        $data_detail = ViewDetailLinen::select([ViewDetailLinen::field_rs_name(), DB::raw('count(view_linen_rfid) as total')])
                 ->where(ViewDetailLinen::field_status_process(), TransactionType::BERSIH)
-                ->groupBy(ViewDetailLinen::field_ruangan_name())
-                ->orderBy(ViewDetailLinen::field_ruangan_name());
-
+                ->groupBy(ViewDetailLinen::field_rs_name())
+                ->orderBy(ViewDetailLinen::field_rs_name());
 
         if ($rs_id) {
 
@@ -34,15 +33,15 @@ class DashboardKotorHarian
 
         }
 
-        $ruangan = $data_detail->pluck('view_ruangan_nama')->toArray();
+        $rs = $data_detail->pluck('view_rs_nama')->toArray();
         $total = $data_detail->pluck('total')->toArray();
 
         return $this->chart->donutChart()
             ->setSubtitle('Tanggal '.Carbon::now()->format('d-M-Y'))
-            // ->setXAxis($ruangan)
+            // ->setXAxis($rs)
             // ->addData('Sebaran Linen per Ruangan', $total)
-            ->setLabels($ruangan)
+            ->setLabels($rs)
             ->addData($total)
-            ->setTitle('Sebaran Linen di Rs. Premier Bintaro');
+            ->setTitle('Sebaran Linen Bersih di Seluruh Rumah Sakit');
     }
 }
