@@ -92,7 +92,7 @@
                     {{ $qty ?? 0 }}
                 </td>
                 <td class="text-right">{{ $kg }}</td>
-                <td class="text-right">{{ $total }}</td>
+                <td class="text-right">{{ round($total) }}</td>
             </tr>
             @empty
             @endforelse
@@ -106,7 +106,7 @@
                 <td colspan="{{ $tanggal->count() + 5 }}">TOTAL DATA</td>
                 <td class="text-right">{{ $sum_qty }}</td>
                 <td class="text-right">{{ $sum_kg }}</td>
-                <td class="text-right">{{ $sum_total }}</td>
+                <td class="text-right">{{ round($sum_total) }}</td>
             </tr>
         </tbody>
 
