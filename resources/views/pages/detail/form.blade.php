@@ -11,7 +11,6 @@
             <x-form-select col="6" class="search" name="detail_id_bahan" :options="$bahan" />
             <x-form-select col="6" class="search" name="detail_id_supplier" :options="$supplier" />
             <x-form-select col="6" class="search" name="detail_status_cuci" :options="$cuci" />
-            <x-form-select col="6" class="search" name="detail_status_linen" label="Status Linen" :options="$transaction" />
 
             <div class="form-group col-md-6 ">
                 <label>RFID</label>
