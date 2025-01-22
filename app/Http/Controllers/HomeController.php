@@ -70,8 +70,10 @@ class HomeController extends Controller
         $rewash = $rewash->where(Transaksi::field_status_transaction(), TransactionType::REWASH);
 
         $pending = Outstanding::where(Outstanding::field_status_hilang(), HilangType::PENDING)
+            ->joinRelationship('has_rfid')
             ->whereNotNull(Outstanding::field_rs_ori());
         $hilang = Outstanding::where(Outstanding::field_status_hilang(), HilangType::HILANG)
+            ->joinRelationship('has_rfid')
             ->whereNotNull(Outstanding::field_rs_ori());
 
         return view('pages.home.home', [
