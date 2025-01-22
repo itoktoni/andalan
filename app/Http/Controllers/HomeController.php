@@ -69,8 +69,10 @@ class HomeController extends Controller
         $reject = $reject->where(Transaksi::field_status_transaction(), TransactionType::REJECT);
         $rewash = $rewash->where(Transaksi::field_status_transaction(), TransactionType::REWASH);
 
-        $pending = Outstanding::where(Outstanding::field_status_hilang(), HilangType::PENDING);
-        $hilang = Outstanding::where(Outstanding::field_status_hilang(), HilangType::HILANG);
+        $pending = Outstanding::where(Outstanding::field_status_hilang(), HilangType::PENDING)
+            ->whereNotNull(Outstanding::field_rs_ori());
+        $hilang = Outstanding::where(Outstanding::field_status_hilang(), HilangType::HILANG)
+            ->whereNotNull(Outstanding::field_rs_ori());
 
         return view('pages.home.home', [
             'sebaran' => $sebaran->build(),
