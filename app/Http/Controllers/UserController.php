@@ -5,11 +5,14 @@ namespace App\Http\Controllers;
 use App\Dao\Models\SystemRole;
 use App\Dao\Models\User;
 use App\Dao\Repositories\UserRepository;
+use App\Http\Requests\GeneralRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\UserRequest;
 use App\Http\Services\CreateService;
 use App\Http\Services\SingleService;
+use App\Http\Services\UpdateProfileService;
 use App\Http\Services\UpdateService;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Plugins\Notes;
 use Plugins\Response;
@@ -48,7 +51,6 @@ class UserController extends MasterController
 
     public function changePassword()
     {
-
         if (request()->method() == 'POST') {
 
             User::find(auth()->user()->id)->update([
@@ -90,5 +92,20 @@ class UserController extends MasterController
         $data['menu'] = $menu;
 
         return Notes::token($data);
+    }
+
+    public function getProfile()
+    {
+        $user = Auth::user();
+        return moduleView('pages.user.profile', $this->share([
+            'model' => $user,
+        ]));
+    }
+
+    public function postProfile(GeneralRequest $request, UpdateProfileService $service)
+    {
+        $data = $service->save($request);
+
+        return Response::redirectBack($data);
     }
 }

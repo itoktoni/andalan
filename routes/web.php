@@ -22,6 +22,8 @@ Route::get('/signout', 'App\Http\Controllers\Auth\LoginController@logout')->name
 Route::get('/home', 'App\Http\Controllers\HomeController@index')->middleware(['access'])->name('home');
 Route::get('/settings', 'App\Http\Controllers\SettingController@getCreate')->middleware(['access'])->name('create-settings');
 Route::post('/settings', 'App\Http\Controllers\SettingController@postCreate')->middleware(['access'])->name('save-settings');
+Route::get('/profile', 'App\Http\Controllers\UserController@getProfile')->middleware(['access'])->name('update-profile');
+Route::post('/profile', 'App\Http\Controllers\UserController@postProfile')->middleware(['access'])->name('save-profile');
 
 Route::get('/error-402', 'App\Http\Controllers\HomeController@error402')->middleware(['access'])->name('error-402');
 Route::get('/doc', 'App\Http\Controllers\HomeController@doc')->middleware(['access'])->name('doc');

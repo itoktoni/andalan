@@ -73,7 +73,7 @@
                 </button>
                 <div class="dropdown-menu dropdown-menu-end">
                     <!-- item-->
-                    <a class="dropdown-item" href="#"><i class="dripicons-user"></i>Profile</a>
+                    <a class="dropdown-item" href="{{ route('update-profile') }}"><i class="dripicons-user"></i>Profile</a>
                     <a class="dropdown-item" href="#"><i class="dripicons-card"></i> Billing</a>
                     <a class="dropdown-item" href="{{ route('create-settings') }}"><i class="dripicons-gear"></i> Settings</a>
                     <div class="dropdown-divider"></div>
