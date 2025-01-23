@@ -65,9 +65,12 @@ class HomeController extends Controller
             $transaksi = $transaksi->where(Transaksi::field_rs_ori(), $rs_id);
         }
 
-        $kotor = $transaksi->where(Transaksi::field_status_transaction(), TransactionType::KOTOR);
-        $reject = $reject->where(Transaksi::field_status_transaction(), TransactionType::REJECT);
-        $rewash = $rewash->where(Transaksi::field_status_transaction(), TransactionType::REWASH);
+        $kotor = $transaksi->where(Transaksi::field_status_transaction(), TransactionType::KOTOR)
+            ->whereNotNull(Outstanding::field_rs_ori());
+        $reject = $reject->where(Transaksi::field_status_transaction(), TransactionType::REJECT)
+            ->whereNotNull(Outstanding::field_rs_ori());
+        $rewash = $rewash->where(Transaksi::field_status_transaction(), TransactionType::REWASH)
+            ->whereNotNull(Outstanding::field_rs_ori());
 
         $pending = Outstanding::where(Outstanding::field_status_hilang(), HilangType::PENDING)
             ->joinRelationship('has_rfid')
