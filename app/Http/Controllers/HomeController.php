@@ -66,7 +66,7 @@ class HomeController extends Controller
         }
 
         $kotor = $transaksi->where(Transaksi::field_status_transaction(), TransactionType::KOTOR)
-            ->whereNotNull(Outstanding::field_rs_ori());
+            ->whereNotNull(Transaksi::field_rs_ori());
         $reject = $reject->where(Transaksi::field_status_transaction(), TransactionType::REJECT)
             ->whereNotNull(Transaksi::field_rs_ori());
         $rewash = $rewash->where(Transaksi::field_status_transaction(), TransactionType::REWASH)
