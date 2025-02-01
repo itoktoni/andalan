@@ -45,10 +45,6 @@
                 <th>TANGGAL </th>
                 <th>REGISTER</th>
                 <th>TEMBAK SO</th>
-                <th>RETUR</th>
-                <th>REWASH</th>
-                <th>PENDING</th>
-                <th>HILANG</th>
                 <th>BELUM REGISTER</th>
                 <th>TOTAL OPNAME</th>
                 <th>SELISIH</th>
@@ -72,24 +68,8 @@
                         ->where('opname_detail_transaksi', '!=', 0)
                         ->count();
 
-            $pending = $table->where('opname_detail_hilang', HilangType::PENDING)
-                        ->where('opname_detail_scan_rs', 0)
-                        ->count();
-
-			$hilang = $table->where('opname_detail_hilang', HilangType::HILANG)
-                        ->where('opname_detail_scan_rs', 0)
-                        ->count();
-
-			$retur = $table->where('opname_detail_transaksi', TransactionType::REJECT)
-                        ->where('opname_detail_hilang', [HilangType::NORMAL])
-                        ->count();
-
-			$rewash = $table->where('opname_detail_transaksi', TransactionType::REWASH)
-                        ->where('opname_detail_hilang', [HilangType::NORMAL])
-                        ->count();
-
 			$not_register = $table->where('opname_detail_transaksi', BooleanType::NO)->count();
-			$total = $tembak_so + $pending + $hilang + $retur + $rewash;
+			$total = $tembak_so;
             $grand_total = $grand_total + $total;
 			@endphp
             <tr>
@@ -97,13 +77,9 @@
                 <td>{{ $key ?? '' }}</td>
                 <td>{{ $register }}</td>
                 <td>{{ $tembak_so }}</td>
-                <td>{{ $retur }}</td>
-                <td>{{ $rewash }}</td>
-                <td>{{ $pending }}</td>
-                <td>{{ $hilang }}</td>
                 <td>{{ $not_register }}</td>
                 <td>{{ $total }}</td>
-                <td></td>
+                <td>{{ $register - $total }}</td>
             </tr>
 
             @empty
@@ -117,31 +93,11 @@
                     ->where('opname_detail_transaksi', '!=', 0)
                     ->count();
 
-				$sub_pending = $table->where('opname_detail_hilang', HilangType::PENDING)
-                    ->where('opname_detail_scan_rs', 0)
-                    ->count();
-
-				$sub_hilang = $table->where('opname_detail_hilang', HilangType::HILANG)
-                    ->where('opname_detail_scan_rs', 0)
-                    ->count();
-
-				$sub_retur = $table->where('opname_detail_transaksi', TransactionType::REJECT)
-                        ->where('opname_detail_hilang', [HilangType::NORMAL])
-                    ->count();
-
-				$sub_rewash =  $table->where('opname_detail_transaksi', TransactionType::REWASH)
-                        ->where('opname_detail_hilang', [HilangType::NORMAL])
-                    ->count();
-
 				$sub_not_register = $data->where('opname_detail_transaksi', BooleanType::NO)->count();
 				$sub_total = $data->count();
 				@endphp
 				<td>{{ $register }}</td>
 				<td>{{ $sub_tembak_so }}</td>
-                <td>{{ $sub_retur }}</td>
-				<td>{{ $sub_rewash }}</td>
-				<td>{{ $sub_pending }}</td>
-				<td>{{ $sub_hilang }}</td>
 				<td>{{ $sub_not_register }}</td>
 				<td>{{ $grand_total }}</td>
 				<td>{{ $register - $grand_total }}</td>
