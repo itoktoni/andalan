@@ -68,7 +68,7 @@
 				<td>{{ formatDate($table->opname_detail_created_at) }}</td>
 				<td>{{ $table->opname_detail_ketemu == 1 ? formatDate($table->opname_detail_waktu) : '' }}</td>
 				<td>{{ $table->opname_detail_transaksi ? TransactionType::getDescription($table->opname_detail_transaksi) : 'Belum Register' }}</td>
-				<td>{{ $table->opname_detail_proses ? $table->opname_detail_proses : 'Belum Register' }}</td>
+				<td>{{ $table->opname_detail_transaksi == 'BERSIH' ? 'BERSIH' : $table->opname_detail_proses ? $table->opname_detail_proses : 'Belum Register' }}</td>
 				<td>{{ empty($table->view_status_cuci) ? '' : CuciType::getDescription($table->view_status_cuci) }}</td>
 				<td>{{ $table->view_transaksi_bersih_total ?? 0 }}</td>
 				@if($filter == FilterType::Reject)
