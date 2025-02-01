@@ -97,6 +97,9 @@ class CaptureOpnameService
 
     private function checkKetemu($item)
     {
+
+        return BooleanType::NO;
+
         if (in_array($item->outstanding_status_hilang, [HilangType::PENDING, HilangType::HILANG])) {
             return BooleanType::YES;
         }
