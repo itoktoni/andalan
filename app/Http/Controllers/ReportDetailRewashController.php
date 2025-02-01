@@ -4,10 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Dao\Enums\TransactionType;
 use App\Dao\Models\Rs;
+use App\Dao\Models\Transaksi;
 use App\Dao\Models\User;
 use App\Dao\Repositories\TransaksiRepository;
-use App\Http\Requests\GeneralRequest;
-use App\Http\Requests\TransactionReportNewRequest;
 use App\Http\Requests\TransactionReportRequest;
 
 class ReportDetailRewashController extends MinimalController
@@ -35,13 +34,14 @@ class ReportDetailRewashController extends MinimalController
     {
         return self::$repository
             ->getDetailKotor(TransactionType::REWASH)
+            ->where(Transaksi::field_rs_ori(), request()->get('rs_ori_id'))
             ->get();
     }
 
-    public function getPrint(TransactionReportNewRequest $request)
+    public function getPrint(TransactionReportRequest $request)
     {
         set_time_limit(0);
-        $rs = Rs::find(request()->get(Rs::field_primary()));
+        $rs = Rs::find(request()->get('rs_ori_id'));
 
         $this->data = $this->getQuery($request);
 
