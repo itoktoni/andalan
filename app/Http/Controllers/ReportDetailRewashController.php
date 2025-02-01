@@ -7,6 +7,7 @@ use App\Dao\Models\Rs;
 use App\Dao\Models\User;
 use App\Dao\Repositories\TransaksiRepository;
 use App\Http\Requests\GeneralRequest;
+use App\Http\Requests\TransactionReportNewRequest;
 use App\Http\Requests\TransactionReportRequest;
 
 class ReportDetailRewashController extends MinimalController
@@ -37,7 +38,7 @@ class ReportDetailRewashController extends MinimalController
             ->get();
     }
 
-    public function getPrint(GeneralRequest $request)
+    public function getPrint(TransactionReportNewRequest $request)
     {
         set_time_limit(0);
         $rs = Rs::find(request()->get(Rs::field_primary()));

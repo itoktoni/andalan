@@ -6,7 +6,7 @@ use App\Dao\Enums\TransactionType;
 use App\Dao\Models\Rs;
 use App\Dao\Models\User;
 use App\Dao\Repositories\TransaksiRepository;
-use App\Http\Requests\GeneralRequest;
+use App\Http\Requests\TransactionReportNewRequest;
 use App\Http\Requests\TransactionReportRequest;
 
 class ReportDetailReturController extends MinimalController
@@ -36,7 +36,7 @@ class ReportDetailReturController extends MinimalController
             ->getDetailKotor(TransactionType::REJECT)->get();
     }
 
-    public function getPrint(GeneralRequest $request)
+    public function getPrint(TransactionReportNewRequest $request)
     {
         set_time_limit(0);
         $rs = Rs::find(request()->get(Rs::field_primary()));
