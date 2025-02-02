@@ -47,7 +47,7 @@
                 <th>TEMBAK SO</th>
                 <th>BELUM REGISTER</th>
                 <th>HILANG RS</th>
-                <th>HILANG WAREHOUSE</th>
+                <th>HILANG WORKSHOP</th>
                 <th>TOTAL OPNAME</th>
                 <th>SELISIH</th>
             </tr>
