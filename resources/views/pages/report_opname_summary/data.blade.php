@@ -46,6 +46,8 @@
                 <th>REGISTER</th>
                 <th>TEMBAK SO</th>
                 <th>BELUM REGISTER</th>
+                <th>HILANG RS</th>
+                <th>HILANG WAREHOUSE</th>
                 <th>TOTAL OPNAME</th>
                 <th>SELISIH</th>
             </tr>
@@ -69,7 +71,15 @@
                         ->count();
 
 			$not_register = $table->where('opname_detail_transaksi', BooleanType::NO)->count();
-			$total = $tembak_so;
+            $hilang_rs = $table->where('opname_detail_transaksi', TransactionType::BERSIH)
+                        ->where('opname_detail_ketemu', 0)
+                        ->count();
+
+            $hilang_warehouse = $table->where('opname_detail_transaksi','!=', TransactionType::BERSIH)
+                        ->where('opname_detail_ketemu', 0)
+                        ->count();
+
+			$total = $tembak_so + $hilang_rs + $hilang_warehouse;
             $grand_total = $grand_total + $total;
 			@endphp
             <tr>
@@ -78,6 +88,8 @@
                 <td>{{ $register }}</td>
                 <td>{{ $tembak_so }}</td>
                 <td>{{ $not_register }}</td>
+                <td>{{ $hilang_rs }}</td>
+                <td>{{ $hilang_warehouse }}</td>
                 <td>{{ $total }}</td>
                 <td>{{ $register - $total }}</td>
             </tr>
@@ -95,10 +107,21 @@
 
 				$sub_not_register = $data->where('opname_detail_transaksi', BooleanType::NO)->count();
 				$sub_total = $data->count();
+
+                $sub_hilang_rs = $data->where('opname_detail_transaksi', TransactionType::BERSIH)
+                        ->where('opname_detail_ketemu', 0)
+                        ->count();
+
+                $sub_hilang_warehouse = $data->where('opname_detail_transaksi','!=', TransactionType::BERSIH)
+                            ->where('opname_detail_ketemu', 0)
+                            ->count();
+
 				@endphp
 				<td>{{ $register }}</td>
 				<td>{{ $sub_tembak_so }}</td>
 				<td>{{ $sub_not_register }}</td>
+				<td>{{ $sub_hilang_rs }}</td>
+				<td>{{ $sub_hilang_warehouse }}</td>
 				<td>{{ $grand_total }}</td>
 				<td>{{ $register - $grand_total }}</td>
 			</tr>
