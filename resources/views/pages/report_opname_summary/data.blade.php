@@ -49,7 +49,6 @@
                 <th>HILANG RS</th>
                 <th>HILANG WORKSHOP</th>
                 <th>TOTAL OPNAME</th>
-                <th>SELISIH</th>
             </tr>
         </thead>
         <tbody>
@@ -91,7 +90,6 @@
                 <td>{{ $hilang_rs }}</td>
                 <td>{{ $hilang_warehouse }}</td>
                 <td>{{ $total }}</td>
-                <td>{{ $register - $total }}</td>
             </tr>
 
             @empty
@@ -123,7 +121,6 @@
 				<td>{{ $sub_hilang_rs }}</td>
 				<td>{{ $sub_hilang_warehouse }}</td>
 				<td>{{ $grand_total }}</td>
-				<td>{{ $register - $grand_total }}</td>
 			</tr>
 
         </tbody>
