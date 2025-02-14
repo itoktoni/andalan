@@ -42,7 +42,9 @@
             <tr>
                 <th style="width: 200px" width="20">Nama Ruangan</th>
                 <th style="width: 200px" width="20">Nama Linen</th>
-                <th>Total Kotor (Pcs)</th>
+				@foreach($tanggal as $tgl)
+                <th>{{ formatDate($tgl, 'd') }}</th>
+                @endforeach
             </tr>
         </thead>
 		<tbody>
@@ -60,7 +62,19 @@
 				@forelse ($linen as $jenis_id => $jenis_name)
 					<tr>
 						<td>{{ $jenis_name }}</td>
-						<td>{{ $kotor->where('view_ruangan_id', $loc_id)->where('view_linen_id', $jenis_id)->sum('view_qty') }}</td>
+							@foreach($tanggal as $tgl)
+							<td>
+								@php
+								$total_tanggal = $kotor
+									->where('view_tanggal', $tgl->format('Y-m-d'))
+									->where('view_ruangan_id', $loc_id)
+									->where('view_linen_id', $jenis_id)
+									;
+								@endphp
+
+								{{ $total_tanggal->sum('view_qty') }}
+							</td>
+							@endforeach
 					</tr>
 				@empty
 				@endforelse

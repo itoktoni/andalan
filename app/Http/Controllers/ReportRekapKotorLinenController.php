@@ -13,6 +13,7 @@ use App\Dao\Models\ViewTransaksi;
 use App\Dao\Repositories\TransaksiRepository;
 use App\Http\Requests\GeneralRequest;
 use App\Http\Requests\RekapReportRequest;
+use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -80,11 +81,14 @@ class ReportRekapKotorLinenController extends MinimalController
         $linen = $kotor->sortBy(ViewDetailLinen::field_name())->pluck(ViewDetailLinen::field_name(), ViewDetailLinen::field_id());
         $location = $kotor->sortBy(ViewDetailLinen::field_ruangan_name())->pluck(ViewDetailLinen::field_ruangan_name(), ViewDetailLinen::field_ruangan_id());
 
+        $tanggal = CarbonPeriod::create($request->start_rekap, $request->end_rekap);
+
         return moduleView(modulePathPrint(), $this->share([
             'data' => $this->data,
             'rs' => $rs,
             'location' => $location,
             'ruangan' => $ruangan,
+            'tanggal' => $tanggal,
             'linen' => $linen,
             'kotor' => $kotor,
         ]));
