@@ -21,6 +21,11 @@ class ViewOutstanding extends Outstanding
         'outstanding_hilang_updated_at' => 'datetime',
     ];
 
+    protected $filters = [
+        'filter',
+        'view_rs_id'
+    ];
+
     public function has_outstanding()
     {
         return $this->hasOne(Outstanding::class, Outstanding::field_primary(), $this->field_primary());
