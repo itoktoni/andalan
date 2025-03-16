@@ -41,6 +41,7 @@ class ReportOpnameSummaryController extends MinimalController
         $opname = Opname::with(['has_rs'])->find(request()->get(Opname::field_primary()));
         $register = OpnameDetail::join(Opname::getTableName(), OpnameDetail::getTableName() . '.opname_detail_id_opname', '=', Opname::getTableName() . '.opname_id')
             ->whereNotNull(OpnameDetail::field_transaksi())
+            ->where(OpnameDetail::field_opname(), $request->opname_id)
             ->count();
 
         return moduleView(modulePathPrint(), $this->share([
