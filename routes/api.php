@@ -76,7 +76,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
         ]);
         $resource = new DownloadCollection($data);
 
-        return $resource;
+        return response()->streamJson($resource);
+
     });
 
     Route::get('configuration', function () {
