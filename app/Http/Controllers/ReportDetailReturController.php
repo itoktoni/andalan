@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Dao\Enums\TransactionType;
 use App\Dao\Models\Rs;
+use App\Dao\Models\Transaksi;
 use App\Dao\Models\User;
 use App\Dao\Repositories\TransaksiRepository;
 use App\Http\Requests\TransactionReportRequest;
@@ -34,7 +35,7 @@ class ReportDetailReturController extends MinimalController
         return self::$repository
             ->getDetailKotor(TransactionType::REJECT)
             ->where(Transaksi::field_rs_ori(), request()->get('rs_ori_id'))
-            ->showSql()->get();
+            ->get();
     }
 
     public function getPrint(TransactionReportRequest $request)
