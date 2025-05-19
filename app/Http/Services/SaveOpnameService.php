@@ -79,6 +79,7 @@ class SaveOpnameService
 
             if ($scan_rs) {
                 OpnameDetail::whereIn(OpnameDetail::field_rfid(), $scan_rs)
+                    ->where(OpnameDetail::field_opname(), $opname_id)
                     ->update([
                         OpnameDetail::field_ketemu() => BooleanType::YES,
                         OpnameDetail::field_scan_rs() => BooleanType::YES,
