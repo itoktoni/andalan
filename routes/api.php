@@ -640,7 +640,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
             else
             {
 
-                if((!empty($detail->field_report) && $detail->field_report->format('Y-m-d') != date('Y-m-d')) || empty($detail->field_report))
+                if((!empty($detail->field_report) && $detail->field_report->format('Y-m-d') != date('Y-m-d')))
                 {
                     $flag = 'KOTOR';
                     $transaksi_status = TransactionType::KOTOR;
