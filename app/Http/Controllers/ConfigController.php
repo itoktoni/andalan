@@ -154,7 +154,6 @@ class ConfigController extends MasterController
 
     private function deleteAll($code)
     {
-        OpnameDetail::whereIn(OpnameDetail::field_rfid(), $code)->delete();
         Transaksi::whereIn(Transaksi::field_rfid(), $code)->delete();
         ConfigLinen::whereIn(Detail::field_primary(), $code)->delete();
         Outstanding::whereIn(Outstanding::field_primary(), $code)->delete();

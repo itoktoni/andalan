@@ -98,11 +98,11 @@ class OpnameController extends MasterController
 
     public function postTable()
     {
-        if (request()->exists('delete') and ! empty(request()->get('code'))) {
-            $code = array_unique(request()->get('code'));
-            OpnameDetail::whereIn(OpnameDetail::field_opname(), $code)->delete();
-            $data = self::$service->delete(self::$repository, $code);
-        }
+        // if (request()->exists('delete') and ! empty(request()->get('code'))) {
+        //     $code = array_unique(request()->get('code'));
+        //     OpnameDetail::whereIn(OpnameDetail::field_opname(), $code)->delete();
+        //     $data = self::$service->delete(self::$repository, $code);
+        // }
 
         return Response::redirectBack();
     }
