@@ -44,11 +44,11 @@
                 <th width="1">No. </th>
                 <th>TANGGAL </th>
                 <th>REGISTER</th>
-                <th>TEMBAK SO</th>
-                <th>BELUM REGISTER</th>
-                <th>HILANG RS</th>
-                <th>HILANG WORKSHOP</th>
+                <th>SCAN LINEN SAAT SO</th>
+                <th>BELUM TERBACA SAAT SO DI RS</th>
+                <th>LINEN MASIH DALAM PROSES DI LAUNDRY</th>
                 <th>TOTAL OPNAME</th>
+                <th>LINEN BERCHIP YANG TIDAK TERINDENTIFIKASI</th>
             </tr>
         </thead>
         <tbody>
@@ -86,10 +86,10 @@
                 <td>{{ $key ?? '' }}</td>
                 <td>{{ $register }}</td>
                 <td>{{ $tembak_so }}</td>
-                <td>{{ $not_register }}</td>
                 <td>{{ $hilang_rs }}</td>
                 <td>{{ $hilang_warehouse }}</td>
                 <td>{{ $total }}</td>
+                <td>{{ $not_register }}</td>
             </tr>
 
             @empty
@@ -117,10 +117,10 @@
 				@endphp
 				<td>{{ $register }}</td>
 				<td>{{ $sub_tembak_so }}</td>
-				<td>{{ $sub_not_register }}</td>
 				<td>{{ $sub_hilang_rs }}</td>
 				<td>{{ $sub_hilang_warehouse }}</td>
 				<td>{{ $grand_total }}</td>
+				<td>{{ $sub_not_register }}</td>
 			</tr>
 
         </tbody>
