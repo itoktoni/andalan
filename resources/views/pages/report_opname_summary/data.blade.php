@@ -44,11 +44,11 @@
                 <th width="1">No. </th>
                 <th>TANGGAL </th>
                 <th>REGISTER</th>
-                <th>SCAN LINEN SAAT SO</th>
-                <th>BELUM TERBACA SAAT SO DI RS</th>
-                <th>LINEN MASIH DALAM PROSES DI LAUNDRY</th>
+                <th>SCAN LINEN <br>SAAT SO</th>
+                <th>BELUM <br>TERBACA <br>SAAT SO DI RS</th>
+                <th>LINEN MASIH <br>DALAM PROSES <br>DI LAUNDRY</th>
                 <th>TOTAL OPNAME</th>
-                <th>LINEN BERCHIP YANG TIDAK TERINDENTIFIKASI</th>
+                <th>LINEN BERCHIP <br>YANG TIDAK <br>TERINDENTIFIKASI</th>
             </tr>
         </thead>
         <tbody>
