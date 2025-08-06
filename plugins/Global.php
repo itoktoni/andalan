@@ -52,6 +52,8 @@ define('STATUS_PROCESS', 'status_process');
 define('STATUS_SYNC', 'status_sync');
 define('TANGGAL_UPDATE', 'tanggal_update');
 
+define('USER_SYSTEM', 1);
+
 define('KOTOR', [TransactionType::KOTOR, TransactionType::REJECT, TransactionType::REWASH]);
 define('BERSIH', [TransactionType::BERSIH]);
 
