@@ -40,7 +40,14 @@ class DetailController extends MasterController
     public function postUpdate($code, GeneralRequest $request, UpdateDetailService $service)
     {
         $data = $service->update(self::$repository, $request, $code);
-        return Response::redirectToRoute('detail.getUpdate', ['code' => $data['data']->field_primary]);
+        if($data['status'])
+        {
+            return Response::redirectToRoute('detail.getUpdate', ['code' => $data['data']->detail_rfid]);
+        }
+        else
+        {
+            return Response::redirectBack($data);
+        }
     }
 
     protected function beforeForm()

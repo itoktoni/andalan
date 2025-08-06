@@ -11,6 +11,7 @@ use App\Dao\Models\OpnameDetail;
 use App\Dao\Models\Outstanding;
 use App\Dao\Models\Rs;
 use App\Dao\Models\Transaksi;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Plugins\Alert;
 use Plugins\Notes;
@@ -68,7 +69,19 @@ class UpdateDetailService
 
             return $check;
 
-        } catch (\Throwable $th) {
+        }
+
+        catch (\Throwable $th) {
+
+            if ($th instanceof QueryException)
+            {
+                Alert::error("No RFID yang di input (" . request()->get('detail_rfid').") Tidak boleh Duplikat di database !");
+            }
+            else
+            {
+                Alert::error($th->getMessage());
+            }
+
             DB::rollBack();
 
             return Notes::error($th->getMessage());

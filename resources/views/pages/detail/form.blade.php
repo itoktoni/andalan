@@ -14,7 +14,7 @@
 
             <div class="form-group col-md-6 ">
                 <label>RFID</label>
-                <input type="text" readonly class="form-control" value="{{ old('detail_rfid') ?? $model->detail_rfid ?? null }}" name="detail_rfid">
+                <input type="text" class="form-control" value="{{ old('detail_rfid') ?? $model->detail_rfid ?? null }}" name="detail_rfid">
             </div>
 
             @endbind
