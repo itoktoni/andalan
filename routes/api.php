@@ -436,9 +436,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
             }
 
             Detail::insert($detail);
+            Outstanding::upsert($outstanding, Outstanding::field_primary());
+
             if($request->status_register == RegisterType::GANTI_CHIP){
                 Transaksi::insert($transaksi);
-                Outstanding::upsert($outstanding, Outstanding::field_primary());
 
                 $history = collect($request->rfid)->map(function ($item, $rsid) {
                     return [
