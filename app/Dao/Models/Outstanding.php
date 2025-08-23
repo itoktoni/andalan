@@ -57,7 +57,13 @@ class Outstanding extends Model
 
     protected $filters = [
         'filter',
+        'view_rs_id',
     ];
+
+    public function view_rs_id($query, $value)
+    {
+        return $query->where('view_rs_ori_id', $value);
+    }
 
     public $timestamps = false;
 
