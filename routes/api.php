@@ -640,7 +640,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
             }
             else
             {
-
                 if((!empty($detail->field_report) && $detail->field_report->format('Y-m-d') != date('Y-m-d')))
                 {
                     $flag = 'KOTOR';
@@ -699,6 +698,19 @@ Route::middleware(['auth:sanctum'])->group(function () {
                         Outstanding::field_created_at() => $date,
                         Outstanding::field_created_by() => $user,
                     ]));
+
+                }
+                else
+                {
+                    if($detail->field_status_linen == TransactionType::REGISTER)
+                    {
+                        $outstanding = Outstanding::create(array_merge($data_outstanding, [
+                            Outstanding::field_key() => $autoNumber,
+                            Outstanding::field_status_transaction() => TransactionType::REGISTER,
+                            Outstanding::field_created_at() => $date,
+                            Outstanding::field_created_by() => $user,
+                        ]));
+                    }
 
                 }
             }
