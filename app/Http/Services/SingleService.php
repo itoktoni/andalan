@@ -2,7 +2,9 @@
 
 namespace App\Http\Services;
 
+use App\Dao\Enums\LogType;
 use App\Dao\Interfaces\CrudInterface;
+use App\Dao\Models\History;
 use Plugins\Alert;
 use Plugins\Notes;
 
@@ -21,6 +23,15 @@ class SingleService
     {
         $rules = ['code' => 'required'];
         request()->validate($rules, ['code.required' => 'Silahkan centang terlebih dahulu!']);
+
+        History::create([
+            History::field_rs_id() => 0,
+            History::field_name() => $code,
+            History::field_status() => LogType::DELETE_RFID,
+            History::field_created_by() => auth()->user()->name,
+            History::field_created_at() => now(),
+            History::field_description() => "user mendelete rfid ".$code,
+        ]);
 
         $check = $repository->deleteRepository($code);
         if ($check['status']) {
