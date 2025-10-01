@@ -708,7 +708,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                             Outstanding::field_key() => $autoNumber,
                             Outstanding::field_status_transaction() => TransactionType::REGISTER,
                             Outstanding::field_created_at() => $detail->detail_created_at->format('Y-m-d H:i:s') ?? $date,
-                            Outstanding::field_created_by() => $user->detail_updated_at->format('Y-m-d H:i:s') ?? $user,
+                            Outstanding::field_created_by() => $detail->detail_updated_at->format('Y-m-d H:i:s') ?? $user,
                         ]));
                     }
 
