@@ -702,7 +702,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 }
                 else
                 {
-                    if($detail->field_status_linen == TransactionType::REGISTER || $detail->field_status_linen == TransactionType::REGISTER)
+                    if($detail->field_status_linen == TransactionType::REGISTER || $detail->field_status_linen == TransactionType::BERSIH)
                     {
                         $outstanding = Outstanding::create(array_merge($data_outstanding, [
                             Outstanding::field_key() => $autoNumber,
