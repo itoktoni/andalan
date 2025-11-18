@@ -110,7 +110,7 @@
                         ->where('opname_detail_ketemu', 0)
                         ->count();
 
-                $sub_hilang_warehouse = $data->whereIn('opname_detail_transaksi', [TransactionType::KOTOR, TransactionType::REJECT, TransactionType::REWASH])
+                $sub_hilang_warehouse = $data->where('opname_detail_transaksi','!=', TransactionType::BERSIH)
                             ->where('opname_detail_ketemu', 0)
                             ->count();
 
