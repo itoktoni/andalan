@@ -70,11 +70,11 @@
                         ->count();
 
 			$not_register = $table->where('opname_detail_transaksi', BooleanType::NO)->count();
-            $hilang_rs = $table->where('opname_detail_transaksi', '!=', TransactionType::BERSIH)
+            $hilang_rs = $table->where('opname_detail_transaksi', TransactionType::BERSIH)
                         ->where('opname_detail_ketemu', 0)
                         ->count();
 
-            $hilang_warehouse = $table->where('opname_detail_transaksi', TransactionType::BERSIH)
+            $hilang_warehouse = $table->where('opname_detail_transaksi', '!=', TransactionType::BERSIH)
                         ->where('opname_detail_ketemu', 0)
                         ->count();
 
