@@ -11,7 +11,7 @@ use App\Dao\Repositories\OpnameRepository;
 use Illuminate\Http\Request;
 use Plugins\Query;
 
-class ReportOpnameHilangController extends MinimalController
+class ReportOpnameHilangWarehouseController extends MinimalController
 {
     public $data;
 
@@ -32,7 +32,7 @@ class ReportOpnameHilangController extends MinimalController
     {
         $query = self::$repository->getOpnameByID($opname_id)
             ->where(OpnameDetail::field_ketemu(), BooleanType::NO)
-            ->where(OpnameDetail::field_transaksi(), TransactionType::BERSIH);
+            ->where(OpnameDetail::field_transaksi(), '!=', TransactionType::BERSIH);
 
         return $query;
     }
