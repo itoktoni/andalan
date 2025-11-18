@@ -36,6 +36,8 @@ class ReportOpnameSummaryController extends MinimalController
     public function getPrint(Request $request)
     {
         set_time_limit(0);
+        ini_set('memory_limit', '256M');
+
         $this->data = $this->getQuery($request->opname_id)->get();
 
         $opname = Opname::with(['has_rs'])->find(request()->get(Opname::field_primary()));
