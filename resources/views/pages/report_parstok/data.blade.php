@@ -55,6 +55,40 @@
 			@endforelse
 
 		</tbody>
+		<tfoot>
+			<tr>
+				<th colspan="3" style="text-align: right;">Total:</th>
+				<th>
+					@php
+					$total_qty = $data->sum('qty');
+					@endphp
+					{{ $total_qty }}
+				</th>
+				<th></th>
+				<th>
+					@php
+					$total_weight = $data->sum(function($item) {
+						return $item->qty * $item->jenis_berat;
+					});
+					@endphp
+					{{ $total_weight }}
+				</th>
+				<th>
+					@php
+					$total_parstock = $data->sum('jenis_parstok');
+					@endphp
+					{{ $total_parstock }}
+				</th>
+				<th>
+					@php
+					$total_difference = $data->sum(function($item) {
+						return $item->qty - $item->jenis_parstok;
+					});
+					@endphp
+					{{ $total_difference }}
+				</th>
+			</tr>
+		</tfoot>
 	</table>
 </div>
 

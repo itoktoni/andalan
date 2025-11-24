@@ -85,5 +85,32 @@
 			@empty
 			@endforelse
 		</tbody>
+		<tfoot>
+			<tr>
+				<th colspan="2" style="text-align: right;">Total:</th>
+				@foreach($location as $loc_id => $loc_name)
+					<th>
+						@php
+						$total_location = $kotor
+						->where('view_ruangan_id', $loc_id)
+						->sum('view_qty');
+						@endphp
+						{{ $total_location > 0 ? $total_location : '0' }}
+					</th>
+				@endforeach
+				<th>
+					@php
+					$total_all = $kotor->sum('view_qty');
+					@endphp
+					{{ $total_all > 0 ? $total_all : '0' }}
+				</th>
+				<th>
+					@php
+					$total_kg_all = $kotor->sum('view_kg');
+					@endphp
+					{{ $total_kg_all > 0 ? $total_kg_all : '0' }}
+				</th>
+			</tr>
+		</tfoot>
 	</table>
 </div>

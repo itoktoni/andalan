@@ -593,7 +593,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
             ModelsHistory::create([
                 ModelsHistory::field_rs_id() => $detail->field_primary,
                 ModelsHistory::field_name() => $rfid,
-                ModelsHistory::field_status() => LogType::QC_TRANSACTION,
+                ModelsHistory::field_status() => LogType::QC,
                 ModelsHistory::field_created_by() => auth()->user()->name,
                 ModelsHistory::field_created_at() => $date,
                 ModelsHistory::field_description() => json_encode([ModelsHistory::field_name() => $rfid]),
@@ -672,6 +672,15 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
                         if($transaksi == 0)
                         {
+                            ModelsHistory::create([
+                                ModelsHistory::field_rs_id() => $detail->field_primary,
+                                ModelsHistory::field_name() => $rfid,
+                                ModelsHistory::field_status() => LogType::QC_TRANSACTION,
+                                ModelsHistory::field_created_by() => auth()->user()->name,
+                                ModelsHistory::field_created_at() => $date,
+                                ModelsHistory::field_description() => json_encode([ModelsHistory::field_name() => $rfid]),
+                            ]);
+
                             Transaksi::create([
                                 Transaksi::field_key() => $autoNumber,
                                 Transaksi::field_rfid() => $rfid,

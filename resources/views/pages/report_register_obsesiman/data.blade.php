@@ -65,6 +65,13 @@
 			@endforelse
 
 		</tbody>
+		<tfoot>
+			<tr>
+				<th colspan="9" style="text-align: center;">
+					Total RFID: {{ $data->count() }}
+				</th>
+			</tr>
+		</tfoot>
 	</table>
 </div>
 
