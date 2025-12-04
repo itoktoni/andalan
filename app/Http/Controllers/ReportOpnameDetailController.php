@@ -68,7 +68,7 @@ class ReportOpnameDetailController extends MinimalController
             }
         }
 
-        return $query();
+        return $query;
     }
 
     public function getPrint(Request $request)
