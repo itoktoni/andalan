@@ -154,7 +154,8 @@ class TransaksiController extends MasterController
 
             DB::beginTransaction();
 
-            $rfid = $request->rfid;
+            $rfid = collect($request->rfid)->filter()->toArray();
+
             $data = Detail::leftJoinRelationship(HAS_OUTSTANDING)
                 ->addSelect([
                     Outstanding::field_status_transaction(),
