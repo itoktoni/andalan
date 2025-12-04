@@ -188,7 +188,7 @@ class TransaksiController extends MasterController
                 $date = date('Y-m-d H:i:s');
                 $user = auth()->user()->id;
 
-                if (isset($data[$item]) && !empty($item)) {
+                if (isset($data[$item])) {
                     $detail = $data[$item];
 
                     if (empty($detail->outstanding_status_transaksi) and $this->rfidCanSyncToServer($status_transaksi, $detail->field_status_linen, $detail->field_updated_at)) {
