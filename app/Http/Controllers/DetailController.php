@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Dao\Enums\CuciType;
 use App\Dao\Enums\DetailType;
+use App\Dao\Enums\LogType;
 use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\RegisterType;
 use App\Dao\Enums\TransactionType;
@@ -27,6 +28,7 @@ use App\Http\Services\DeleteService;
 use App\Http\Services\SingleService;
 use App\Http\Services\UpdateDetailService;
 use App\Http\Services\UpdateService;
+use Plugins\History as PluginsHistory;
 use Plugins\Response;
 
 class DetailController extends MasterController
@@ -166,6 +168,7 @@ class DetailController extends MasterController
 
     private function deleteAll($code)
     {
+        PluginsHistory::bulk($code, LogType::DELETE_RFID, "DELETE");
         Transaksi::whereIn(Transaksi::field_rfid(), $code)->delete();
         ConfigLinen::whereIn(Detail::field_primary(), $code)->delete();
         Outstanding::whereIn(Outstanding::field_primary(), $code)->delete();
