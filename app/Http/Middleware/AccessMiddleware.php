@@ -115,6 +115,8 @@ class AccessMiddleware
                 'timer' => env('APP_TIMER_ALERT', 5000),
             ]);
 
+            // dd($data);
+
             SharedData::put($data);
 
         } catch (\Throwable$th) {
