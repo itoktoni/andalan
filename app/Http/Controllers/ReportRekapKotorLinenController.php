@@ -93,10 +93,13 @@ class ReportRekapKotorLinenController extends MinimalController
             $register = $register->where('view_ruangan_id', $ruangan);
         }
 
-        $kotor = $this->getQueryKotor($request);
-        $linen = $kotor->sortBy(ViewDetailLinen::field_name())->pluck(ViewDetailLinen::field_name(), ViewDetailLinen::field_id());
+        $register = $register->get();
 
-        $location = $kotor->sortBy(ViewDetailLinen::field_ruangan_name())->pluck(ViewDetailLinen::field_ruangan_name(), ViewDetailLinen::field_ruangan_id());
+        $kotor = $this->getQueryKotor($request);
+
+        $linen = $register->sortBy(ViewDetailLinen::field_name())->pluck(ViewDetailLinen::field_name(), ViewDetailLinen::field_id());
+
+        $location = $register->sortBy(ViewDetailLinen::field_ruangan_name())->pluck(ViewDetailLinen::field_ruangan_name(), ViewDetailLinen::field_ruangan_id());
 
         $tanggal = CarbonPeriod::create($request->start_rekap, $request->end_rekap);
 
@@ -108,7 +111,7 @@ class ReportRekapKotorLinenController extends MinimalController
             'tanggal' => $tanggal,
             'linen' => $linen,
             'kotor' => $kotor,
-            'register' => $register->get(),
+            'register' => $register,
         ]));
     }
 }
