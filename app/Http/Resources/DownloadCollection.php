@@ -87,7 +87,7 @@ class DownloadCollection extends ResourceCollection
             }
 
             if(!isset($transaksi[$item->field_primary])){
-                $status_transaction = TransactionType::REGISTER;
+                $status_transaction = TransactionType::BERSIH;
             }
 
             return [
