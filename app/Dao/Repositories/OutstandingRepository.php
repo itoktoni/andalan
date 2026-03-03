@@ -41,7 +41,7 @@ class OutstandingRepository extends MasterRepository implements CrudInterface
     {
         $query = ViewOutstanding::query()
             ->joinRelationship('has_outstanding')
-            ->leftJoinRelationship('has_detail')
+            ->joinRelationship('has_detail')
             ->addSelect([
                 'view_outstanding.*',
                 'outstanding_pending_created_at',

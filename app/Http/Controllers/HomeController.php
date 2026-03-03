@@ -10,6 +10,7 @@ use App\Dao\Enums\TransactionType;
 use App\Dao\Models\Bersih;
 use App\Dao\Models\Outstanding;
 use App\Dao\Models\Transaksi;
+use App\Dao\Models\ViewOutstandingHilang;
 
 class HomeController extends Controller
 {
@@ -72,13 +73,9 @@ class HomeController extends Controller
         $rewash = $rewash->where(Transaksi::field_status_transaction(), TransactionType::REWASH)
             ->whereNotNull(Transaksi::field_rs_ori());
 
-        $pending = Outstanding::where(Outstanding::field_status_hilang(), HilangType::PENDING)
-            ->joinRelationship('has_rfid')
-            ->whereNotNull(Outstanding::field_rs_ori());
+        $pending = ViewOutstandingHilang::where(Outstanding::field_status_hilang(), HilangType::PENDING);
 
-        $hilang = Outstanding::where(Outstanding::field_status_hilang(), HilangType::HILANG)
-            ->joinRelationship('has_rfid')
-            ->whereNotNull(Outstanding::field_rs_ori());
+        $hilang = ViewOutstandingHilang::where(Outstanding::field_status_hilang(), HilangType::HILANG);
 
         return view('pages.home.home', [
             'sebaran' => $sebaran->build(),
