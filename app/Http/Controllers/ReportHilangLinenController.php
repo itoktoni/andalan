@@ -47,7 +47,8 @@ class ReportHilangLinenController extends MinimalController
     private function getQuery($request)
     {
         $query = self::$repository->getPrint()
-            ->where('outstanding.'.ViewOutstanding::field_status_hilang(), HilangType::HILANG);
+            ->where('outstanding.'.ViewOutstanding::field_status_hilang(), HilangType::HILANG)
+            ->whereNotNull('outstanding_rs_ori');
 
         if ($start_date = $request->start_hilang) {
             $query = $query->whereDate(ViewOutstanding::field_hilang_created_at(), '>=', $start_date);
