@@ -191,7 +191,7 @@ class TransaksiController extends MasterController
                 if (isset($data[$item])) {
                     $detail = $data[$item];
 
-                    if (empty($detail->outstanding_status_transaksi) and $this->rfidCanSyncToServer($status_transaksi, $detail->field_status_linen, $detail->field_updated_at)) {
+                    if (empty($detail->outstanding_status_transaksi) and $this->rfidCanSyncToServer($status_transaksi, $detail->field_status_linen, $detail->detail_report)) {
                         $status_sync = SyncType::Yes;
 
                         $beda_rs = $request->rs_id == $detail->field_rs_id ? YesNoType::NO : BooleanType::YES;
