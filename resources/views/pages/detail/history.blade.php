@@ -32,7 +32,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($history as $table)
+                    @forelse($history->sortBy('history_waktu') as $table)
                         <tr>
                             <td>{{ $table->rs_nama}}</td>
                             <td>{{ $table->field_created_at }}</td>

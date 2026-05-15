@@ -20,6 +20,7 @@
         "kirschbaum-development/eloquent-power-joins": "^3.5",
         "kyslik/column-sortable": "^6.4",
         "laravel/framework": "^10.0",
+        "laravel/mcp": "*",
         "laravel/sanctum": "^3.3",
         "laravel/scout": "^10.8",
         "laravel/telescope": "^5.0",
@@ -42,11 +43,12 @@
         "barryvdh/laravel-debugbar": "^3.7",
         "dietercoopman/laravel-showsql": "^1.3",
         "fzaninotto/faker": "^1.9.1",
+        "laravel/boost": "*",
         "laravel/pint": "^1.15",
         "mockery/mockery": "^1.3.1",
         "orangehill/iseed": "^3.0",
-        "spatie/laravel-mail-preview": "^6.0",
-        "phpunit/phpunit": "^9.3"
+        "phpunit/phpunit": "^9.3",
+        "spatie/laravel-mail-preview": "^6.0"
     },
     "config": {
         "optimize-autoloader": true,
