@@ -24,7 +24,7 @@ class SaveOpnameService
             $data_opname = $data['opname'];
             $code = $data['code'];
             $waktu = date('Y-m-d H:i:s');
-            $insert_register = $scan_rs = false;
+            $insert_register = $scan_rs = [];
 
             foreach ($scan_rfid as $rfid) {
                 $detail = isset($data_opname[$rfid]) ? $data_opname[$rfid] : false;
@@ -39,6 +39,8 @@ class SaveOpnameService
                     OpnameDetail::field_proses() => ProcessType::UNKNOWN,
                     OpnameDetail::field_scan_rs() => BooleanType::YES,
                     OpnameDetail::field_ketemu() => BooleanType::YES,
+                    OpnameDetail::field_reff() => $code,
+                    OpnameDetail::field_scan_by() => LogType::OPNAME,
                 ];
 
                 if (! $detail) {
@@ -73,11 +75,11 @@ class SaveOpnameService
                 $sent[] = $item;
             }
 
-            if ($insert_register) {
+            if (!empty($insert_register)) {
                 OpnameDetail::insert($insert_register);
             }
 
-            if ($scan_rs) {
+            if (!empty($scan_rs)) {
                 OpnameDetail::whereIn(OpnameDetail::field_rfid(), $scan_rs)
                     ->where(OpnameDetail::field_opname(), $opname_id)
                     ->update([

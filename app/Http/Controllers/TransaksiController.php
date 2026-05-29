@@ -6,6 +6,7 @@ use App\Dao\Enums\BedaRsType;
 use App\Dao\Enums\BooleanType;
 use App\Dao\Enums\HilangType;
 use App\Dao\Enums\LogType;
+use App\Dao\Enums\OpnameType;
 use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\SyncType;
 use App\Dao\Enums\TransactionType;
@@ -13,6 +14,8 @@ use App\Dao\Enums\YesNoType;
 use App\Dao\Models\Bersih;
 use App\Dao\Models\Detail;
 use App\Dao\Models\History;
+use App\Dao\Models\Opname;
+use App\Dao\Models\OpnameDetail;
 use App\Dao\Models\Outstanding;
 use App\Dao\Models\Transaksi;
 use App\Dao\Models\ViewTransaksi;
@@ -364,6 +367,26 @@ class TransaksiController extends MasterController
                 Detail::field_updated_at() => date('Y-m-d H:i:s'),
                 Detail::field_status_linen() => TransactionType::KOTOR,
             ]);
+
+            $opname = Opname::where(Opname::field_status(), OpnameType::Proses)
+                ->whereDate(Opname::field_start(), '<=', date('Y-m-d'))
+                ->whereDate(Opname::field_end(), '>=', date('Y-m-d'))
+                ->first();
+
+            if($opname)
+            {
+                OpnameDetail::where('opname_detail_id_opname', $opname->opname_id)
+                    ->whereIn('opname_detail_rfid', $rfid)
+                    ->where('opname_detail_ketemu', BooleanType::NO)
+                    ->update([
+                        OpnameDetail::field_scan_rs() => BooleanType::YES,
+                        OpnameDetail::field_ketemu() => BooleanType::YES,
+                        OpnameDetail::field_waktu() => date('Y-m-d H:i:s'),
+                        OpnameDetail::field_sync() => BooleanType::YES,
+                        OpnameDetail::field_reff() => $request->key,
+                        OpnameDetail::field_scan_by() => LogType::SCAN,
+                    ]);
+            }
 
             DB::commit();
 

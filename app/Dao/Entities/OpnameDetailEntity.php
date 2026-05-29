@@ -202,4 +202,24 @@ trait OpnameDetailEntity
     {
         return 'opname_detail_sync';
     }
+
+    public function getFieldReffAttribute()
+    {
+        return $this->{$this->field_reff()};
+    }
+
+    public static function field_reff()
+    {
+        return 'opname_detail_reff';
+    }
+
+     public function getFieldScanByAttribute()
+    {
+        return $this->{$this->field_scan_by()};
+    }
+
+    public static function field_scan_by()
+    {
+        return 'opname_detail_scan_by';
+    }
 }

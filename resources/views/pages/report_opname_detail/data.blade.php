@@ -44,6 +44,8 @@
 				<th>RUANGAN</th>
 				<th>TANGGAL BUAT OPNAME</th>
 				<th>SUDAH DI OPNAME</th>
+				<th>AKTIFITAS OPNAME</th>
+				<th>REFF OPNAME</th>
 				<th>STATUS TRANSAKSI</th>
 				<th>STATUS LINEN</th>
 				<th>CUCI/RENTAL</th>
@@ -67,6 +69,8 @@
 				<td>{{ $table->view_ruangan_nama ?? '' }}</td>
 				<td>{{ formatDate($table->opname_detail_created_at) }}</td>
 				<td>{{ $table->opname_detail_ketemu == 1 ? formatDate($table->opname_detail_waktu) : '' }}</td>
+				<td>{{ $table->opname_detail_scan_by }}</td>
+				<td>{{ $table->opname_detail_reff }}</td>
 				<td>{{ $table->opname_detail_transaksi ? TransactionType::getDescription($table->opname_detail_transaksi) : 'Belum Register' }}</td>
 				<td>
 					@if($table->opname_detail_transaksi == 'BERSIH')
