@@ -55,9 +55,11 @@
 			@php
 			$map = [];
 			if(!empty($data)){
-				$map = $data->mapToGroups(function($item){
+				// Sort by original timestamp first, then group by formatted date
+				$sortedData = $data->sortBy('opname_detail_waktu');
+				$map = $sortedData->mapToGroups(function($item){
 					return [formatDate($item->opname_detail_waktu) => $item];
-				})->sortKeys();
+				});
 			}
 
             $grand_total = 0;
