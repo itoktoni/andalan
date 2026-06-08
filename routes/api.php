@@ -1,6 +1,7 @@
 <?php
 
 use App\Dao\Enums\BedaRsType;
+use App\Dao\Enums\BooleanType;
 use App\Dao\Enums\CetakType;
 use App\Dao\Enums\CuciType;
 use App\Dao\Enums\HilangType;
@@ -19,6 +20,7 @@ use App\Dao\Models\History as ModelsHistory;
 use App\Dao\Models\JenisBahan;
 use App\Dao\Models\JenisLinen;
 use App\Dao\Models\Opname;
+use App\Dao\Models\OpnameDetail;
 use App\Dao\Models\Outstanding;
 use App\Dao\Models\Register;
 use App\Dao\Models\Rs;
@@ -745,6 +747,26 @@ Route::middleware(['auth:sanctum'])->group(function () {
             $detail->update([
                 Detail::field_status_linen() => $detail->field_status_linen,
             ]);
+
+            $opname = Opname::where(Opname::field_status(), OpnameType::Proses)
+                ->whereDate(Opname::field_start(), '<=', date('Y-m-d'))
+                ->whereDate(Opname::field_end(), '>=', date('Y-m-d'))
+                ->first();
+
+            if($opname)
+            {
+                OpnameDetail::where('opname_detail_id_opname', $opname->opname_id)
+                    ->where('opname_detail_rfid', $rfid)
+                    ->where('opname_detail_ketemu', BooleanType::NO)
+                    ->update([
+                        OpnameDetail::field_scan_rs() => BooleanType::YES,
+                        OpnameDetail::field_ketemu() => BooleanType::YES,
+                        OpnameDetail::field_waktu() => date('Y-m-d H:i:s'),
+                        OpnameDetail::field_sync() => BooleanType::YES,
+                        OpnameDetail::field_reff() => $outstanding->outstanding_key,
+                        OpnameDetail::field_scan_by() => LogType::QC,
+                    ]);
+            }
 
             DB::commit();
 

@@ -50,6 +50,8 @@ class OpnameDetail extends Model
         'opname_detail_pending_at',
         'opname_detail_hilang_at',
         'opname_detail_scan_rs',
+        'opname_detail_reff',
+        'opname_detail_scan_by'
     ];
 
     protected $casts = [
