@@ -369,8 +369,8 @@ class TransaksiController extends MasterController
             ]);
 
             $opname = Opname::where(Opname::field_status(), OpnameType::Proses)
-                ->whereDate(Opname::field_start(), '<=', date('Y-m-d'))
-                ->whereDate(Opname::field_end(), '>=', date('Y-m-d'))
+                ->whereDate(Opname::field_start(), '>=', date('Y-m-d'))
+                ->whereDate(Opname::field_end(), '<=', date('Y-m-d'))
                 ->first();
 
             if($opname)
