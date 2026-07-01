@@ -104,7 +104,8 @@ class UpdateDeliveryService
                 ->update($detail);
 
                 Outstanding::whereIn(Outstanding::field_primary(), $data_rfid)->delete();
-                Pending::whereIn('pending_rfid', $data_rfid)->update([
+                Pending::where('pending_tranaksi', '!=', TransactionType::BERSIH)
+                ->whereIn('pending_rfid', $data_rfid)->update([
                     'pending_bersih_by' => auth()->user()->id,
                     'pending_bersih_at' => $report_date->format('Y-m-d H:i:s'),
                     'pending_updated_at' => $report_date->format('Y-m-d H:i:s'),
