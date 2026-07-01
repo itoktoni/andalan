@@ -6,9 +6,11 @@ use App\Dao\Enums\CetakType;
 use App\Dao\Enums\HilangType;
 use App\Dao\Enums\LogType;
 use App\Dao\Enums\ProcessType;
+use App\Dao\Enums\TransactionType;
 use App\Dao\Models\Bersih;
 use App\Dao\Models\Cetak;
 use App\Dao\Models\Outstanding;
+use App\Dao\Models\Pending;
 use App\Dao\Models\Transaksi;
 use App\Dao\Models\ViewDetailLinen;
 use Illuminate\Support\Facades\DB;
@@ -34,6 +36,12 @@ class UpdatePackingService
                     Outstanding::field_status_hilang() => HilangType::NORMAL,
                     Outstanding::field_hilang_created_at() => null,
                     Outstanding::field_pending_created_at() => null,
+                ]);
+
+            Pending::where('pending_tranaksi', '!=', TransactionType::BERSIH)
+                ->where('pending_rfid', $data->rfid)->update([
+                    'pending_updated_at' => date('Y-m-d H:i:s'),
+                    'pending_proses' => ProcessType::PACKING,
                 ]);
 
             History::bulk($data->rfid, LogType::PACKING, 'Assign to Rs '.$data->rs_name, $data->rs_id);

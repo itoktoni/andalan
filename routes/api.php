@@ -22,6 +22,7 @@ use App\Dao\Models\JenisLinen;
 use App\Dao\Models\Opname;
 use App\Dao\Models\OpnameDetail;
 use App\Dao\Models\Outstanding;
+use App\Dao\Models\Pending;
 use App\Dao\Models\Register;
 use App\Dao\Models\Rs;
 use App\Dao\Models\Ruangan;
@@ -710,6 +711,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
                         Outstanding::field_created_at() => $date,
                         Outstanding::field_created_by() => $user,
                     ]));
+
+                    Pending::where('pending_tranaksi', '!=', TransactionType::BERSIH)
+                    ->where('pending_rfid', $rfid)->update([
+                        'pending_updated_at' => date('Y-m-d H:i:s'),
+                        'pending_transaksi' => $transaksi_status,
+                        'pending_proses' => ProcessType::QC,
+                    ]);
 
                 }
                 else

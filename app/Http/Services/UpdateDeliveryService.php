@@ -10,6 +10,7 @@ use App\Dao\Models\Bersih;
 use App\Dao\Models\Cetak;
 use App\Dao\Models\Detail;
 use App\Dao\Models\Outstanding;
+use App\Dao\Models\Pending;
 use App\Dao\Models\Transaksi;
 use App\Dao\Models\ViewDetailLinen;
 use Illuminate\Support\Carbon;
@@ -81,7 +82,7 @@ class UpdateDeliveryService
                     Detail::field_rs_id() => $data->rs_id,
                     Detail::field_status_linen() => TransactionType::BERSIH,
                     Detail::field_updated_at() => date('Y-m-d H:i:s'),
-                    Detail::field_report() => date('Y-m-d'),
+                    Detail::field_report() => $report_date->format('Y-m-d'),
                     Detail::field_updated_by() => auth()->user()->id,
                 ];
 
@@ -103,6 +104,14 @@ class UpdateDeliveryService
                 ->update($detail);
 
                 Outstanding::whereIn(Outstanding::field_primary(), $data_rfid)->delete();
+                Pending::whereIn('pending_rfid', $data_rfid)->update([
+                    'pending_bersih_by' => auth()->user()->id,
+                    'pending_bersih_at' => $report_date->format('Y-m-d H:i:s'),
+                    'pending_updated_at' => $report_date->format('Y-m-d H:i:s'),
+                    'pending_delivery' => $data->code,
+                    'pending_transaksi' => $transaksi,
+                    'pending_proses' => $transaksi,
+                ]);
 
                 History::bulk($data_rfid, LogType::BERSIH, 'assign rs ', $data->rs_id);
 

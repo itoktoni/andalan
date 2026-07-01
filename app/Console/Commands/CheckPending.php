@@ -5,8 +5,10 @@ namespace App\Console\Commands;
 use App\Dao\Enums\HilangType;
 use App\Dao\Enums\LogType;
 use App\Dao\Enums\ProcessType;
+use App\Dao\Enums\TransactionType;
 use App\Dao\Models\Detail;
 use App\Dao\Models\Outstanding;
+use App\Dao\Models\Pending;
 use App\Dao\Models\Transaksi;
 use App\Dao\Models\ViewDetailLinen;
 use Illuminate\Console\Command;
@@ -47,10 +49,13 @@ class CheckPending extends Command
     public function handle()
     {
         $outstanding = Outstanding::query()
-            ->select(Outstanding::field_primary())
-            ->whereDate(Outstanding::field_updated_at(), '>=', Carbon::now()->subMinutes(1440)->toDateString())
-            ->whereDate(Outstanding::field_updated_at(), '<', Carbon::now()->toDateString())
+            ->select(Outstanding::getTableName().'.*', 'detail_id_jenis')
+            ->leftJoinRelationship('has_rfid')
+            ->whereNotNull('outstanding_rs_ori')
+            ->whereDate(Outstanding::field_updated_at(), '<=', Carbon::now()->subMinutes(1440)->toDateString())
+            // ->whereDate(Outstanding::field_updated_at(), '<', Carbon::now()->toDateString())
             ->where(Outstanding::field_status_hilang(), HilangType::NORMAL)
+            ->limit(2)
             ->get();
 
         if ($outstanding) {
@@ -58,11 +63,39 @@ class CheckPending extends Command
             $rfid = $outstanding->pluck(Outstanding::field_primary());
 
             PluginsHistory::bulk($rfid, LogType::PENDING, 'RFID Pending');
-            Outstanding::whereIn(Outstanding::field_primary(), $rfid)->update([
-                Outstanding::field_status_hilang() => HilangType::PENDING,
-                Outstanding::field_pending_created_at() => date('Y-m-d H:i:s'),
-                Outstanding::field_pending_updated_at() => date('Y-m-d H:i:s'),
-            ]);
+
+            $insert = [];
+
+            $now = now()->format('Y-m-d H:i:s');
+
+            foreach($outstanding as $pending)
+            {
+                $user_id = $pending->outstanding_created_by;
+                $insert[] = [
+                    'pending_rfid' => $pending->outstanding_rfid,
+                    'pending_key' => $pending->outstanding_key,
+                    'pending_id_rs' => $pending->outstanding_rs_ori,
+                    'pending_id_ruangan' => $pending->outstanding_id_ruangan,
+                    'pending_id_jenis' => $pending->detail_id_jenis,
+                    'pending_created_at' => $now,
+                    'pending_updated_at' => $now,
+                    'pending_kotor_at' => $pending->outstanding_created_at,
+                    'pending_transaksi' => $pending->outstanding_status_transaksi,
+                    'pending_proses' => $pending->outstanding_status_proses,
+                    'pending_created_by' => $user_id,
+                    'pending_updated_by' => $user_id,
+                    'pending_kotor_by' => $user_id,
+                    'pending_status' => LogType::PENDING,
+                ];
+            }
+
+            Pending::insert($insert);
+
+            // Outstanding::whereIn(Outstanding::field_primary(), $rfid)->update([
+            //     Outstanding::field_status_hilang() => HilangType::PENDING,
+            //     Outstanding::field_pending_created_at() => date('Y-m-d H:i:s'),
+            //     Outstanding::field_pending_updated_at() => date('Y-m-d H:i:s'),
+            // ]);
         }
 
         $this->info('The system has been check successfully!');
