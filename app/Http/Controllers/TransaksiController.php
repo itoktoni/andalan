@@ -26,6 +26,7 @@ use App\Http\Services\CreateService;
 use App\Http\Services\SingleService;
 use App\Http\Services\UpdateService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Plugins\Alert;
 use Plugins\History as PluginsHistory;
 use Plugins\Notes;

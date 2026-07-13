@@ -38,7 +38,7 @@ class UpdatePackingService
                     Outstanding::field_pending_created_at() => null,
                 ]);
 
-            Pending::where('pending_tranaksi', '!=', TransactionType::BERSIH)
+            Pending::where('pending_transaksi', '!=', TransactionType::BERSIH)
                 ->where('pending_rfid', $data->rfid)->update([
                     'pending_updated_at' => date('Y-m-d H:i:s'),
                     'pending_proses' => ProcessType::PACKING,
