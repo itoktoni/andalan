@@ -41,9 +41,6 @@
 				<th>JUMLAH PEMAKAIAN LINEN</th>
 				<th>TRANSAKSI</th>
 				<th>TANGGAL KOTOR</th>
-				<th>PROSES TERAKHIR</th>
-				<th>TANGGAL PROSES</th>
-				<th>BERSIH</th>
 				<th>TANGGAL BERSIH</th>
 			</tr>
 		</thead>
@@ -61,10 +58,7 @@
 				<td>{{ $table->ruangan_nama }}</td>
 				<td class="text-right">{{ $table->view_transaksi_bersih_total ?? 0 }}</td>
 				<td>{{ $table->pending_transaksi }}</td>
-				<td>{{ formatDate($table->pending_created_at) }}</td>
-				<td>{{ $table->pending_proses ?? '' }}</td>
-				<td>{{ formatDate($table->pending_updated_at) }}</td>
-				<td>{{ $table->pending_bersih ?? '' }}</td>
+				<td>{{ formatDate($table->pending_kotor_at) }}</td>
 				<td>{{ formatDate($table->pending_bersih_at) }}</td>
 			</tr>
 			@empty
