@@ -34,9 +34,9 @@
 		<thead>
 			<tr>
 				<th width="1">No. </th>
-				<th>NO. RFID</th>
 				<th>LINEN LAMA</th>
 				<th>LINEN BARU</th>
+				<th>JENIS LINEN</th>
 				<th>RUMAH SAKIT</th>
 				<th>RUANGAN</th>
 				<th>CUCI/RENTAL</th>
