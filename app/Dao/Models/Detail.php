@@ -51,6 +51,9 @@ class Detail extends Model
         'detail_total_bersih',
         'detail_tgl_cek',
         'detail_report',
+        'detail_lama',
+        'detail_pengantian_user',
+        'detail_pengantian_waktu',
     ];
 
     public $sortable = [

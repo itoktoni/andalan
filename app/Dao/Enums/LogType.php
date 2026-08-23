@@ -14,6 +14,8 @@ class LogType extends Enum implements LocalizedEnum
 
     const REGISTER = 'REGISTER';
 
+    const GANTI_LINEN = 'GANTI_LINEN';
+
     const KOTOR = 'KOTOR';
 
     const SCAN = 'SCAN';

@@ -13,8 +13,12 @@
             <x-form-select col="6" class="search" name="detail_status_cuci" :options="$cuci" />
 
             <div class="form-group col-md-6 ">
-                <label>RFID</label>
+                <label>RFID Baru</label>
                 <input type="text" class="form-control" value="{{ old('detail_rfid') ?? $model->detail_rfid ?? null }}" name="detail_rfid">
+            </div>
+            <div class="form-group col-md-6 ">
+                <label>RFID Lama</label>
+                <input type="text" class="form-control" value="{{ old('rfid_lama') ?? null }}" name="rfid_lama">
             </div>
 
             @endbind

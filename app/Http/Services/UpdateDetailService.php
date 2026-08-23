@@ -2,6 +2,7 @@
 
 namespace App\Http\Services;
 
+use App\Dao\Enums\LogType;
 use App\Dao\Interfaces\CrudInterface;
 use App\Dao\Models\Bersih;
 use App\Dao\Models\ConfigLinen;
@@ -23,12 +24,24 @@ class UpdateDetailService
         DB::beginTransaction();
 
         try {
+
             $data = $request->all();
             $check = $repository->updateRepository($data, $code);
 
-            Detail::where(Detail::field_primary(), $code)->update([
+            $det = [
                 Detail::field_primary() => $data[Detail::field_primary()],
-            ]);
+            ];
+
+            if(!empty($data['rfid_lama']))
+            {
+                $det = array_merge($det, [
+                    'detail_lama' => $data['rfid_lama'],
+                    'detail_pengantian_user' => auth()->user()->id,
+                    'detail_pengantian_waktu' => date('Y-m-d H:i:s'),
+                ]);
+            }
+
+            Detail::where(Detail::field_primary(), $code)->update($det);
 
             Outstanding::where(Outstanding::field_primary(), $code)->update([
                 Outstanding::field_primary() => $data[Detail::field_primary()],
@@ -53,6 +66,15 @@ class UpdateDetailService
 
             History::where(History::field_name(), $code)->update([
                 History::field_name() => $data[Detail::field_primary()],
+            ]);
+
+            $test = History::create([
+                History::field_rs_id() => $data[Detail::field_rs_id()],
+                History::field_name() => Detail::field_primary(),
+                History::field_status() => LogType::GANTI_LINEN,
+                History::field_created_by() => auth()->user()->name,
+                History::field_created_at() => date('Y-m-d H:i:s'),
+                History::field_description() => json_encode(['lama' => $data['rfid_lama'], 'rfid_baru' => Detail::field_primary()]),
             ]);
 
             OpnameDetail::where(OpnameDetail::field_rfid(), $code)->update([
