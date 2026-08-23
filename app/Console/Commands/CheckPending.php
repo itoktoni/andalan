@@ -91,11 +91,11 @@ class CheckPending extends Command
 
             Pending::insert($insert);
 
-            // Outstanding::whereIn(Outstanding::field_primary(), $rfid)->update([
-            //     Outstanding::field_status_hilang() => HilangType::PENDING,
-            //     Outstanding::field_pending_created_at() => date('Y-m-d H:i:s'),
-            //     Outstanding::field_pending_updated_at() => date('Y-m-d H:i:s'),
-            // ]);
+            Outstanding::whereIn(Outstanding::field_primary(), $rfid)->update([
+                Outstanding::field_status_hilang() => HilangType::PENDING,
+                Outstanding::field_pending_created_at() => date('Y-m-d H:i:s'),
+                Outstanding::field_pending_updated_at() => date('Y-m-d H:i:s'),
+            ]);
         }
 
         $this->info('The system has been check successfully!');

@@ -73,7 +73,7 @@ class ReportPendingLinenController extends MinimalController
             $query = $query->whereDate('pending.pending_kotor_at', '<=', $end_date);
         }
 
-         if ($start_bersih = $request->start_pending) {
+         if ($start_bersih = $request->start_bersih) {
             $query = $query->whereDate('pending.pending_bersih_at', '>=', $start_bersih);
         }
 

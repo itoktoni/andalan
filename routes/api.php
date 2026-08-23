@@ -712,7 +712,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                         Outstanding::field_created_by() => $user,
                     ]));
 
-                    Pending::where('pending_tranaksi', '!=', TransactionType::BERSIH)
+                    Pending::where('pending_transaksi', '!=', TransactionType::BERSIH)
                     ->where('pending_rfid', $rfid)->update([
                         'pending_updated_at' => date('Y-m-d H:i:s'),
                         'pending_transaksi' => $transaksi_status,
