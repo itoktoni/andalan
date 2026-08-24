@@ -1,7 +1,7 @@
 <x-layout>
     <div class="row">
 
-        <div class="col-xl-2 col-md-6">
+        <div class="col-xl-3 col-md-6">
             <!-- card -->
             <div class="card card-h-50">
                 <!-- card body -->
@@ -18,7 +18,7 @@
             </div><!-- end card -->
         </div><!-- end col -->
 
-        <div class="col-xl-2 col-md-6">
+        <div class="col-xl-3 col-md-6">
             <!-- card -->
             <div class="card card-h-50">
                 <!-- card body -->
@@ -86,22 +86,6 @@
             </div><!-- end card -->
         </div><!-- end col -->
 
-        <div class="col-xl-2 col-md-6">
-            <!-- card -->
-            <div class="card card-h-50">
-                <!-- card body -->
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col-6">
-                            <span class="text-muted mb-2 d-block text-truncate">Hilang</span>
-                            <h4 class="mb-1">
-                                <span class="counter-value" data-target="{{ $hilang }}"></span>
-                            </h4>
-                        </div>
-                    </div>
-                </div><!-- end card body -->
-            </div><!-- end card -->
-        </div><!-- end col -->
     </div><!-- end row-->
 
     <div class="row">
