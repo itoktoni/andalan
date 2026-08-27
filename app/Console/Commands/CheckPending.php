@@ -89,7 +89,11 @@ class CheckPending extends Command
                 ];
             }
 
-            Pending::insert($insert);
+            $cek_ada = Pending::where('pending_rfid', $pending->outstanding_rfid)->whereNull('pending_bersih_at')->count();
+            if($cek_ada == 0)
+            {
+                Pending::insert($insert);
+            }
 
             Outstanding::whereIn(Outstanding::field_primary(), $rfid)->update([
                 Outstanding::field_status_hilang() => HilangType::PENDING,

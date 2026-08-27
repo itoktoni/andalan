@@ -109,4 +109,9 @@ class Outstanding extends Model
     {
         return $this->hasOne(ViewOutstanding::class, ViewOutstanding::field_primary(), $this->field_primary());
     }
+
+    public function has_pending()
+    {
+        return $this->hasOne(Pending::class, Pending::field_name(), $this->field_primary());
+    }
 }
