@@ -83,7 +83,7 @@ class HomeController extends Controller
             ->join('config_linen', function ($join) {
                 $join->on('config_linen.detail_rfid', '=', 'pending.pending_rfid') // Perbaikan penulisan detail_rfid / details_rfid
                     ->on('config_linen.rs_id', '=', 'rs.rs_id');
-            })->whereNull('pending_bersih_at')->where('pending_id_rs', $rs_id);
+            })->whereNull('pending_bersih_at');
 
         // $hilang = ViewOutstandingHilang::where(Outstanding::field_status_hilang(), HilangType::HILANG);
 
