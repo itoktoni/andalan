@@ -93,6 +93,10 @@ class ReportPendingLinenController extends MinimalController
             {
                $query = $query->whereNull('pending.pending_bersih_at');
             }
+            else if($request->get('status') == 'BERSIH')
+            {
+               $query = $query->whereNotNull('pending.pending_bersih_at');
+            }
             else
             {
                 $query = $query->where('pending.pending_transaksi', $status);
