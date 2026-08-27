@@ -110,8 +110,6 @@ class UpdateDeliveryService
                     'pending_bersih_at' => $report_date->format('Y-m-d H:i:s'),
                     'pending_updated_at' => $report_date->format('Y-m-d H:i:s'),
                     'pending_delivery' => $data->code,
-                    'pending_transaksi' => $transaksi,
-                    'pending_proses' => $transaksi,
                 ]);
 
                 History::bulk($data_rfid, LogType::BERSIH, 'assign rs ', $data->rs_id);
