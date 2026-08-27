@@ -41,7 +41,9 @@ class ReportPendingLinenController extends MinimalController
             'jenis' => $jenis,
             'register' => $register,
             'cuci' => $cuci,
-            'transaction' => $transaction,
+            'transaction' => array_merge($transaction, [
+                'Pending' => 'Pending',
+            ])
         ];
     }
 
@@ -52,6 +54,10 @@ class ReportPendingLinenController extends MinimalController
             ->leftJoin('ruangan', 'ruangan.ruangan_id', '=', 'pending.pending_id_ruangan')
             ->leftJoin('jenis_linen', 'jenis_linen.jenis_id', '=', 'pending.pending_id_jenis')
             ->leftJoin('view_detail_linen', 'view_detail_linen.view_linen_rfid', '=', 'pending.pending_rfid')
+            ->join('config_linen', function ($join) {
+                $join->on('config_linen.detail_rfid', '=', 'pending.pending_rfid') // Perbaikan penulisan detail_rfid / details_rfid
+                    ->on('config_linen.rs_id', '=', 'rs.rs_id');
+            })
             ->select([
                 'pending.*',
                 'rs.rs_nama',
@@ -82,7 +88,16 @@ class ReportPendingLinenController extends MinimalController
         }
 
         if ($status = $request->status) {
-            $query = $query->where('pending.pending_transaksi', $status);
+
+            if($request->get('status') == 'Pending')
+            {
+               $query = $query->whereNull('pending.pending_bersih_at');
+            }
+            else
+            {
+                $query = $query->where('pending.pending_transaksi', $status);
+            }
+
         }
 
         return $query->get();
