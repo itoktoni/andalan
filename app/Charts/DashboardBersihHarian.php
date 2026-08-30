@@ -34,15 +34,15 @@ class DashboardBersihHarian
 
         $data_kotor = Transaksi::whereDate(Transaksi::field_created_at(), '>=', $start_date->format('Y-m-d'))
             ->whereDate(Transaksi::field_created_at(), '<=', $end_date->format('Y-m-d'))
-            ->where(Transaksi::field_status_transaction(), TransactionType::KOTOR);
+            ->where(Transaksi::field_status_transaction(), TransactionType::KOTOR)->whereNotNull(Transaksi::field_rs_ori());
 
         $data_rewash = Transaksi::whereDate(Transaksi::field_created_at(), '>=', $start_date->format('Y-m-d'))
             ->whereDate(Transaksi::field_created_at(), '<=', $end_date->format('Y-m-d'))
-            ->where(Transaksi::field_status_transaction(), TransactionType::REWASH);
+            ->where(Transaksi::field_status_transaction(), TransactionType::REWASH)->whereNotNull(Transaksi::field_rs_ori());
 
         $data_reject = Transaksi::whereDate(Transaksi::field_created_at(), '>=', $start_date->format('Y-m-d'))
             ->whereDate(Transaksi::field_created_at(), '<=', $end_date->format('Y-m-d'))
-            ->where(Transaksi::field_status_transaction(), TransactionType::REJECT);
+            ->where(Transaksi::field_status_transaction(), TransactionType::REJECT)->whereNotNull(Transaksi::field_rs_ori());
 
         if ($rs_id) {
 
