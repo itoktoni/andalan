@@ -53,6 +53,9 @@ class CaptureOpnameService
                     $status_hilang = $item->outstanding_status_hilang ?? HilangType::NORMAL;
 
                     $ketemu = $this->checkKetemu($item);
+
+
+                    //capture diambil dari detail update at
                     $data[] = [
                         OpnameDetail::field_rfid() => $item->detail_rfid,
                         OpnameDetail::field_transaksi() => $status_transaksi,

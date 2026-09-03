@@ -757,12 +757,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
             ]);
 
             $opname = Opname::where(Opname::field_status(), OpnameType::Proses)
-                ->whereDate(Opname::field_start(), '>=', date('Y-m-d'))
-                ->whereDate(Opname::field_end(), '<=', date('Y-m-d'))
                 ->first();
 
             if($opname)
             {
+                //ketika grouping update at nya di update
                 OpnameDetail::where('opname_detail_id_opname', $opname->opname_id)
                     ->where('opname_detail_rfid', $rfid)
                     ->where('opname_detail_ketemu', BooleanType::NO)
