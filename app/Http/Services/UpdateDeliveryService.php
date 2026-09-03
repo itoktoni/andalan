@@ -122,24 +122,24 @@ class UpdateDeliveryService
 
                 $code = $data->code;
 
-                $opname = Opname::where(Opname::field_status(), OpnameType::Proses)
-                ->first();
+                // $opname = Opname::where(Opname::field_status(), OpnameType::Proses)
+                // ->first();
 
-                if($opname)
-                {
-                    //ketika grouping update at nya di update
-                    OpnameDetail::where('opname_detail_id_opname', $opname->opname_id)
-                        ->whereIn('opname_detail_rfid', $data->rfid)
-                        ->where('opname_detail_ketemu', BooleanType::NO)
-                        ->update([
-                            OpnameDetail::field_scan_rs() => BooleanType::YES,
-                            OpnameDetail::field_ketemu() => BooleanType::YES,
-                            OpnameDetail::field_waktu() => date('Y-m-d H:i:s'),
-                            OpnameDetail::field_sync() => BooleanType::YES,
-                            OpnameDetail::field_reff() => $code,
-                            OpnameDetail::field_scan_by() => LogType::BERSIH,
-                        ]);
-                }
+                // if($opname)
+                // {
+                //     //ketika grouping update at nya di update
+                //     OpnameDetail::where('opname_detail_id_opname', $opname->opname_id)
+                //         ->whereIn('opname_detail_rfid', $data->rfid)
+                //         ->where('opname_detail_ketemu', BooleanType::NO)
+                //         ->update([
+                //             OpnameDetail::field_scan_rs() => BooleanType::YES,
+                //             OpnameDetail::field_ketemu() => BooleanType::YES,
+                //             OpnameDetail::field_waktu() => date('Y-m-d H:i:s'),
+                //             OpnameDetail::field_sync() => BooleanType::YES,
+                //             OpnameDetail::field_reff() => $code,
+                //             OpnameDetail::field_scan_by() => LogType::BERSIH,
+                //         ]);
+                // }
 
                 $total = Bersih::where(Bersih::field_delivery(), $code)
                     ->addSelect([

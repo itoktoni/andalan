@@ -756,24 +756,24 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 Detail::field_status_linen() => $detail->field_status_linen,
             ]);
 
-            // $opname = Opname::where(Opname::field_status(), OpnameType::Proses)
-            //     ->first();
+            $opname = Opname::where(Opname::field_status(), OpnameType::Proses)
+                ->first();
 
-            // if($opname)
-            // {
-            //     //ketika grouping update at nya di update
-            //     OpnameDetail::where('opname_detail_id_opname', $opname->opname_id)
-            //         ->where('opname_detail_rfid', $rfid)
-            //         ->where('opname_detail_ketemu', BooleanType::NO)
-            //         ->update([
-            //             OpnameDetail::field_scan_rs() => BooleanType::YES,
-            //             OpnameDetail::field_ketemu() => BooleanType::YES,
-            //             OpnameDetail::field_waktu() => date('Y-m-d H:i:s'),
-            //             OpnameDetail::field_sync() => BooleanType::YES,
-            //             OpnameDetail::field_reff() => $outstanding->outstanding_key,
-            //             OpnameDetail::field_scan_by() => LogType::QC,
-            //         ]);
-            // }
+            if($opname)
+            {
+                //ketika grouping update at nya di update
+                OpnameDetail::where('opname_detail_id_opname', $opname->opname_id)
+                    ->where('opname_detail_rfid', $rfid)
+                    ->where('opname_detail_ketemu', BooleanType::NO)
+                    ->update([
+                        OpnameDetail::field_scan_rs() => BooleanType::YES,
+                        OpnameDetail::field_ketemu() => BooleanType::YES,
+                        OpnameDetail::field_waktu() => date('Y-m-d H:i:s'),
+                        OpnameDetail::field_sync() => BooleanType::YES,
+                        OpnameDetail::field_reff() => $outstanding->outstanding_key,
+                        OpnameDetail::field_scan_by() => LogType::QC,
+                    ]);
+            }
 
             DB::commit();
 
