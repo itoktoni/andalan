@@ -122,7 +122,7 @@ class UpdateDeliveryService
 
                 $code = $data->code;
 
-                 $opname = Opname::where(Opname::field_status(), OpnameType::Proses)
+                $opname = Opname::where(Opname::field_status(), OpnameType::Proses)
                 ->first();
 
                 if($opname)
