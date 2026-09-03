@@ -2,13 +2,17 @@
 
 namespace App\Http\Services;
 
+use App\Dao\Enums\BooleanType;
 use App\Dao\Enums\CetakType;
 use App\Dao\Enums\HilangType;
 use App\Dao\Enums\LogType;
+use App\Dao\Enums\OpnameType;
 use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\TransactionType;
 use App\Dao\Models\Bersih;
 use App\Dao\Models\Cetak;
+use App\Dao\Models\Opname;
+use App\Dao\Models\OpnameDetail;
 use App\Dao\Models\Outstanding;
 use App\Dao\Models\Pending;
 use App\Dao\Models\Transaksi;
@@ -49,6 +53,26 @@ class UpdatePackingService
             // CETAK PRINT
 
             $code = $data->uuid;
+
+             $opname = Opname::where(Opname::field_status(), OpnameType::Proses)
+                ->first();
+
+                if($opname)
+                {
+                    //ketika grouping update at nya di update
+                    OpnameDetail::where('opname_detail_id_opname', $opname->opname_id)
+                        ->whereIn('opname_detail_rfid', $data->rfid)
+                        ->where('opname_detail_ketemu', BooleanType::NO)
+                        ->update([
+                            OpnameDetail::field_scan_rs() => BooleanType::YES,
+                            OpnameDetail::field_ketemu() => BooleanType::YES,
+                            OpnameDetail::field_waktu() => date('Y-m-d H:i:s'),
+                            OpnameDetail::field_sync() => BooleanType::YES,
+                            OpnameDetail::field_reff() => $code,
+                            OpnameDetail::field_scan_by() => LogType::PACKING,
+                        ]);
+                }
+
             $total = Bersih::where(Bersih::field_barcode(), $code)
                 ->addSelect([
                     'bersih_rfid',
