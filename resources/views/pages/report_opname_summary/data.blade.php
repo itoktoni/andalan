@@ -66,7 +66,7 @@
 			@endphp
             @forelse($map as $key => $table)
 			@php
-			$tembak_so = $table->where('opname_detail_scan_rs', BooleanType::YES)
+			$tembak_so = $table
                         ->where('opname_detail_ketemu', 1)
                         ->where('opname_detail_transaksi', '!=', 0)
                         ->count();
@@ -100,7 +100,7 @@
 			<tr>
 				<td colspan="2">Total</td>
 				@php
-				$sub_tembak_so = $data->where('opname_detail_scan_rs', BooleanType::YES)
+				$sub_tembak_so = $data
                     ->where('opname_detail_ketemu', 1)
                     ->where('opname_detail_transaksi', '!=', 0)
                     ->count();
