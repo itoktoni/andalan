@@ -46,6 +46,7 @@ use App\Http\Services\SaveOpnameService;
 use App\PushSubscription;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Plugins\Notes;
@@ -149,6 +150,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('rs', function (Request $request) {
 
         $type = $request->type;
+        $rs_id = Auth::user()->rs_id;
 
         $status_register = [];
         $status_cuci = [];
@@ -163,9 +165,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
             'ruangan.ruangan_id',
             'ruangan_nama',
             'rs_id',
-        ])->leftJoin('rs_dan_ruangan', 'rs_dan_ruangan.ruangan_id', '=', 'ruangan.ruangan_id')
-        ->orderBy('ruangan_nama', 'ASC')
-        ->get();
+        ])->leftJoin('rs_dan_ruangan', 'rs_dan_ruangan.ruangan_id', '=', 'ruangan.ruangan_id');
+
+        if(!empty($rs_id)){
+            $ruangan = $ruangan->where('rs_id', $rs_id);
+        }
 
         $data_jenis_rs = JenisLinen::select([
             'jenis_linen.jenis_id',
@@ -219,16 +223,22 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
             if(empty($type))
             {
-                $rs = Rs::with([HAS_RUANGAN, HAS_JENIS])->get();
-                $collection = RsResource::collection($rs);
+                $rs = Rs::with([HAS_RUANGAN, HAS_JENIS]);
+                if(!empty($rs_id)){
+                    $rs = $rs->where(Rs::field_primary(), $rs_id);
+                }
+                $collection = RsResource::collection($rs->get());
                 $data_supplier = Supplier::select(Supplier::field_primary(), Supplier::field_name())->get() ?? [];
                 $data_bahan = JenisBahan::select(JenisBahan::field_primary(), JenisBahan::field_name())->get() ?? [];
-                $data_jenis = JenisLinen::select(JenisLinen::field_primary(), JenisLinen::field_name())->orderBy('jenis_nama', 'ASC')->get() ?? [];
+                $data_jenis = JenisLinen::select([JenisLinen::field_primary(), JenisLinen::field_name()])->orderBy('nama', 'ASC')->get() ?? [];
             }
             else if($type == "register")
             {
-                $rs = Rs::get();
-                $collection = RsSingleResource::collection($rs);
+                $rs = Rs::query();
+                if(!empty($rs_id)){
+                    $rs = $rs->where(Rs::field_primary(), $rs_id);
+                }
+                $collection = RsSingleResource::collection($rs->get());
 
                 $data_supplier = Supplier::select(Supplier::field_primary(), Supplier::field_name())->get() ?? [];
                 $data_bahan = JenisBahan::select(JenisBahan::field_primary(), JenisBahan::field_name())->orderBy(JenisBahan::field_name(), 'ASC')->get() ?? [];
@@ -267,6 +277,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     $rs = $rs->where(Rs::field_status(), OwnershipType::DEDICATED);
                 }
 
+                if(!empty($rs_id)){
+                    $rs = $rs->where(Rs::field_primary(), $rs_id);
+                }
+
                 $collection = RsSingleResource::collection($rs->get());
 
                 $ruangan = Ruangan::select([
@@ -302,7 +316,18 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
 
     Route::get('rs_lite', function(){
-        $rs = Rs::select(Rs::field_primary(), Rs::field_name())->get() ?? [];
+
+        $rs_id = Auth::user()->rs_id;
+
+        if(!empty($rs_id))
+        {
+            $rs = Rs::select(Rs::field_primary(), Rs::field_name())->where('rs_id', $rs_id)->get() ?? [];
+        }
+        else
+        {
+            $rs = Rs::select(Rs::field_primary(), Rs::field_name())->get() ?? [];
+        }
+
         return Notes::data($rs);
     });
 
