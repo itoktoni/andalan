@@ -47,6 +47,7 @@ use App\PushSubscription;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Plugins\Notes;
 use Plugins\Query;
@@ -793,6 +794,55 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 return Notes::error($clean);
             }
 
+            return Notes::error($rfid, $th->getMessage());
+        }
+    });
+
+    Route::get('check/{rfid}', function ($rfid) {
+        try {
+
+            $flag = 'Normal';
+
+            $detail = Detail::with([HAS_VIEW])->findOrFail($rfid);
+            $view = $detail->has_view;
+
+            Log::info($detail);
+
+
+            if ($detail->field_status_linen == TransactionType::REGISTER) {
+                $flag = 'REGISTER';
+            } else if ($detail->field_status_linen == TransactionType::KOTOR) {
+                $flag = 'KOTOR';
+            } else if ($detail->field_status_linen == TransactionType::REJECT) {
+                $flag = 'REJECT';
+            } else if ($detail->field_status_linen == TransactionType::REWASH) {
+                $flag = 'REWASH';
+            } else if ($detail->field_status_linen == TransactionType::BERSIH) {
+                $flag = 'BERSIH';
+            }
+
+            $collection = [
+                'rfid' => $rfid ?? '',
+                'linen_id' => $view->view_linen_id ?? '',
+                'linen_nama' => $view->view_linen_nama ?? '',
+                'rs_id' => $view->view_rs_id ?? '',
+                'rs_nama' => $view->view_rs_nama ?? '',
+                'ruangan_id' => $view->view_ruangan_id ?? '',
+                'ruangan_nama' => $view->view_ruangan_nama ?? '',
+                'status_transaksi' => '',
+                'status_proses' => '',
+                'status_kepemilikan' => $detail->detail_status_kepemilikan ?? null,
+                'tanggal_create' => null,
+                'tanggal_update' => null,
+                'user_nama' => $view->view_created_name ?? null,
+                'status_linen' => $flag ?? null,
+            ];
+
+            return Notes::data($collection);
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $th) {
+            return Notes::error($rfid, 'RFID ' . $rfid . ' tidak ditemukan');
+        } catch (\Throwable $th) {
             return Notes::error($rfid, $th->getMessage());
         }
     });
