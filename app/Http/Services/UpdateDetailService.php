@@ -70,11 +70,11 @@ class UpdateDetailService
 
             $test = History::create([
                 History::field_rs_id() => $data[Detail::field_rs_id()],
-                History::field_name() => Detail::field_primary(),
+                History::field_name() => $data[Detail::field_primary()],
                 History::field_status() => LogType::GANTI_LINEN,
                 History::field_created_by() => auth()->user()->name,
                 History::field_created_at() => date('Y-m-d H:i:s'),
-                History::field_description() => json_encode(['lama' => $data['rfid_lama'], 'rfid_baru' => Detail::field_primary()]),
+                History::field_description() => json_encode(['lama' => $data['rfid_lama'], 'rfid_baru' => $data[Detail::field_primary()]]),
             ]);
 
             OpnameDetail::where(OpnameDetail::field_rfid(), $code)->update([
