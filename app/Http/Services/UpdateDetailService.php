@@ -10,7 +10,6 @@ use App\Dao\Models\Detail;
 use App\Dao\Models\History;
 use App\Dao\Models\OpnameDetail;
 use App\Dao\Models\Outstanding;
-use App\Dao\Models\Rs;
 use App\Dao\Models\Transaksi;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
@@ -26,14 +25,30 @@ class UpdateDetailService
         try {
 
             $data = $request->all();
-            $newRfid = $data[Detail::field_primary()];
+            $newRfid = trim($data[Detail::field_primary()] ?? $code);
             $oldRfid = $code;
+
+            $rsId = $data[Detail::field_rs_id()] ?? null;
+            $ruanganId = $data[Detail::field_ruangan_id()] ?? null;
+
+            // Payload non-PK untuk repository (hindari double rename PK via Eloquent).
+            // Buang key non-fillable agar tidak ikut ke Eloquent update.
+            $payload = $data;
+            unset(
+                $payload[Detail::field_primary()],
+                $payload['rfid_lama'],
+                $payload['_token'],
+                $payload['_method']
+            );
 
             // Check if new RFID already exists (and is different from old)
             $existingNew = Detail::where(Detail::field_primary(), $newRfid)->first();
 
             if ($existingNew && $newRfid !== $oldRfid) {
-                // Merge: transfer old RFID data to existing new RFID, then delete old
+                // Merge: update data existing new RFID dengan data form, lalu hapus old
+                if (!empty($payload)) {
+                    $existingNew->update($payload);
+                }
                 Detail::where(Detail::field_primary(), $oldRfid)->delete();
                 Outstanding::where(Outstanding::field_primary(), $oldRfid)->delete();
                 Transaksi::where(Transaksi::field_rfid(), $oldRfid)->delete();
@@ -42,19 +57,30 @@ class UpdateDetailService
                 History::where(History::field_name(), $oldRfid)->delete();
                 OpnameDetail::where(OpnameDetail::field_rfid(), $oldRfid)->delete();
 
-                $check = $existingNew;
-
                 History::create([
-                    History::field_rs_id() => $data[Detail::field_rs_id()],
+                    History::field_rs_id() => $rsId,
                     History::field_name() => $newRfid,
                     History::field_status() => LogType::GANTI_LINEN,
-                    History::field_created_by() => auth()->user()->name,
+                    History::field_created_by() => optional(auth()->user())->name,
                     History::field_created_at() => date('Y-m-d H:i:s'),
                     History::field_description() => json_encode(['lama' => $oldRfid, 'rfid_baru' => $newRfid, 'action' => 'merged']),
                 ]);
+
+                $check = Notes::update($existingNew->refresh());
             } else {
-                // Normal update: new RFID doesn't exist or same as old
-                $check = $repository->updateRepository($data, $code);
+                // Normal update: update field non-PK via repository dulu
+                $check = $repository->updateRepository($payload, $code);
+
+                // Jika repository gagal, rollback dan return — jangan lanjut update tabel lain
+                if (empty($check['status'])) {
+                    DB::rollBack();
+
+                    if (!request()->wantsJson()) {
+                        Alert::error($check['message'] ?? 'Gagal update data.');
+                    }
+
+                    return $check;
+                }
 
                 $det = [
                     Detail::field_primary() => $newRfid,
@@ -64,59 +90,70 @@ class UpdateDetailService
                 {
                     $det = array_merge($det, [
                         'detail_lama' => $data['rfid_lama'],
-                        'detail_pengantian_user' => auth()->user()->id,
+                        'detail_pengantian_user' => optional(auth()->user())->id,
                         'detail_pengantian_waktu' => date('Y-m-d H:i:s'),
                     ]);
                 }
 
                 Detail::where(Detail::field_primary(), $oldRfid)->update($det);
 
-                Outstanding::where(Outstanding::field_primary(), $oldRfid)->update([
-                    Outstanding::field_primary() => $newRfid,
-                    Outstanding::field_ruangan_id() => $data[Detail::field_ruangan_id()],
-                ]);
+                $childRuangan = [];
+                if ($ruanganId !== null) {
+                    $childRuangan = [Transaksi::field_ruangan_id() => $ruanganId];
+                }
 
-                Transaksi::where(Transaksi::field_rfid(), $oldRfid)->update([
-                    Transaksi::field_rfid() => $newRfid,
-                    Transaksi::field_ruangan_id() => $data[Detail::field_ruangan_id()],
-                ]);
+                Outstanding::where(Outstanding::field_primary(), $oldRfid)->update(array_merge(
+                    [Outstanding::field_primary() => $newRfid],
+                    $ruanganId !== null ? [Outstanding::field_ruangan_id() => $ruanganId] : []
+                ));
 
-                ConfigLinen::where(Detail::field_primary(), $oldRfid)
-                    ->where(Rs::field_primary(), $data[Detail::field_rs_id()])
+                Transaksi::where(Transaksi::field_rfid(), $oldRfid)->update(array_merge(
+                    [Transaksi::field_rfid() => $newRfid],
+                    $childRuangan
+                ));
+
+                ConfigLinen::where(ConfigLinen::field_primary(), $oldRfid)
+                    ->when($rsId !== null, function ($query) use ($rsId) {
+                        return $query->where(ConfigLinen::field_rs_id(), $rsId);
+                    })
                     ->update([
-                        Detail::field_primary() => $newRfid,
+                        ConfigLinen::field_primary() => $newRfid,
                     ]);
 
-                Bersih::where(Bersih::field_rfid(), $oldRfid)->update([
-                    Bersih::field_rfid() => $newRfid,
-                    Bersih::field_ruangan_id() => $data[Detail::field_ruangan_id()],
-                ]);
+                Bersih::where(Bersih::field_rfid(), $oldRfid)->update(array_merge(
+                    [Bersih::field_rfid() => $newRfid],
+                    $ruanganId !== null ? [Bersih::field_ruangan_id() => $ruanganId] : []
+                ));
 
                 History::where(History::field_name(), $oldRfid)->update([
                     History::field_name() => $newRfid,
                 ]);
 
                 History::create([
-                    History::field_rs_id() => $data[Detail::field_rs_id()],
+                    History::field_rs_id() => $rsId,
                     History::field_name() => $newRfid,
                     History::field_status() => LogType::GANTI_LINEN,
-                    History::field_created_by() => auth()->user()->name,
+                    History::field_created_by() => optional(auth()->user())->name,
                     History::field_created_at() => date('Y-m-d H:i:s'),
-                    History::field_description() => json_encode(['lama' => $data['rfid_lama'], 'rfid_baru' => $newRfid]),
+                    History::field_description() => json_encode(['lama' => $data['rfid_lama'] ?? $oldRfid, 'rfid_baru' => $newRfid]),
                 ]);
 
                 OpnameDetail::where(OpnameDetail::field_rfid(), $oldRfid)->update([
                     OpnameDetail::field_rfid() => $newRfid,
                 ]);
-            }
 
-            if (request()->wantsJson()) {
-                return response()->json($check)->getData();
+                // Refresh model agar redirect controller memakai RFID baru
+                $fresh = Detail::where(Detail::field_primary(), $newRfid)->first();
+                $check = Notes::update($fresh ?? $check['data'] ?? null);
             }
 
             Alert::update();
 
             DB::commit();
+
+            if (request()->wantsJson()) {
+                return response()->json($check)->getData();
+            }
 
             return $check;
 
