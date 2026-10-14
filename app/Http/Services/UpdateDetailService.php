@@ -7,6 +7,7 @@ use App\Dao\Interfaces\CrudInterface;
 use App\Dao\Models\Bersih;
 use App\Dao\Models\ConfigLinen;
 use App\Dao\Models\Detail;
+use App\Dao\Models\GantiChip;
 use App\Dao\Models\History;
 use App\Dao\Models\OpnameDetail;
 use App\Dao\Models\Outstanding;
@@ -18,6 +19,44 @@ use Plugins\Notes;
 
 class UpdateDetailService
 {
+    /**
+     * Catat penggantian chip ke table ganti_chip.
+     * Keterangan diambil dari outstanding.outstanding_status_transaksi,
+     * jika tidak ada (linen sudah bersih / tanpa outstanding) fallback BERSIH.
+     * Request boleh override via input `keterangan` / `ganti_keterangan`.
+     */
+    private function logGantiChip($oldRfid, $newRfid, $data)
+    {
+        $lama = !empty($data['rfid_lama']) ? trim($data['rfid_lama']) : $oldRfid;
+
+        if (empty($lama) || empty($newRfid) || $lama === $newRfid) {
+            return;
+        }
+
+        $keterangan = $data['keterangan'] ?? $data['ganti_keterangan'] ?? null;
+
+        if (empty($keterangan)) {
+            $outstanding = Outstanding::where(Outstanding::field_primary(), $oldRfid)->first();
+            $keterangan = optional($outstanding)->{Outstanding::field_status_transaction()};
+        }
+
+        if (empty($keterangan)) {
+            $keterangan = 'BERSIH';
+        }
+
+        GantiChip::firstOrCreate(
+            [
+                GantiChip::field_lama() => $lama,
+                GantiChip::field_baru() => $newRfid,
+            ],
+            [
+                GantiChip::field_tanggal() => date('Y-m-d H:i:s'),
+                GantiChip::field_by() => optional(auth()->user())->id,
+                GantiChip::field_keterangan() => $keterangan,
+            ]
+        );
+    }
+
     public function update(CrudInterface $repository, $request, $code)
     {
         DB::beginTransaction();
@@ -37,6 +76,8 @@ class UpdateDetailService
             unset(
                 $payload[Detail::field_primary()],
                 $payload['rfid_lama'],
+                $payload['keterangan'],
+                $payload['ganti_keterangan'],
                 $payload['_token'],
                 $payload['_method']
             );
@@ -49,6 +90,7 @@ class UpdateDetailService
                 if (!empty($payload)) {
                     $existingNew->update($payload);
                 }
+                $this->logGantiChip($oldRfid, $newRfid, $data);
                 Detail::where(Detail::field_primary(), $oldRfid)->delete();
                 Outstanding::where(Outstanding::field_primary(), $oldRfid)->delete();
                 Transaksi::where(Transaksi::field_rfid(), $oldRfid)->delete();
@@ -82,20 +124,17 @@ class UpdateDetailService
                     return $check;
                 }
 
+                // Rename PK saja — histori penggantian dicatat di table
+                // ganti_chip (lihat logGantiChip), bukan di detail_linen.
                 $det = [
                     Detail::field_primary() => $newRfid,
                 ];
 
-                if(!empty($data['rfid_lama']))
-                {
-                    $det = array_merge($det, [
-                        'detail_lama' => $data['rfid_lama'],
-                        'detail_pengantian_user' => optional(auth()->user())->id,
-                        'detail_pengantian_waktu' => date('Y-m-d H:i:s'),
-                    ]);
-                }
-
                 Detail::where(Detail::field_primary(), $oldRfid)->update($det);
+
+                if ($newRfid !== $oldRfid || !empty($data['rfid_lama'])) {
+                    $this->logGantiChip($oldRfid, $newRfid, $data);
+                }
 
                 $childRuangan = [];
                 if ($ruanganId !== null) {
