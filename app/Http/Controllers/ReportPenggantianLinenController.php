@@ -58,8 +58,6 @@ class ReportPenggantianLinenController extends MinimalController
                 $ganti.'.'.GantiChip::field_baru().' as rfid_baru',
                 $ganti.'.'.GantiChip::field_keterangan().' as keterangan',
                 $ganti.'.'.GantiChip::field_tanggal().' as detail_pengantian_waktu',
-                $detail.'.'.Detail::field_status_cuci().' as detail_status_cuci',
-                $detail.'.'.Detail::field_status_register().' as detail_status_register',
                 $jenis.'.'.JenisLinen::field_name().' as jenis_nama',
                 $rs.'.'.Rs::field_name().' as rs_nama',
                 $ruangan.'.'.Ruangan::field_name().' as ruangan_nama',

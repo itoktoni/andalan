@@ -40,8 +40,6 @@
 				<th>RUMAH SAKIT</th>
 				<th>RUANGAN</th>
 				<th>KETERANGAN</th>
-				<th>CUCI/RENTAL</th>
-				<th>STATUS REGISTRASI</th>
 				<th>TANGGAL PENGGANTIAN</th>
 				<th>OPERATOR</th>
 			</tr>
@@ -60,8 +58,6 @@
 				<td>{{ $table->rs_nama }}</td>
 				<td>{{ $table->ruangan_nama }}</td>
 				<td>{{ $table->keterangan }}</td>
-				<td>{{ $table->detail_status_cuci }}</td>
-				<td>{{ $table->detail_status_register }}</td>
 				<td>{{ formatDate($table->detail_pengantian_waktu) }}</td>
 				<td>{{ $table->operator_name }}</td>
 			</tr>
