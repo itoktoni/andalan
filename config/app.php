@@ -202,7 +202,6 @@ return [
         App\Providers\TelescopeServiceProvider::class,
         BenSampo\Enum\EnumServiceProvider::class,
         Kyslik\ColumnSortable\ColumnSortableServiceProvider::class,
-        Barryvdh\DomPDF\ServiceProvider::class,
         CacheableAuthUserServiceProvider::class,
         LaravelWebConsoleServiceProvider::class,
         ProtoneMedia\LaravelFormComponents\Support\ServiceProvider::class,
