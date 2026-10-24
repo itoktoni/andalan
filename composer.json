@@ -35,8 +35,7 @@
         "spatie/laravel-backup": "^8.2",
         "spatie/simple-excel": "^3.2",
         "touhidurabir/laravel-model-sanitize": "^1.1",
-        "wildside/userstamps": "^2.2",
-        "wnx/laravel-backup-restore": "^1.0"
+        "wildside/userstamps": "^2.2"
     },
     "require-dev": {
         "andreaselia/laravel-api-to-postman": "^2.0",
