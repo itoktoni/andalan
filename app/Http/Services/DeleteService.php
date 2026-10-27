@@ -5,7 +5,6 @@ namespace App\Http\Services;
 use App\Dao\Enums\LogType;
 use App\Dao\Interfaces\CrudInterface;
 use App\Dao\Models\History;
-use Illuminate\Database\Eloquent\Model;
 use Plugins\Alert;
 
 class DeleteService
@@ -17,19 +16,21 @@ class DeleteService
 
         $log = [];
         $date = now();
+        $user = auth()->user()->name ?? 'system';
 
-        foreach($code as $key){
+        $codes = is_array($code) ? array_values(array_unique($code)) : [$code];
+        foreach ($codes as $key) {
             $log[] = [
                 History::field_rs_id() => 0,
                 History::field_name() => $key,
                 History::field_status() => LogType::DELETE_RFID,
-                History::field_created_by() => auth()->user()->name,
+                History::field_created_by() => $user,
                 History::field_created_at() => $date,
                 History::field_description() => "user mendelete rfid ".$key,
             ];
         }
 
-        Model::insert($log);
+        History::insert($log);
 
         $check = $repository->deleteRepository($code);
 

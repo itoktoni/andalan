@@ -24,14 +24,23 @@ class SingleService
         $rules = ['code' => 'required'];
         request()->validate($rules, ['code.required' => 'Silahkan centang terlebih dahulu!']);
 
-        History::create([
-            History::field_rs_id() => 0,
-            History::field_name() => $code,
-            History::field_status() => LogType::DELETE_RFID,
-            History::field_created_by() => auth()->user()->name,
-            History::field_created_at() => now(),
-            History::field_description() => "user mendelete rfid ".$code,
-        ]);
+        $codes = is_array($code) ? array_values(array_unique($code)) : [$code];
+        $date = now();
+        $user = auth()->user()->name ?? 'system';
+
+        $log = [];
+        foreach ($codes as $key) {
+            $log[] = [
+                History::field_rs_id() => 0,
+                History::field_name() => $key,
+                History::field_status() => LogType::DELETE_RFID,
+                History::field_created_by() => $user,
+                History::field_created_at() => $date,
+                History::field_description() => "user mendelete rfid ".$key,
+            ];
+        }
+
+        History::insert($log);
 
         $check = $repository->deleteRepository($code);
         if ($check['status']) {
