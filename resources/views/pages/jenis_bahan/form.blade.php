@@ -5,8 +5,8 @@
 
             @bind($model)
 
-            <x-form-input col="6" label="Nama Bahan" name="jenis_bahan_nama" />
-            <x-form-textarea col="6" name="jenis_bahan_deskripsi" />
+            <x-form-input col="6" label="Nama Bahan" name="bahan_nama" />
+            <x-form-textarea col="6" name="bahan_deskripsi" />
 
             @endbind
 
