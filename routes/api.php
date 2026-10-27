@@ -230,7 +230,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                 $collection = RsResource::collection($rs->get());
                 $data_supplier = Supplier::select(Supplier::field_primary(), Supplier::field_name())->get() ?? [];
                 $data_bahan = JenisBahan::select(JenisBahan::field_primary(), JenisBahan::field_name())->get() ?? [];
-                $data_jenis = JenisLinen::select([JenisLinen::field_primary(), JenisLinen::field_name()])->orderBy('nama', 'ASC')->get() ?? [];
+                $data_jenis = JenisLinen::select([JenisLinen::field_primary(), JenisLinen::field_name()])->orderBy('jenis_nama', 'ASC')->get() ?? [];
             }
             else if($type == "register")
             {
