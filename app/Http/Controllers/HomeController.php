@@ -9,10 +9,11 @@ use App\Charts\DashboardKotorHarian;
 use App\Dao\Enums\HilangType;
 use App\Dao\Enums\TransactionType;
 use App\Dao\Models\Bersih;
+use App\Dao\Models\Detail;
 use App\Dao\Models\Outstanding;
 use App\Dao\Models\Pending;
 use App\Dao\Models\Transaksi;
-use App\Dao\Models\ViewDetailLinen;
+use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
@@ -58,7 +59,17 @@ class HomeController extends Controller
         $rs_id = auth()->user()->rs_id;
         if ($rs_id) {
 
-            $register = ViewDetailLinen::where('view_rs_id', $rs_id)->count();
+            //shortcut: register = detail terdaftar (ada config = bisa dijoin, atau ada outstanding = pernah register); baris yatim tidak dihitung
+            $register = Detail::where(Detail::field_rs_id(), $rs_id)
+                ->where(function ($q) {
+                    $q->whereExists(function ($s) {
+                        $s->select(DB::raw(1))->from('config_linen')
+                            ->whereColumn('config_linen.detail_rfid', 'detail_linen.detail_rfid');
+                    })->orWhereExists(function ($s) {
+                        $s->select(DB::raw(1))->from('outstanding')
+                            ->whereColumn('outstanding.outstanding_rfid', 'detail_linen.detail_rfid');
+                    });
+                })->count();
 
             $pending_kotor = Pending::query()
              ->select(['pending_rfid'])
@@ -129,7 +140,10 @@ class HomeController extends Controller
                 ->joinRelationship('has_rfid')
                 ->count();
 
-            $available = $register - ($kotor + $reject + $rewash + $pending_kotor + $pending_reject + $pending_rewash);
+            //shortcut: available = linen master berstatus BERSIH saja; REGISTER tidak dihitung (menyimpang dari rumus premier register-minus-out)
+            $available = Detail::where(Detail::field_rs_id(), $rs_id)
+                ->where(Detail::field_status_linen(), TransactionType::BERSIH)
+                ->count();
         }
 
         return view('pages.home.home', [
