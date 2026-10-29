@@ -11,7 +11,6 @@ use App\Dao\Models\Outstanding;
 use App\Dao\Models\Rs;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class PackingRequest extends FormRequest
 {
@@ -104,7 +103,8 @@ class PackingRequest extends FormRequest
 
     public function prepareForValidation()
     {
-        $code = Str::orderedUuid()->toString();
+        //shortcut: tanpa query DB (cetak membesar bikin max() lemot); uniqid berbasis microtime + jam, cukup unik untuk barcode
+        $code = 'PACK-'.strtoupper(uniqid()).'-'.date('YmdHi');
         $date = date('Y-m-d H:i:s');
         $user = auth()->user()->id;
 
