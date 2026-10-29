@@ -20,9 +20,11 @@ class History
     public static function bulk($rfid, $status, $message = null, $rs_id = null)
     {
         $log = [];
-        foreach ($rfid as $item) {
+        $items = is_array($rfid) ? $rfid : [$rfid];
+        foreach ($items as $item) {
+            $rs = is_array($rs_id) ? ($rs_id[$item] ?? null) : $rs_id;
             $log[] = [
-                ModelsHistory::field_rs_id() => $rs_id,
+                ModelsHistory::field_rs_id() => $rs,
                 ModelsHistory::field_name() => $item,
                 ModelsHistory::field_status() => $status,
                 ModelsHistory::field_created_by() => auth()->user()->name ?? 'System',

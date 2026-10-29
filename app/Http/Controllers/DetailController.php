@@ -135,8 +135,10 @@ class DetailController extends MasterController
     public function postDelete(DeleteRequest $request, DeleteService $service)
     {
         $code = $request->get('code');
+        $codes = is_array($code) ? $code : [$code];
+        $rsMap = Detail::whereIn(Detail::field_primary(), $codes)->pluck(Detail::field_rs_id(), Detail::field_primary())->all();
         $data = $service->delete(self::$repository, $code);
-        $this->deleteAll($code);
+        $this->deleteAll($code, $rsMap);
 
         return Response::redirectBack($data);
     }
@@ -144,8 +146,9 @@ class DetailController extends MasterController
     public function getDelete()
     {
         $code = request()->get('code');
+        $rsMap = Detail::where(Detail::field_primary(), $code)->pluck(Detail::field_rs_id(), Detail::field_primary())->all();
         $data = self::$service->delete(self::$repository, $code);
-        $this->deleteAll([$code]);
+        $this->deleteAll([$code], $rsMap);
 
         return Response::redirectBack($data);
     }
@@ -154,8 +157,9 @@ class DetailController extends MasterController
     {
         if (request()->exists('delete')) {
             $code = array_unique(request()->get('code'));
+            $rsMap = Detail::whereIn(Detail::field_primary(), $code)->pluck(Detail::field_rs_id(), Detail::field_primary())->all();
             $data = self::$service->delete(self::$repository, $code);
-            $this->deleteAll($code);
+            $this->deleteAll($code, $rsMap);
         }
 
         if (request()->exists('sort')) {
@@ -166,9 +170,14 @@ class DetailController extends MasterController
         return Response::redirectBack($data);
     }
 
-    private function deleteAll($code)
+    private function deleteAll($code, $rsMap = [])
     {
-        PluginsHistory::bulk($code, LogType::DELETE_RFID, "DELETE");
+        $codes = is_array($code) ? $code : [$code];
+        $bulkRs = [];
+        foreach ($codes as $item) {
+            $bulkRs[$item] = $rsMap[$item] ?? 0;
+        }
+        PluginsHistory::bulk($code, LogType::DELETE_RFID, "DELETE", $bulkRs);
         Transaksi::whereIn(Transaksi::field_rfid(), $code)->delete();
         ConfigLinen::whereIn(Detail::field_primary(), $code)->delete();
         Outstanding::whereIn(Outstanding::field_primary(), $code)->delete();

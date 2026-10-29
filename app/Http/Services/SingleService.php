@@ -30,8 +30,18 @@ class SingleService
 
         $log = [];
         foreach ($codes as $key) {
+            $rs_id = 0;
+            try {
+                $model = $repository->model ?? null;
+                if ($model && method_exists($model, 'field_rs_id')) {
+                    $pk = $model->getKeyName();
+                    $rsField = $model::field_rs_id();
+                    $rs_id = $model::where($pk, $key)->value($rsField) ?? 0;
+                }
+            } catch (\Throwable $th) {
+            }
             $log[] = [
-                History::field_rs_id() => 0,
+                History::field_rs_id() => $rs_id,
                 History::field_name() => $key,
                 History::field_status() => LogType::DELETE_RFID,
                 History::field_created_by() => $user,
