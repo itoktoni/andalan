@@ -13,7 +13,6 @@ use App\Dao\Models\Detail;
 use App\Dao\Models\Outstanding;
 use App\Dao\Models\Pending;
 use App\Dao\Models\Transaksi;
-use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
@@ -59,17 +58,8 @@ class HomeController extends Controller
         $rs_id = auth()->user()->rs_id;
         if ($rs_id) {
 
-            //shortcut: register = detail terdaftar (ada config = bisa dijoin, atau ada outstanding = pernah register); baris yatim tidak dihitung
-            $register = Detail::where(Detail::field_rs_id(), $rs_id)
-                ->where(function ($q) {
-                    $q->whereExists(function ($s) {
-                        $s->select(DB::raw(1))->from('config_linen')
-                            ->whereColumn('config_linen.detail_rfid', 'detail_linen.detail_rfid');
-                    })->orWhereExists(function ($s) {
-                        $s->select(DB::raw(1))->from('outstanding')
-                            ->whereColumn('outstanding.outstanding_rfid', 'detail_linen.detail_rfid');
-                    });
-                })->count();
+            //shortcut: register = total semua linen RS; available = yang BERSIH saja
+            $register = Detail::where(Detail::field_rs_id(), $rs_id)->count();
 
             $pending_kotor = Pending::query()
              ->select(['pending_rfid'])
