@@ -61,11 +61,22 @@
             @endphp
 
 			@forelse ($location as $loc_id => $loc_name)
+			@php
+			//shortcut: hanya (ruangan x linen) yang ada isinya yang tampil; yang nol semua disembunyikan
+			$visible = [];
+			foreach ($linen as $jid => $jname) {
+				$isi = $kotor->where('view_ruangan_id', $loc_id)->where('view_linen_id', $jid)->sum('view_qty');
+				if ($isi > 0) {
+					$visible[$jid] = $jname;
+				}
+			}
+			@endphp
+			@if(count($visible))
 			<tr>
-				<td rowspan="{{ count($linen) + 1 }}">{{ $loc_name }}</td>
+				<td rowspan="{{ count($visible) + 1 }}">{{ $loc_name }}</td>
 			</tr>
 
-				@forelse ($linen as $jenis_id => $jenis_name)
+				@foreach ($visible as $jenis_id => $jenis_name)
 					<tr>
 						<td>{{ $jenis_name }}</td>
 						@foreach($tanggal as $tgl)
@@ -97,8 +108,8 @@
 						<td>{{ $drop_max }}</td>
 						<td>{{ $drop_min }}</td>
 					</tr>
-				@empty
-				@endforelse
+				@endforeach
+			@endif
 
 			@empty
 
