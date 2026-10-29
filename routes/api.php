@@ -355,7 +355,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
             $code = env('CODE_REGISTER', 'REG');
             $autoNumber = Query::autoNumber(Outstanding::getTableName(), Outstanding::field_key(), $code . date('ymd'), env('AUTO_NUMBER', 15));
-            $rsid = $request->rs_id;
+            //shortcut: desktop kirim string "77", web lama harapkan array utk linen free -> normalisasi di sini, upgrade ke Request rule bila pola berulang
+            $rsIds = is_array($request->rs_id) ? array_values($request->rs_id) : [$request->rs_id];
+            $rsid = $rsIds[0] ?? env('RS_ID', 77);
             $userId = auth()->user()->id;
             $date = date('Y-m-d H:i:s');
 
@@ -444,7 +446,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                     );
 
                 } else {
-                    foreach ($rsid as $id_rs) {
+                    foreach ($rsIds as $id_rs) {
                         //ConfigLinen::updateOrCreate(
                         ConfigLinen::create(
                             [
@@ -470,7 +472,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
             if($request->status_register == RegisterType::GANTI_CHIP){
                 Transaksi::insert($transaksi);
 
-                $history = collect($request->rfid)->map(function ($item, $rsid) {
+                $history = collect($request->rfid)->map(function ($item) use ($rsid) {
                     return [
                         ModelsHistory::field_rs_id() => $rsid,
                         ModelsHistory::field_name() => $item,
@@ -483,7 +485,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
             }
 
             else{
-                $history = collect($request->rfid)->map(function ($item, $rsid) {
+                $history = collect($request->rfid)->map(function ($item) use ($rsid) {
                     return [
                         ModelsHistory::field_rs_id() => $rsid,
                         ModelsHistory::field_name() => $item,
