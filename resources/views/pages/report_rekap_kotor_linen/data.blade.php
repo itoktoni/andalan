@@ -79,7 +79,7 @@
 						$average = $kotor->where('view_linen_id', $jenis_id)->avg('view_qty') ?? 0;
 						$max = $kotor->where('view_linen_id', $jenis_id)->max('view_qty') ?? 0;
 						$min = $kotor->where('view_linen_id', $jenis_id)->min('view_qty') ?? 0;
-						$stock = $register->where('view_linen_id', $jenis_id)->count();
+						$stock = $register->where('view_linen_id', $jenis_id)->where('view_ruangan_id', $loc_id)->count();
 
 						$drop_max = (!empty($stock) && !empty($max)) ? round($stock / $max, 2) : 0;
 						$drop_min = (!empty($stock) && !empty($min)) ? round($stock / $min, 2) : 0;

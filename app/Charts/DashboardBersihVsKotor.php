@@ -32,29 +32,31 @@ class DashboardBersihVsKotor
         $date = [];
 
         $rs_id = auth()->user()->rs_id;
-        if ($rs_id)
-        {
-            $data_bersih = Bersih::where(Bersih::field_rs_id(), auth()->user()->rs_id)
-                ->where(Bersih::field_report(), '>=', $start_date->format('Y-m-d'))
-                ->where(Bersih::field_report(), '<=', $end_date->format('Y-m-d'))
-                ->where(Bersih::field_status(), TransactionType::BERSIH)
-                ->get();
 
-            $data_kotor = Transaksi::where(Transaksi::field_rs_ori(), auth()->user()->rs_id)
-                ->whereDate(Transaksi::field_created_at(), '>=', $start_date_kotor->format('Y-m-d'))
-                ->whereDate(Transaksi::field_created_at(), '<=', $end_date_kotor->format('Y-m-d'))
-                ->where(Transaksi::field_status_transaction(), TransactionType::KOTOR)
-                ->get()->map(function($item){
-                    $item['tanggal'] = $item->transaksi_created_at->format('Y-m-d') ?? null;
-                    return $item;
-                });
+        $data_bersih = Bersih::where(Bersih::field_report(), '>=', $start_date->format('Y-m-d'))
+            ->where(Bersih::field_report(), '<=', $end_date->format('Y-m-d'))
+            ->where(Bersih::field_status(), TransactionType::BERSIH)
+            ->when($rs_id, function ($q) use ($rs_id) {
+                return $q->where(Bersih::field_rs_id(), $rs_id);
+            })
+            ->get();
+
+        $data_kotor = Transaksi::whereDate(Transaksi::field_created_at(), '>=', $start_date_kotor->format('Y-m-d'))
+            ->whereDate(Transaksi::field_created_at(), '<=', $end_date_kotor->format('Y-m-d'))
+            ->where(Transaksi::field_status_transaction(), TransactionType::KOTOR)
+            ->when($rs_id, function ($q) use ($rs_id) {
+                return $q->where(Transaksi::field_rs_ori(), $rs_id);
+            })
+            ->get()->map(function($item){
+                $item['tanggal'] = $item->transaksi_created_at->format('Y-m-d') ?? null;
+                return $item;
+            });
 
                 foreach($range as $dates){
                     $date[] = $dates->format('d M');
                     $bersih[] = $data_bersih->where(Bersih::field_report(), $dates->format('Y-m-d'))->count();
                     $kotor[] = $data_kotor->where('tanggal', $dates->subDay(1)->format('Y-m-d'))->count();
                 }
-        }
 
 
         return $this->chart->barChart()

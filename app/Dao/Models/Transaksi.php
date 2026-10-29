@@ -60,6 +60,7 @@ class Transaksi extends Model
     protected $casts = [
         'transaksi_rfid' => 'string',
         'transaksi_status' => 'string',
+        'transaksi_created_at' => 'datetime',
     ];
 
     protected $filters = [

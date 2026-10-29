@@ -56,85 +56,113 @@ class HomeController extends Controller
         $yesterday = now()->addDay(-1)->format('Y-m-d');
 
         $rs_id = auth()->user()->rs_id;
-        if ($rs_id) {
 
-            //shortcut: register = total semua linen RS; available = yang BERSIH saja
-            $register = Detail::where(Detail::field_rs_id(), $rs_id)->count();
+        //shortcut: rs_id kosong = total semua RS; query premier yang sama, filter RS hanya bila terisi
+        $register = Detail::when($rs_id, function ($q) use ($rs_id) {
+            return $q->where(Detail::field_rs_id(), $rs_id);
+        })->count();
 
-            $pending_kotor = Pending::query()
-             ->select(['pending_rfid'])
-            ->leftJoin('rs', 'rs.rs_id', '=', 'pending.pending_id_rs')
-            ->leftJoin('ruangan', 'ruangan.ruangan_id', '=', 'pending.pending_id_ruangan')
-            ->leftJoin('jenis_linen', 'jenis_linen.jenis_id', '=', 'pending.pending_id_jenis')
-            ->leftJoin('view_detail_linen', 'view_detail_linen.view_linen_rfid', '=', 'pending.pending_rfid')
-            ->join('config_linen', function ($join) {
-                $join->on('config_linen.detail_rfid', '=', 'pending.pending_rfid') // Perbaikan penulisan detail_rfid / details_rfid
-                    ->on('config_linen.rs_id', '=', 'rs.rs_id');
-            })->whereNull('pending_bersih_at')->where('pending_id_rs', $rs_id)->where('pending_transaksi', TransactionType::KOTOR)->count();
+        //shortcut: available = linen master berstatus BERSIH saja; REGISTER tidak dihitung
+        $available = Detail::where(Detail::field_status_linen(), TransactionType::BERSIH)
+            ->when($rs_id, function ($q) use ($rs_id) {
+                return $q->where(Detail::field_rs_id(), $rs_id);
+            })
+            ->count();
 
-            $pending_reject = Pending::query()
-             ->select(['pending_rfid'])
-            ->leftJoin('rs', 'rs.rs_id', '=', 'pending.pending_id_rs')
-            ->leftJoin('ruangan', 'ruangan.ruangan_id', '=', 'pending.pending_id_ruangan')
-            ->leftJoin('jenis_linen', 'jenis_linen.jenis_id', '=', 'pending.pending_id_jenis')
-            ->leftJoin('view_detail_linen', 'view_detail_linen.view_linen_rfid', '=', 'pending.pending_rfid')
-            ->join('config_linen', function ($join) {
-                $join->on('config_linen.detail_rfid', '=', 'pending.pending_rfid') // Perbaikan penulisan detail_rfid / details_rfid
-                    ->on('config_linen.rs_id', '=', 'rs.rs_id');
-            })->whereNull('pending_bersih_at')->where('pending_id_rs', $rs_id)->where('pending_transaksi', TransactionType::REJECT)->count();
+        $pending_kotor = Pending::query()
+         ->select(['pending_rfid'])
+        ->leftJoin('rs', 'rs.rs_id', '=', 'pending.pending_id_rs')
+        ->leftJoin('ruangan', 'ruangan.ruangan_id', '=', 'pending.pending_id_ruangan')
+        ->leftJoin('jenis_linen', 'jenis_linen.jenis_id', '=', 'pending.pending_id_jenis')
+        ->leftJoin('view_detail_linen', 'view_detail_linen.view_linen_rfid', '=', 'pending.pending_rfid')
+        ->join('config_linen', function ($join) {
+            $join->on('config_linen.detail_rfid', '=', 'pending.pending_rfid') // Perbaikan penulisan detail_rfid / details_rfid
+                ->on('config_linen.rs_id', '=', 'rs.rs_id');
+        })->whereNull('pending_bersih_at')
+        ->when($rs_id, function ($q) use ($rs_id) {
+            return $q->where('pending_id_rs', $rs_id);
+        })->where('pending_transaksi', TransactionType::KOTOR)->count();
+
+        $pending_reject = Pending::query()
+         ->select(['pending_rfid'])
+        ->leftJoin('rs', 'rs.rs_id', '=', 'pending.pending_id_rs')
+        ->leftJoin('ruangan', 'ruangan.ruangan_id', '=', 'pending.pending_id_ruangan')
+        ->leftJoin('jenis_linen', 'jenis_linen.jenis_id', '=', 'pending.pending_id_jenis')
+        ->leftJoin('view_detail_linen', 'view_detail_linen.view_linen_rfid', '=', 'pending.pending_rfid')
+        ->join('config_linen', function ($join) {
+            $join->on('config_linen.detail_rfid', '=', 'pending.pending_rfid') // Perbaikan penulisan detail_rfid / details_rfid
+                ->on('config_linen.rs_id', '=', 'rs.rs_id');
+        })->whereNull('pending_bersih_at')
+        ->when($rs_id, function ($q) use ($rs_id) {
+            return $q->where('pending_id_rs', $rs_id);
+        })->where('pending_transaksi', TransactionType::REJECT)->count();
 
 
-            $pending_rewash = Pending::query()
-             ->select(['pending_rfid'])
-            ->leftJoin('rs', 'rs.rs_id', '=', 'pending.pending_id_rs')
-            ->leftJoin('ruangan', 'ruangan.ruangan_id', '=', 'pending.pending_id_ruangan')
-            ->leftJoin('jenis_linen', 'jenis_linen.jenis_id', '=', 'pending.pending_id_jenis')
-            ->leftJoin('view_detail_linen', 'view_detail_linen.view_linen_rfid', '=', 'pending.pending_rfid')
-            ->join('config_linen', function ($join) {
-                $join->on('config_linen.detail_rfid', '=', 'pending.pending_rfid') // Perbaikan penulisan detail_rfid / details_rfid
-                    ->on('config_linen.rs_id', '=', 'rs.rs_id');
-            })->whereNull('pending_bersih_at')->where('pending_id_rs', $rs_id)->where('pending_transaksi', TransactionType::REWASH)->count();
+        $pending_rewash = Pending::query()
+         ->select(['pending_rfid'])
+        ->leftJoin('rs', 'rs.rs_id', '=', 'pending.pending_id_rs')
+        ->leftJoin('ruangan', 'ruangan.ruangan_id', '=', 'pending.pending_id_ruangan')
+        ->leftJoin('jenis_linen', 'jenis_linen.jenis_id', '=', 'pending.pending_id_jenis')
+        ->leftJoin('view_detail_linen', 'view_detail_linen.view_linen_rfid', '=', 'pending.pending_rfid')
+        ->join('config_linen', function ($join) {
+            $join->on('config_linen.detail_rfid', '=', 'pending.pending_rfid') // Perbaikan penulisan detail_rfid / details_rfid
+                ->on('config_linen.rs_id', '=', 'rs.rs_id');
+        })->whereNull('pending_bersih_at')
+        ->when($rs_id, function ($q) use ($rs_id) {
+            return $q->where('pending_id_rs', $rs_id);
+        })->where('pending_transaksi', TransactionType::REWASH)->count();
 
-            $bersih = Bersih::where(Bersih::field_rs_id(), $rs_id)
-                ->where(Bersih::field_report(), $date)
-                ->where(Bersih::field_status(), TransactionType::BERSIH)
-                ->count();
+        $bersih = Bersih::where(Bersih::field_report(), $date)
+            ->where(Bersih::field_status(), TransactionType::BERSIH)
+            ->when($rs_id, function ($q) use ($rs_id) {
+                return $q->where(Bersih::field_rs_id(), $rs_id);
+            })
+            ->count();
 
-            $kotor = Transaksi::where(Transaksi::field_rs_ori(), $rs_id)
-                ->whereDate(Transaksi::field_created_at(), $date)
-                ->where(Transaksi::field_status_transaction(), TransactionType::KOTOR)
-                ->count();
+        //shortcut: scan linen belum register simpan rs_ori NULL (hanya rs_scan); tetap hitung di RS yang scan
+        $rsScope = function ($q) use ($rs_id) {
+            return $q->where(function ($qq) use ($rs_id) {
+                $qq->where(Transaksi::field_rs_ori(), $rs_id)
+                    ->orWhere(function ($qqq) use ($rs_id) {
+                        $qqq->whereNull(Transaksi::field_rs_ori())
+                            ->where(Transaksi::field_rs_scan(), $rs_id);
+                    });
+            });
+        };
 
-            $kemarin = Transaksi::where(Transaksi::field_rs_ori(), $rs_id)
-                ->whereDate(Transaksi::field_created_at(), $yesterday)
-                ->where(Transaksi::field_status_transaction(), TransactionType::KOTOR)
-                ->count();
+        $kotor = Transaksi::whereDate(Transaksi::field_created_at(), $date)
+            ->where(Transaksi::field_status_transaction(), TransactionType::KOTOR)
+            ->when($rs_id, $rsScope)
+            ->count();
 
-            $reject = Transaksi::where(Transaksi::field_rs_ori(), $rs_id)
-                ->whereDate(Transaksi::field_created_at(), $date)
-                ->where(Transaksi::field_status_transaction(), TransactionType::REJECT)
-                ->count();
+        $kemarin = Transaksi::whereDate(Transaksi::field_created_at(), $yesterday)
+            ->where(Transaksi::field_status_transaction(), TransactionType::KOTOR)
+            ->when($rs_id, $rsScope)
+            ->count();
 
-            $rewash = Transaksi::where(Transaksi::field_rs_ori(), $rs_id)
-                ->whereDate(Transaksi::field_created_at(), $date)
-                ->where(Transaksi::field_status_transaction(), TransactionType::REWASH)
-                ->count();
+        $reject = Transaksi::whereDate(Transaksi::field_created_at(), $date)
+            ->where(Transaksi::field_status_transaction(), TransactionType::REJECT)
+            ->when($rs_id, $rsScope)
+            ->count();
 
-            $pending = Outstanding::where(Outstanding::field_status_hilang(), HilangType::PENDING)
-                ->where(Outstanding::field_rs_scan(), $rs_id)
-                ->joinRelationship('has_rfid')
-                ->count();
+        $rewash = Transaksi::whereDate(Transaksi::field_created_at(), $date)
+            ->where(Transaksi::field_status_transaction(), TransactionType::REWASH)
+            ->when($rs_id, $rsScope)
+            ->count();
 
-            $hilang = Outstanding::where(Outstanding::field_status_hilang(), HilangType::HILANG)
-                ->where(Outstanding::field_rs_scan(), $rs_id)
-                ->joinRelationship('has_rfid')
-                ->count();
+        $pending = Outstanding::where(Outstanding::field_status_hilang(), HilangType::PENDING)
+            ->when($rs_id, function ($q) use ($rs_id) {
+                return $q->where(Outstanding::field_rs_scan(), $rs_id);
+            })
+            ->joinRelationship('has_rfid')
+            ->count();
 
-            //shortcut: available = linen master berstatus BERSIH saja; REGISTER tidak dihitung (menyimpang dari rumus premier register-minus-out)
-            $available = Detail::where(Detail::field_rs_id(), $rs_id)
-                ->where(Detail::field_status_linen(), TransactionType::BERSIH)
-                ->count();
-        }
+        $hilang = Outstanding::where(Outstanding::field_status_hilang(), HilangType::HILANG)
+            ->when($rs_id, function ($q) use ($rs_id) {
+                return $q->where(Outstanding::field_rs_scan(), $rs_id);
+            })
+            ->joinRelationship('has_rfid')
+            ->count();
 
         return view('pages.home.home', [
             'available' => $available,
