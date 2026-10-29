@@ -5,7 +5,7 @@ namespace App\Charts;
 use App\Dao\Enums\TransactionType;
 use App\Dao\Models\ViewDetailLinen;
 use ArielMejiaDev\LarapexCharts\LarapexChart;
-use Illuminate\Support\Carbon;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class DashboardKotorHarian
@@ -21,27 +21,28 @@ class DashboardKotorHarian
     {
         $ruangan = $total = [];
         $rs_id = auth()->user()->rs_id;
-
-        $data_detail = ViewDetailLinen::select([ViewDetailLinen::field_rs_name(), DB::raw('count(view_linen_rfid) as total')])
-                ->where(ViewDetailLinen::field_status_process(), TransactionType::BERSIH)
-                ->groupBy(ViewDetailLinen::field_rs_name())
-                ->orderBy(ViewDetailLinen::field_rs_name());
+        $tanggal = now()->subDay(1)->format('Y-m-d');
 
         if ($rs_id) {
+            $data_bersih = DB::table('view_rekap_kotor')
+            ->select(['view_ruangan_nama', DB::raw('sum(view_qty) as total')])
+                ->where('view_rs_id', $rs_id)
+                ->where('view_tanggal', $tanggal)
+                ->where('view_status', TransactionType::KOTOR)
+                ->groupBy('view_ruangan_id', 'view_rs_id')
+                ->orderBy('view_ruangan_nama')
+                ->get();
 
-            $data_detail = $data_detail->where(ViewDetailLinen::field_rs_id(), $rs_id);
+            $ruangan = $data_bersih->pluck('view_ruangan_nama')->toArray();
+            $data_total = $data_bersih->pluck('total')->toArray();
 
+            $total = array_map('intval', $data_total);
         }
 
-        $rs = $data_detail->pluck('view_rs_nama')->toArray();
-        $total = $data_detail->pluck('total')->toArray();
-
         return $this->chart->donutChart()
-            ->setSubtitle('Tanggal '.Carbon::now()->format('d-M-Y'))
-            // ->setXAxis($rs)
-            // ->addData('Sebaran Linen per Ruangan', $total)
-            ->setLabels($rs)
+            ->setSubtitle('Tanggal '.formatDate($tanggal))
+            ->setLabels($ruangan)
             ->addData($total)
-            ->setTitle('Sebaran Linen Bersih di Seluruh Rumah Sakit');
+            ->setTitle('Sebaran Linen Kotor');
     }
 }

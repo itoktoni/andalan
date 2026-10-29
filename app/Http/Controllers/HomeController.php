@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Alkhachatryan\LaravelWebConsole\LaravelWebConsole;
 use App\Charts\DashboardBersihHarian;
+use App\Charts\DashboardBersihVsKotor;
 use App\Charts\DashboardKotorHarian;
 use App\Dao\Enums\HilangType;
 use App\Dao\Enums\TransactionType;
@@ -11,7 +12,7 @@ use App\Dao\Models\Bersih;
 use App\Dao\Models\Outstanding;
 use App\Dao\Models\Pending;
 use App\Dao\Models\Transaksi;
-use App\Dao\Models\ViewOutstandingHilang;
+use App\Dao\Models\ViewDetailLinen;
 
 class HomeController extends Controller
 {
@@ -32,12 +33,8 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index(DashboardKotorHarian $sebaran, DashboardBersihHarian $perbandingan)
+    public function index(DashboardKotorHarian $dkotor, DashboardBersihHarian $dbersih, DashboardBersihVsKotor $dperbandingan)
     {
-        if (auth()->check() && auth()->user()->active == false) {
-            return redirect()->route('login');
-        }
-
         if (auth()->check() && auth()->user()->active == false) {
             return redirect()->route('login');
         }
@@ -46,35 +43,24 @@ class HomeController extends Controller
         $kotor = 0;
         $reject = 0;
         $rewash = 0;
+        $register = 0;
+        $pending_kotor = 0;
+        $pending_reject = 0;
+        $pending_rewash = 0;
+        $available = 0;
+        $pending = 0;
+        $hilang = 0;
+        $kemarin = 0;
 
         $date = date('Y-m-d');
+        $yesterday = now()->addDay(-1)->format('Y-m-d');
 
         $rs_id = auth()->user()->rs_id;
+        if ($rs_id) {
 
-        $bersih = Bersih::select(Bersih::field_rfid())
-            ->where(Bersih::field_report(), $date)
-            ->where(Bersih::field_status(), TransactionType::BERSIH);
+            $register = ViewDetailLinen::where('view_rs_id', $rs_id)->count();
 
-        $transaksi = Transaksi::select(Transaksi::field_rfid())
-            ->whereDate(Transaksi::field_created_at(), $date);
-
-            $reject = clone $transaksi;
-            $rewash = clone $transaksi;
-
-        if (!empty($rs_id))
-        {
-            $bersih = $bersih->where(Bersih::field_rs_id(), $rs_id);
-            $transaksi = $transaksi->where(Transaksi::field_rs_ori(), $rs_id);
-        }
-
-        $kotor = $transaksi->where(Transaksi::field_status_transaction(), TransactionType::KOTOR)
-            ->whereNotNull(Transaksi::field_rs_ori());
-        $reject = $reject->where(Transaksi::field_status_transaction(), TransactionType::REJECT)
-            ->whereNotNull(Transaksi::field_rs_ori());
-        $rewash = $rewash->where(Transaksi::field_status_transaction(), TransactionType::REWASH)
-            ->whereNotNull(Transaksi::field_rs_ori());
-
-        $pending = Pending::query()
+            $pending_kotor = Pending::query()
              ->select(['pending_rfid'])
             ->leftJoin('rs', 'rs.rs_id', '=', 'pending.pending_id_rs')
             ->leftJoin('ruangan', 'ruangan.ruangan_id', '=', 'pending.pending_id_ruangan')
@@ -83,19 +69,85 @@ class HomeController extends Controller
             ->join('config_linen', function ($join) {
                 $join->on('config_linen.detail_rfid', '=', 'pending.pending_rfid') // Perbaikan penulisan detail_rfid / details_rfid
                     ->on('config_linen.rs_id', '=', 'rs.rs_id');
-            })->whereNull('pending_bersih_at');
+            })->whereNull('pending_bersih_at')->where('pending_id_rs', $rs_id)->where('pending_transaksi', TransactionType::KOTOR)->count();
 
-        // $hilang = ViewOutstandingHilang::where(Outstanding::field_status_hilang(), HilangType::HILANG);
+            $pending_reject = Pending::query()
+             ->select(['pending_rfid'])
+            ->leftJoin('rs', 'rs.rs_id', '=', 'pending.pending_id_rs')
+            ->leftJoin('ruangan', 'ruangan.ruangan_id', '=', 'pending.pending_id_ruangan')
+            ->leftJoin('jenis_linen', 'jenis_linen.jenis_id', '=', 'pending.pending_id_jenis')
+            ->leftJoin('view_detail_linen', 'view_detail_linen.view_linen_rfid', '=', 'pending.pending_rfid')
+            ->join('config_linen', function ($join) {
+                $join->on('config_linen.detail_rfid', '=', 'pending.pending_rfid') // Perbaikan penulisan detail_rfid / details_rfid
+                    ->on('config_linen.rs_id', '=', 'rs.rs_id');
+            })->whereNull('pending_bersih_at')->where('pending_id_rs', $rs_id)->where('pending_transaksi', TransactionType::REJECT)->count();
+
+
+            $pending_rewash = Pending::query()
+             ->select(['pending_rfid'])
+            ->leftJoin('rs', 'rs.rs_id', '=', 'pending.pending_id_rs')
+            ->leftJoin('ruangan', 'ruangan.ruangan_id', '=', 'pending.pending_id_ruangan')
+            ->leftJoin('jenis_linen', 'jenis_linen.jenis_id', '=', 'pending.pending_id_jenis')
+            ->leftJoin('view_detail_linen', 'view_detail_linen.view_linen_rfid', '=', 'pending.pending_rfid')
+            ->join('config_linen', function ($join) {
+                $join->on('config_linen.detail_rfid', '=', 'pending.pending_rfid') // Perbaikan penulisan detail_rfid / details_rfid
+                    ->on('config_linen.rs_id', '=', 'rs.rs_id');
+            })->whereNull('pending_bersih_at')->where('pending_id_rs', $rs_id)->where('pending_transaksi', TransactionType::REWASH)->count();
+
+            $bersih = Bersih::where(Bersih::field_rs_id(), $rs_id)
+                ->where(Bersih::field_report(), $date)
+                ->where(Bersih::field_status(), TransactionType::BERSIH)
+                ->count();
+
+            $kotor = Transaksi::where(Transaksi::field_rs_ori(), $rs_id)
+                ->whereDate(Transaksi::field_created_at(), $date)
+                ->where(Transaksi::field_status_transaction(), TransactionType::KOTOR)
+                ->count();
+
+            $kemarin = Transaksi::where(Transaksi::field_rs_ori(), $rs_id)
+                ->whereDate(Transaksi::field_created_at(), $yesterday)
+                ->where(Transaksi::field_status_transaction(), TransactionType::KOTOR)
+                ->count();
+
+            $reject = Transaksi::where(Transaksi::field_rs_ori(), $rs_id)
+                ->whereDate(Transaksi::field_created_at(), $date)
+                ->where(Transaksi::field_status_transaction(), TransactionType::REJECT)
+                ->count();
+
+            $rewash = Transaksi::where(Transaksi::field_rs_ori(), $rs_id)
+                ->whereDate(Transaksi::field_created_at(), $date)
+                ->where(Transaksi::field_status_transaction(), TransactionType::REWASH)
+                ->count();
+
+            $pending = Outstanding::where(Outstanding::field_status_hilang(), HilangType::PENDING)
+                ->where(Outstanding::field_rs_scan(), $rs_id)
+                ->joinRelationship('has_rfid')
+                ->count();
+
+            $hilang = Outstanding::where(Outstanding::field_status_hilang(), HilangType::HILANG)
+                ->where(Outstanding::field_rs_scan(), $rs_id)
+                ->joinRelationship('has_rfid')
+                ->count();
+
+            $available = $register - ($kotor + $reject + $rewash + $pending_kotor + $pending_reject + $pending_rewash);
+        }
 
         return view('pages.home.home', [
-            'sebaran' => $sebaran->build(),
-            'perbandingan' => $perbandingan->build(),
-            'kotor' => $kotor->count(),
-            'bersih' => $bersih->count(),
-            'reject' => $reject->count(),
-            'rewash' => $rewash->count(),
-            // 'hilang' => 0,
-            'pending' => $pending->count() ,
+            'available' => $available,
+            'dbersih' => $dbersih->build(),
+            'dkotor' => $dkotor->build(),
+            'dperbandingan' => $dperbandingan->build(),
+            'kotor' => $kotor,
+            'bersih' => $bersih,
+            'reject' => $reject,
+            'pending' => $pending,
+            'hilang' => $hilang,
+            'register' => $register,
+            'kemarin' => $kemarin,
+            'rewash' => $rewash,
+            'pending_kotor' => $pending_kotor,
+            'pending_reject' => $pending_reject,
+            'pending_rewash' => $pending_rewash,
         ]);
     }
 

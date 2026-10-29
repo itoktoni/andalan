@@ -36,7 +36,7 @@
 	</tr>
 </table>
 <div class="table-responsive" id="table_data">
-	<table id="export" border="1" style="border-collapse: collapse !important; border-spacing: 0 !important;"
+	<table id="export" border="1" style="border-collapse: collapse !important; border-spacing: 0 !important; text-align: center;"
 		class="table table-bordered table-striped table-responsive-stack">
 		<thead>
             <tr>
