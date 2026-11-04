@@ -27,7 +27,12 @@ class UpdateDetailService
 
             $data = $request->all();
             $oldRfid = $code;
-            $newRfid = $data[Detail::field_primary()] ?? $code;
+            $newRfid = trim($data[Detail::field_primary()] ?? '');
+            if ($newRfid === '') {
+                DB::rollBack();
+                Alert::error('RFID Baru wajib diisi');
+                return Notes::error('RFID Baru wajib diisi');
+            }
             $check = $repository->updateRepository($data, $code);
 
             if ($newRfid !== $oldRfid) {
