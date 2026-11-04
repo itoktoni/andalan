@@ -14,11 +14,11 @@
 
             <div class="form-group col-md-6 ">
                 <label>RFID Baru</label>
-                <input type="text" class="form-control" value="{{ old('detail_rfid') ?? $model->detail_rfid ?? null }}" name="detail_rfid">
+                <input type="text" class="form-control" value="{{ old('detail_rfid') ?? null }}" name="detail_rfid" placeholder="Scan / ketik RFID baru" {{ $model ? 'autofocus required' : '' }}>
             </div>
             <div class="form-group col-md-6 ">
                 <label>RFID Lama</label>
-                <input type="text" class="form-control" value="{{ old('rfid_lama') ?? null }}" name="rfid_lama">
+                <input type="text" class="form-control" value="{{ old('rfid_lama') ?? $model->detail_rfid ?? null }}" name="rfid_lama" readonly>
             </div>
 
             @endbind
