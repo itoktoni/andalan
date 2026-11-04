@@ -27,12 +27,10 @@ class UpdateDetailService
 
             $data = $request->all();
             $oldRfid = $code;
-            $newRfid = trim($data[Detail::field_primary()] ?? '');
-            if ($newRfid === '') {
-                DB::rollBack();
-                Alert::error('RFID Baru wajib diisi');
-                return Notes::error('RFID Baru wajib diisi');
-            }
+            // rfid_baru opsional: kosong = tidak ganti RFID, hanya update field lain
+            $rawBaru = trim($data['rfid_baru'] ?? '');
+            $newRfid = $rawBaru !== '' ? $rawBaru : $oldRfid;
+            $data[Detail::field_primary()] = $newRfid;
             $check = $repository->updateRepository($data, $code);
 
             if ($newRfid !== $oldRfid) {
@@ -100,7 +98,7 @@ class UpdateDetailService
 
             if ($th instanceof QueryException)
             {
-                Alert::error("No RFID yang di input (" . request()->get('detail_rfid').") Tidak boleh Duplikat di database !");
+                Alert::error("No RFID yang di input (" . (request()->get('rfid_baru') ?: request()->get('detail_rfid')).") Tidak boleh Duplikat di database !");
             }
             else
             {
