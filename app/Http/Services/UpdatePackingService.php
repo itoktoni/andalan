@@ -29,7 +29,21 @@ class UpdatePackingService
 
         DB::beginTransaction();
         try {
-            Bersih::insert($data->bersih);
+            // Guard: jangan insert RFID yang sudah ada di bersih dengan delivery kosong.
+            // Validasi di PackingRequest sudah menolak, ini pengaman bila service dipanggil langsung.
+            $existing = Bersih::whereIn(Bersih::field_rfid(), $data->rfid)
+                ->whereNull(Bersih::field_delivery())
+                ->pluck(Bersih::field_rfid())
+                ->all();
+
+            $bersih = collect($data->bersih)
+                ->reject(fn ($row) => in_array($row[Bersih::field_rfid()], $existing))
+                ->values()
+                ->all();
+
+            if (count($bersih) > 0) {
+                Bersih::insert($bersih);
+            }
 
             Outstanding::whereIn(Outstanding::field_primary(), $data->rfid)
                 ->update([

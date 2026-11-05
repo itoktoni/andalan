@@ -92,6 +92,25 @@ class PackingRequest extends FormRequest
             return;
         }
 
+        // CASE KETIKA RFID SUDAH ADA DI BERSIH DENGAN DELIVERY KOSONG
+        // Mencegah duplikat: packing -> grouping -> packing lagi menghasilkan 2 baris RFID sama
+        if (is_array($this->rfid) && count($this->rfid) > 0) {
+            $sudah_packing = Bersih::whereIn(Bersih::field_rfid(), $this->rfid)
+                ->whereNull(Bersih::field_delivery())
+                ->pluck(Bersih::field_rfid())
+                ->toArray();
+
+            $validator->after(function ($validator) use ($sudah_packing) {
+                if (count($sudah_packing) > 0) {
+                    $validator->errors()->add('rfid', 'RFID sudah di packing ('.implode(', ', $sudah_packing).') !');
+                }
+            });
+
+            if (count($sudah_packing) > 0) {
+                return;
+            }
+        }
+
         // CASE YANG DIBARCODE LEBIH DARI YANG DITENTUKAN
         $validator->after(function ($validator) use ($total) {
             $maksimal = env('TRANSACTION_BARCODE_MAXIMAL', 10);
