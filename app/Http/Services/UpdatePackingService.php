@@ -29,6 +29,14 @@ class UpdatePackingService
 
         DB::beginTransaction();
         try {
+            $exists = Bersih::whereIn(Bersih::field_rfid(), $data->rfid)
+                ->whereNull(Bersih::field_delivery())
+                ->exists();
+
+            if ($exists) {
+                throw new \Exception('RFID sudah di packing dan belum delivery !');
+            }
+
             Bersih::insert($data->bersih);
 
             Outstanding::whereIn(Outstanding::field_primary(), $data->rfid)

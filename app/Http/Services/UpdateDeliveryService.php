@@ -38,7 +38,7 @@ class UpdateDeliveryService
             $report_date = Carbon::now();
 
             if ($check_date) {
-                $report_date = Carbon::now()->addDay(1);
+                $report_date = Carbon::now()->addDay();
             }
 
             $transaksi = $data->status_transaksi;

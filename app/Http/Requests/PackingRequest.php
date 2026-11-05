@@ -93,6 +93,22 @@ class PackingRequest extends FormRequest
             return;
         }
 
+        // CASE KETIKA RFID MASIH NYANGKUT DI BERSIH (DELIVERY MASIH KOSONG)
+
+        $check_pending = Bersih::whereIn(Bersih::field_rfid(), $this->rfid)
+            ->whereNull(Bersih::field_delivery())
+            ->count();
+
+        $validator->after(function ($validator) use ($check_pending) {
+            if ($check_pending > 0) {
+                $validator->errors()->add('rfid', 'RFID sudah di packing dan belum delivery !');
+            }
+        });
+
+        if ($check_pending > 0) {
+            return;
+        }
+
         // CASE YANG DIBARCODE LEBIH DARI YANG DITENTUKAN
         $validator->after(function ($validator) use ($total) {
             $maksimal = env('TRANSACTION_BARCODE_MAXIMAL', 10);
