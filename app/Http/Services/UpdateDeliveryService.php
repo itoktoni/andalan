@@ -31,14 +31,16 @@ class UpdateDeliveryService
         try {
 
             $passing = $return = [];
-            $startDate = Carbon::createFromFormat('Y-m-d H:i', date('Y-m-d').' 13:00');
-            $endDate = Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d').' 23:59:59');
+            // Cut-off operasional jam 13:00:
+            // - 13:00:00 - 23:59:59 => report besok (next day)
+            // - 00:00:00 - 02:00:00 => report hari ini (ini adalah "next day" dari shift sore kemarin)
+            // - 02:00:01 - 12:59:59 => report hari ini juga
+            // Singkatnya: >= 13:00 => +1 hari, < 13:00 => hari ini.
+            $now = Carbon::now();
+            $report_date = $now->copy();
 
-            $check_date = Carbon::now()->between($startDate, $endDate);
-            $report_date = Carbon::now();
-
-            if ($check_date) {
-                $report_date = Carbon::now()->addDay();
+            if ($now->format('H:i:s') >= '13:00:00') {
+                $report_date = $now->copy()->addDay();
             }
 
             $transaksi = $data->status_transaksi;

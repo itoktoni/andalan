@@ -590,6 +590,17 @@ Route::middleware(['auth:sanctum'])->group(function () {
             $date = date('Y-m-d H:i:s');
             $user = auth()->user()->id;
 
+            // Tanggal operasional untuk tabel transaksi:
+            // 00:00:00 - 02:00:00 => H-1 (misal sekarang tgl 2 jam 01:00 => transaksi_created_at tgl 1)
+            // selain itu => hari ini
+            $nowTransaksi = Carbon::now();
+            $transaksiDate = $nowTransaksi->copy();
+            if ($nowTransaksi->format('H:i:s') >= '00:00:00' && $nowTransaksi->format('H:i:s') <= '02:00:00') {
+                $transaksiDate->subDay();
+            }
+            $transaksi_created_at = $transaksiDate->format('Y-m-d H:i:s');
+            $transaksi_today = $transaksiDate->format('Y-m-d');
+
             DB::beginTransaction();
 
             $detail = Detail::with([HAS_OUTSTANDING, HAS_VIEW])->findOrFail($rfid);
@@ -614,7 +625,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
             else if($detail->field_status_linen == TransactionType::REWASH){
                 $code = env('CODE_REWASH', 'WSH');
             }
-            $autoNumber = Query::autoNumber(Outstanding::getTableName(), Outstanding::field_key(), $code . date('ymd'), env('AUTO_NUMBER', 15));
+            $autoNumber = Query::autoNumber(Outstanding::getTableName(), Outstanding::field_key(), $code . $transaksiDate->format('ymd'), env('AUTO_NUMBER', 15));
 
             // CHECK OUTSTANDING DATA
             $data_outstanding = [
@@ -663,6 +674,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                             Transaksi::field_beda_rs() => BedaRsType::NO,
                             Transaksi::field_ruangan_id() => $detail->detail_id_ruangan,
                             Transaksi::field_status_transaction() => $transaksi_status,
+                            Transaksi::field_created_at() => $transaksi_created_at,
                             Transaksi::field_created_by() => $user,
                             Transaksi::field_updated_at() => $date,
                             Transaksi::field_updated_by() => $user,
@@ -672,7 +684,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                         // CHECK TRANSACTION DATA IF NOT PRESENT
 
                         $transaksi = Transaksi::where(Transaksi::field_rfid(), $rfid)
-                            ->whereDate(Transaksi::field_created_at(), date('Y-m-d'))
+                            ->whereDate(Transaksi::field_created_at(), $transaksi_today)
                             ->count();
 
                         if($transaksi == 0)
@@ -694,7 +706,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
                                 Transaksi::field_beda_rs() => BedaRsType::NO,
                                 Transaksi::field_ruangan_id() => $detail->detail_id_ruangan,
                                 Transaksi::field_status_transaction() => TransactionType::KOTOR,
-                                Transaksi::field_created_at() => $date,
+                                Transaksi::field_created_at() => $transaksi_created_at,
                                 Transaksi::field_created_by() => $user,
                                 Transaksi::field_updated_at() => $date,
                                 Transaksi::field_updated_by() => $user,
