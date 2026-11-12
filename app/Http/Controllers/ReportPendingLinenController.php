@@ -58,6 +58,7 @@ class ReportPendingLinenController extends MinimalController
                 $join->on('config_linen.detail_rfid', '=', 'pending.pending_rfid') // Perbaikan penulisan detail_rfid / details_rfid
                     ->on('config_linen.rs_id', '=', 'rs.rs_id');
             })
+            ->whereNotNull('view_detail_linen.view_linen_rfid')
             ->select([
                 'pending.*',
                 'rs.rs_nama',
