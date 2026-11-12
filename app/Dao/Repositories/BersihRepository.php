@@ -18,6 +18,7 @@ class BersihRepository extends MasterRepository implements CrudInterface
     public function dataRepository()
     {
         $query = ViewBersih::query()
+            ->whereHas(HAS_DETAIL)
             ->sortable()->filter();
 
         if (request()->hasHeader('authorization')) {
@@ -41,6 +42,7 @@ class BersihRepository extends MasterRepository implements CrudInterface
     public function getReport()
     {
         return ViewBersih::query()
+            ->whereHas(HAS_DETAIL)
             ->orderBy(JenisLinen::field_name(), 'ASC')
             ->filter();
     }

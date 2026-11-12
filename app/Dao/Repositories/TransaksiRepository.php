@@ -2,6 +2,7 @@
 
 namespace App\Dao\Repositories;
 
+use App\Dao\Enums\BedaRsType;
 use App\Dao\Enums\TransactionType;
 use App\Dao\Interfaces\CrudInterface;
 use App\Dao\Models\Rs;
@@ -40,6 +41,7 @@ class TransaksiRepository extends MasterRepository implements CrudInterface
     {
         $query = $this->model
             ->select($this->model->getSelectedField())
+            ->whereHas(HAS_RFID)
             ->sortable()->filter();
 
         return $this->filterRepository($query);
@@ -59,6 +61,11 @@ class TransaksiRepository extends MasterRepository implements CrudInterface
     public function getTransactionDetail()
     {
         return Transaksi::query()
+            ->whereHas(HAS_RFID)
+            ->where(function ($query) {
+                $query->where(Transaksi::field_beda_rs(), '!=', BedaRsType::NOT_REGISTERED)
+                    ->orWhereNull(Transaksi::field_beda_rs());
+            })
             ->addSelect(['*', 'ori.rs_id as rs_ori_id', 'ori.rs_nama as rs_ori_nama', 'scan.rs_id as rs_scan_id', 'scan.rs_nama as rs_scan_nama'])
             ->leftJoinRelationship(HAS_RUANGAN)
             ->leftJoinRelationship(HAS_DETAIL)

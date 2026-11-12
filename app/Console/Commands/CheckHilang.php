@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Dao\Enums\HilangType;
+use App\Dao\Enums\BedaRsType;
 use App\Dao\Enums\LogType;
 use App\Dao\Enums\ProcessType;
 use App\Dao\Models\Outstanding;
@@ -48,6 +49,11 @@ class CheckHilang extends Command
 
         $outstanding = Outstanding::query()
             ->select(Outstanding::field_primary())
+            ->whereHas('has_rfid')
+            ->where(function ($q) {
+                $q->where(Outstanding::field_status_beda_rs(), '!=', BedaRsType::NOT_REGISTERED)
+                    ->orWhereNull(Outstanding::field_status_beda_rs());
+            })
             ->whereDate(Outstanding::field_updated_at(), '<=', Carbon::now()->subMinutes(4320)->toDateString())
             ->where(Outstanding::field_status_hilang(), '!=', HilangType::HILANG)
             ->get();

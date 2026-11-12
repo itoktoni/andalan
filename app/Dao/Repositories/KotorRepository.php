@@ -2,6 +2,7 @@
 
 namespace App\Dao\Repositories;
 
+use App\Dao\Enums\BedaRsType;
 use App\Dao\Interfaces\CrudInterface;
 use App\Dao\Models\Kotor;
 use App\Dao\Models\Transaksi;
@@ -18,6 +19,11 @@ class KotorRepository extends MasterRepository implements CrudInterface
     {
         $query = $this->model
             ->select($this->model->getSelectedField())
+            ->whereHas(HAS_RFID)
+            ->where(function ($q) {
+                $q->where(Transaksi::field_beda_rs(), '!=', BedaRsType::NOT_REGISTERED)
+                    ->orWhereNull(Transaksi::field_beda_rs());
+            })
             ->leftJoinRelationship('has_rs')
             ->sortable()->filter();
 

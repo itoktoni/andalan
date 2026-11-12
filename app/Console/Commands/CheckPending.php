@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Dao\Enums\HilangType;
+use App\Dao\Enums\BedaRsType;
 use App\Dao\Enums\LogType;
 use App\Dao\Enums\ProcessType;
 use App\Dao\Enums\TransactionType;
@@ -51,6 +52,11 @@ class CheckPending extends Command
         $outstanding = Outstanding::query()
             ->select(Outstanding::getTableName().'.*', 'detail_id_jenis')
             ->leftJoinRelationship('has_rfid')
+            ->whereHas('has_rfid')
+            ->where(function ($q) {
+                $q->where(Outstanding::field_status_beda_rs(), '!=', BedaRsType::NOT_REGISTERED)
+                    ->orWhereNull(Outstanding::field_status_beda_rs());
+            })
             ->whereNotNull('outstanding_rs_ori')
             ->whereDate(Outstanding::field_updated_at(), '<=', Carbon::now()->subMinutes(1440)->toDateString())
             // ->whereDate(Outstanding::field_updated_at(), '<', Carbon::now()->toDateString())

@@ -7,6 +7,7 @@ use App\Charts\DashboardBersihHarian;
 use App\Charts\DashboardBersihVsKotor;
 use App\Charts\DashboardKotorHarian;
 use App\Dao\Enums\HilangType;
+use App\Dao\Enums\BedaRsType;
 use App\Dao\Enums\TransactionType;
 use App\Dao\Models\Bersih;
 use App\Dao\Models\Detail;
@@ -78,7 +79,7 @@ class HomeController extends Controller
         ->join('config_linen', function ($join) {
             $join->on('config_linen.detail_rfid', '=', 'pending.pending_rfid') // Perbaikan penulisan detail_rfid / details_rfid
                 ->on('config_linen.rs_id', '=', 'rs.rs_id');
-        })->whereNull('pending_bersih_at')
+        })->whereNotNull('view_detail_linen.view_linen_rfid')->whereNull('pending_bersih_at')
         ->when($rs_id, function ($q) use ($rs_id) {
             return $q->where('pending_id_rs', $rs_id);
         })->where('pending_transaksi', TransactionType::KOTOR)->count();
@@ -92,7 +93,7 @@ class HomeController extends Controller
         ->join('config_linen', function ($join) {
             $join->on('config_linen.detail_rfid', '=', 'pending.pending_rfid') // Perbaikan penulisan detail_rfid / details_rfid
                 ->on('config_linen.rs_id', '=', 'rs.rs_id');
-        })->whereNull('pending_bersih_at')
+        })->whereNotNull('view_detail_linen.view_linen_rfid')->whereNull('pending_bersih_at')
         ->when($rs_id, function ($q) use ($rs_id) {
             return $q->where('pending_id_rs', $rs_id);
         })->where('pending_transaksi', TransactionType::REJECT)->count();
@@ -107,13 +108,14 @@ class HomeController extends Controller
         ->join('config_linen', function ($join) {
             $join->on('config_linen.detail_rfid', '=', 'pending.pending_rfid') // Perbaikan penulisan detail_rfid / details_rfid
                 ->on('config_linen.rs_id', '=', 'rs.rs_id');
-        })->whereNull('pending_bersih_at')
+        })->whereNotNull('view_detail_linen.view_linen_rfid')->whereNull('pending_bersih_at')
         ->when($rs_id, function ($q) use ($rs_id) {
             return $q->where('pending_id_rs', $rs_id);
         })->where('pending_transaksi', TransactionType::REWASH)->count();
 
         $bersih = Bersih::where(Bersih::field_report(), $date)
             ->where(Bersih::field_status(), TransactionType::BERSIH)
+            ->whereHas(HAS_DETAIL)
             ->when($rs_id, function ($q) use ($rs_id) {
                 return $q->where(Bersih::field_rs_id(), $rs_id);
             })
@@ -130,27 +132,45 @@ class HomeController extends Controller
             });
         };
 
+        //shortcut: hanya linen ter-register (ada di master detail, bukan NOT_REGISTER);
+        //cabang rs_ori NULL dipertahankan agar linen FREE tetap terhitung
+        $onlyRegistered = function ($q) {
+            return $q->whereHas(HAS_RFID)
+                ->where(function ($qq) {
+                    $qq->where(Transaksi::field_beda_rs(), '!=', BedaRsType::NOT_REGISTERED)
+                        ->orWhereNull(Transaksi::field_beda_rs());
+                });
+        };
+
         $kotor = Transaksi::whereDate(Transaksi::field_created_at(), $date)
             ->where(Transaksi::field_status_transaction(), TransactionType::KOTOR)
+            ->tap($onlyRegistered)
             ->when($rs_id, $rsScope)
             ->count();
 
         $kemarin = Transaksi::whereDate(Transaksi::field_created_at(), $yesterday)
             ->where(Transaksi::field_status_transaction(), TransactionType::KOTOR)
+            ->tap($onlyRegistered)
             ->when($rs_id, $rsScope)
             ->count();
 
         $reject = Transaksi::whereDate(Transaksi::field_created_at(), $date)
             ->where(Transaksi::field_status_transaction(), TransactionType::REJECT)
+            ->tap($onlyRegistered)
             ->when($rs_id, $rsScope)
             ->count();
 
         $rewash = Transaksi::whereDate(Transaksi::field_created_at(), $date)
             ->where(Transaksi::field_status_transaction(), TransactionType::REWASH)
+            ->tap($onlyRegistered)
             ->when($rs_id, $rsScope)
             ->count();
 
         $pending = Outstanding::where(Outstanding::field_status_hilang(), HilangType::PENDING)
+            ->where(function ($q) {
+                $q->where(Outstanding::field_status_beda_rs(), '!=', BedaRsType::NOT_REGISTERED)
+                    ->orWhereNull(Outstanding::field_status_beda_rs());
+            })
             ->when($rs_id, function ($q) use ($rs_id) {
                 return $q->where(Outstanding::field_rs_scan(), $rs_id);
             })
@@ -158,6 +178,10 @@ class HomeController extends Controller
             ->count();
 
         $hilang = Outstanding::where(Outstanding::field_status_hilang(), HilangType::HILANG)
+            ->where(function ($q) {
+                $q->where(Outstanding::field_status_beda_rs(), '!=', BedaRsType::NOT_REGISTERED)
+                    ->orWhereNull(Outstanding::field_status_beda_rs());
+            })
             ->when($rs_id, function ($q) use ($rs_id) {
                 return $q->where(Outstanding::field_rs_scan(), $rs_id);
             })

@@ -3,6 +3,7 @@
 namespace App\Charts;
 
 use App\Dao\Enums\TransactionType;
+use App\Dao\Enums\BedaRsType;
 use App\Dao\Models\Bersih;
 use App\Dao\Models\Transaksi;
 use ArielMejiaDev\LarapexCharts\LarapexChart;
@@ -36,6 +37,7 @@ class DashboardBersihVsKotor
         $data_bersih = Bersih::where(Bersih::field_report(), '>=', $start_date->format('Y-m-d'))
             ->where(Bersih::field_report(), '<=', $end_date->format('Y-m-d'))
             ->where(Bersih::field_status(), TransactionType::BERSIH)
+            ->whereHas(HAS_DETAIL)
             ->when($rs_id, function ($q) use ($rs_id) {
                 return $q->where(Bersih::field_rs_id(), $rs_id);
             })
@@ -44,6 +46,11 @@ class DashboardBersihVsKotor
         $data_kotor = Transaksi::whereDate(Transaksi::field_created_at(), '>=', $start_date_kotor->format('Y-m-d'))
             ->whereDate(Transaksi::field_created_at(), '<=', $end_date_kotor->format('Y-m-d'))
             ->where(Transaksi::field_status_transaction(), TransactionType::KOTOR)
+            ->whereHas(HAS_RFID)
+            ->where(function ($q) {
+                $q->where(Transaksi::field_beda_rs(), '!=', BedaRsType::NOT_REGISTERED)
+                    ->orWhereNull(Transaksi::field_beda_rs());
+            })
             ->when($rs_id, function ($q) use ($rs_id) {
                 return $q->where(Transaksi::field_rs_ori(), $rs_id);
             })

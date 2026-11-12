@@ -2,6 +2,7 @@
 
 namespace App\Dao\Repositories;
 
+use App\Dao\Enums\BedaRsType;
 use App\Dao\Interfaces\CrudInterface;
 use App\Dao\Models\Outstanding;
 use App\Dao\Models\ViewOutstanding;
@@ -18,6 +19,11 @@ class OutstandingRepository extends MasterRepository implements CrudInterface
     public function dataRepository()
     {
         $query = ViewOutstanding::query()
+            ->whereHas(HAS_RFID)
+            ->where(function ($q) {
+                $q->where(ViewOutstanding::field_status_beda_rs(), '!=', BedaRsType::NOT_REGISTERED)
+                    ->orWhereNull(ViewOutstanding::field_status_beda_rs());
+            })
             ->sortable()->filter();
 
         if (request()->hasHeader('authorization')) {
@@ -42,6 +48,10 @@ class OutstandingRepository extends MasterRepository implements CrudInterface
         $query = ViewOutstanding::query()
             ->joinRelationship('has_outstanding')
             ->joinRelationship('has_detail')
+            ->where(function ($q) {
+                $q->where('outstanding.'.ViewOutstanding::field_status_beda_rs(), '!=', BedaRsType::NOT_REGISTERED)
+                    ->orWhereNull('outstanding.'.ViewOutstanding::field_status_beda_rs());
+            })
             ->addSelect([
                 'view_outstanding.*',
                 'outstanding_pending_created_at',
