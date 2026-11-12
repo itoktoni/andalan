@@ -170,18 +170,6 @@ class TransaksiController extends MasterController
                 return [$item[Detail::field_primary()] => $item];
             });
 
-            $outstanding_data = Outstanding::select([
-                Outstanding::field_primary(),
-                Outstanding::field_status_transaction(),
-                Outstanding::field_status_process(),
-                Outstanding::field_created_at(),
-            ])
-                ->whereIn(Outstanding::field_primary(), $request->rfid)
-                ->get()
-                ->mapWithKeys(function ($item) {
-                    return [$item[Outstanding::field_primary()] => $item];
-                });
-
             $status_transaksi = $request->{STATUS_TRANSAKSI};
             $status_process = $request->{STATUS_PROCESS};
             $status_sync = SyncType::No;
@@ -267,76 +255,15 @@ class TransaksiController extends MasterController
                         ];
                     }
                 } else {
-
-                    $transaction_outstanding = $outstanding_data[$item] ?? false;
-                    $transaction_exists = Transaksi::select(Transaksi::field_rfid())
-                        ->where(Transaksi::field_rfid(), $item)
-                        ->whereDate(Transaksi::field_created_at(), date('Y-m-d'))
-                        ->count();
-
-                    // transaksi nya gak boleh dibikin di hari yang sama
-                    if ($transaction_exists == 0) {
-
-                        $transaksi[] = [
-
-                            Transaksi::field_key() => $request->key,
-                            Transaksi::field_rfid() => $item,
-                            Transaksi::field_rs_ori() => null,
-                            Transaksi::field_rs_scan() => $request->rs_id,
-                            Transaksi::field_beda_rs() => BedaRsType::NOT_REGISTERED,
-                            Transaksi::field_ruangan_id() => null,
-                            Transaksi::field_status_transaction() => $status_transaksi,
-                            Transaksi::field_created_at() => $date,
-                            Transaksi::field_created_by() => $user,
-                            Transaksi::field_updated_at() => $date,
-                            Transaksi::field_updated_by() => $user,
-                        ];
-
-                    }
-
-                    if (($transaction_outstanding == false)) { //if outstanding null
-
-                        $outstanding[] = [
-
-                            Outstanding::field_key() => $request->key,
-                            Outstanding::field_primary() => $item,
-                            Outstanding::field_rs_ori() => null,
-                            Outstanding::field_rs_scan() => $request->rs_id,
-                            Outstanding::field_status_beda_rs() => BedaRsType::NOT_REGISTERED,
-                            Outstanding::field_ruangan_id() => null,
-                            Outstanding::field_status_transaction() => $status_transaksi,
-                            Outstanding::field_status_process() => $status_process,
-                            Outstanding::field_created_at() => date('Y-m-d H:i:s'),
-                            Outstanding::field_updated_at() => date('Y-m-d H:i:s'),
-                            Outstanding::field_created_by() => auth()->user()->id,
-                            Outstanding::field_updated_by() => auth()->user()->id,
-                            Outstanding::field_status_hilang() => HilangType::NORMAL,
-                            Outstanding::field_hilang_created_at() => null,
-                            Outstanding::field_pending_created_at() => null,
-                        ];
-                    }
-
-                    if (isset($outstanding_data[$item]) && ($transaction_outstanding->field_created_at == date('Y-m-d'))) {
-                        $transaksi_status = $outstanding_data[$item];
-                        $return[] = [
-                            KEY => $request->key,
-                            STATUS_SYNC => SyncType::No,
-                            STATUS_TRANSAKSI => $transaksi_status->outstanding_status_transaksi,
-                            STATUS_PROCESS => $transaksi_status->outstanding_status_proses,
-                            RFID => $item,
-                            TANGGAL_UPDATE => $date,
-                        ];
-                    } else {
-                        $return[] = [
-                            KEY => $request->key,
-                            STATUS_SYNC => SyncType::Unknown,
-                            STATUS_TRANSAKSI => TransactionType::UNKNOWN,
-                            STATUS_PROCESS => ProcessType::UNKNOWN,
-                            RFID => $item,
-                            TANGGAL_UPDATE => $date,
-                        ];
-                    }
-
+                    // RFID tidak terdaftar di master detail -> jangan tulis ke transaksi / outstanding / database
+                    $return[] = [
+                        KEY => $request->key,
+                        STATUS_SYNC => SyncType::Unknown,
+                        STATUS_TRANSAKSI => TransactionType::UNKNOWN,
+                        STATUS_PROCESS => ProcessType::UNKNOWN,
+                        RFID => $item,
+                        TANGGAL_UPDATE => $date,
+                    ];
                 }
             }
 
@@ -404,7 +331,7 @@ class TransaksiController extends MasterController
         }
 
         $preventif = collect($return);
-        if ($preventif->where('status_sync', '!=', 0)->count() == 0) {
+        if ($preventif->where(STATUS_SYNC, SyncType::Yes)->count() == 0) {
             return Notes::error('Tidak Ada RFID yang di Sync !');
         }
 
