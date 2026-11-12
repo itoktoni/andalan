@@ -31,15 +31,15 @@ class UpdateDeliveryService
         try {
 
             $passing = $return = [];
-            $startDate = Carbon::createFromFormat('Y-m-d H:i', date('Y-m-d').' 13:00');
-            $endDate = Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d').' 23:59:59');
+            // $startDate = Carbon::createFromFormat('Y-m-d H:i', date('Y-m-d').' 13:00');
+            // $endDate = Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d').' 23:59:59');
 
-            $check_date = Carbon::now()->between($startDate, $endDate);
+            // $check_date = Carbon::now()->between($startDate, $endDate);
             $report_date = Carbon::now();
 
-            if ($check_date) {
-                $report_date = Carbon::now()->addDay(1);
-            }
+            // if ($check_date) {
+            //     $report_date = Carbon::now()->addDay(1);
+            // }
 
             $transaksi = $data->status_transaksi;
             if ($transaksi == TransactionType::KOTOR) {
