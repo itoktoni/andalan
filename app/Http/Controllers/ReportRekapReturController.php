@@ -37,6 +37,7 @@ class ReportRekapReturController extends MinimalController
         $query = DB::table('view_rekap_kotor')
         ->where('view_rs_id', $request->rs_id)
         ->where('view_status', TransactionType::REJECT)
+        ->whereNotNull('view_linen_id')
         ;
 
     if ($start_date = $request->start_rekap) {

@@ -53,6 +53,7 @@ class ReportRekapLinenBaruController extends MinimalController
         $query = DB::table('view_rekap_bersih')
         ->where('view_rs_id', $request->rs_id)
         ->where('view_status', TransactionType::REGISTER)
+        ->whereNotNull('view_linen_id')
         ;
 
         if ($start_date = $request->start_rekap) {

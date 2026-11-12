@@ -36,6 +36,7 @@ class ReportRekapKotorController extends MinimalController
         $query = DB::table('view_rekap_kotor')
             ->where('view_rs_id', $request->rs_id)
             ->where('view_status', TransactionType::KOTOR)
+            ->whereNotNull('view_linen_id')
             ;
 
         if ($start_date = $request->start_rekap) {
@@ -51,7 +52,8 @@ class ReportRekapKotorController extends MinimalController
 
     private function getQueryBersih($request)
     {
-        $query = DB::table('view_rekap_bersih')->where('view_rs_id', $request->rs_id);
+        $query = DB::table('view_rekap_bersih')->where('view_rs_id', $request->rs_id)
+            ->whereNotNull('view_linen_id');
 
         if ($start_date = $request->start_rekap) {
             $bersih_from = Carbon::createFromFormat('Y-m-d', $start_date) ?? false;

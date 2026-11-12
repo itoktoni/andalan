@@ -48,6 +48,7 @@ class ReportRekapKotorLinenController extends MinimalController
         $query = DB::table('view_rekap_kotor')
             ->where('view_rs_id', $request->view_rs_id)
             ->where('view_status', TransactionType::KOTOR)
+            ->whereNotNull('view_linen_id')
             ;
 
         if ($ruangan_id = $request->view_ruangan_id) {

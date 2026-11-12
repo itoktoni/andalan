@@ -29,6 +29,7 @@ class DashboardBersihHarian
         ->select(['view_ruangan_nama', DB::raw('sum(view_qty) as total')])
             ->where('view_tanggal', now()->format('Y-m-d'))
             ->where('view_status', TransactionType::BERSIH)
+            ->whereNotNull('view_linen_id')
             ->when($rs_id, function ($q) use ($rs_id) {
                 return $q->where('view_rs_id', $rs_id);
             })

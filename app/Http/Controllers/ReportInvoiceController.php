@@ -39,7 +39,8 @@ class ReportInvoiceController extends MinimalController
     {
         $query = DB::table('view_invoice')
             ->where('view_rs_id', $request->rs_id)
-            ->where('view_status', TransactionType::BERSIH);
+            ->where('view_status', TransactionType::BERSIH)
+            ->whereNotNull('view_linen_id');
 
         if ($start_date = $request->start_rekap) {
             $query = $query->whereDate('view_tanggal', '>=', $start_date);

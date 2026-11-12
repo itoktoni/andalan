@@ -27,6 +27,7 @@ class DashboardKotorHarian
         ->select(['view_ruangan_nama', DB::raw('sum(view_qty) as total')])
             ->where('view_tanggal', $tanggal)
             ->where('view_status', TransactionType::KOTOR)
+            ->whereNotNull('view_linen_id')
             ->when($rs_id, function ($q) use ($rs_id) {
                 return $q->where('view_rs_id', $rs_id);
             })
