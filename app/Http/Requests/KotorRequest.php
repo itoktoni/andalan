@@ -31,7 +31,7 @@ class KotorRequest extends FormRequest
     {
         $this->merge([
             $this->model->field_rs_id() => $this->rs_id,
-            $this->model->field_status_transaction() => TransactionType::Kotor,
+            $this->model->field_status_transaction() => TransactionType::KOTOR,
         ]);
     }
 }

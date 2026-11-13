@@ -29,23 +29,19 @@ class BarcodeRequest extends FormRequest
 
         // CASE KETIKA RFID TIDAK DITEMUKAN
 
-        $where = TransactionType::Register;
+        $where = TransactionType::REGISTER;
 
         /*
         notes : status transaksi berasal dari menu desktop
         */
-        if ($this->status_transaksi == TransactionType::BersihKotor) {
-            $where = TransactionType::Kotor;
-        } elseif ($this->status_transaksi == TransactionType::BersihRetur) {
-            $where = TransactionType::Retur;
-        } elseif ($this->status_transaksi == TransactionType::BersihRewash) {
-            $where = TransactionType::Rewash;
-        } elseif ($this->status_transaksi == TransactionType::Kotor) {
-            $where = TransactionType::Kotor;
-        } elseif ($this->status_transaksi == TransactionType::Retur) {
-            $where = TransactionType::Retur;
-        } elseif ($this->status_transaksi == TransactionType::Rewash) {
-            $where = TransactionType::Rewash;
+        if ($this->status_transaksi == TransactionType::BERSIH) {
+            $where = TransactionType::KOTOR;
+        }elseif ($this->status_transaksi == TransactionType::KOTOR) {
+            $where = TransactionType::KOTOR;
+        } elseif ($this->status_transaksi == TransactionType::REJECT) {
+            $where = TransactionType::REJECT;
+        } elseif ($this->status_transaksi == TransactionType::REWASH) {
+            $where = TransactionType::REWASH;
         }
 
         $rfid = Detail::whereIn(Detail::field_primary(), $this->rfid)
@@ -82,25 +78,19 @@ class BarcodeRequest extends FormRequest
         $code = '';
 
         switch ($this->status_transaksi) {
-            case TransactionType::BersihKotor:
+            case TransactionType::BERSIH:
                 $code = env('CODE_KOTOR', 'KTR');
                 break;
-            case TransactionType::BersihRetur:
-                $code = env('CODE_REJECT', 'RTR');
-                break;
-            case TransactionType::BersihRewash:
-                $code = env('CODE_REWASH', 'WSH');
-                break;
-            case TransactionType::Kotor:
+            case TransactionType::KOTOR:
                 $code = env('CODE_KOTOR', 'KTR');
                 break;
-            case TransactionType::Retur:
+            case TransactionType::REJECT
                 $code = env('CODE_REJECT', 'RTR');
                 break;
-            case TransactionType::Rewash:
+            case TransactionType::REWASH:
                 $code = env('CODE_REWASH', 'WSH');
                 break;
-            case TransactionType::Register:
+            case TransactionType::REGISTER:
                 $code = env('CODE_REGISTER', 'BRU');
                 break;
             default:

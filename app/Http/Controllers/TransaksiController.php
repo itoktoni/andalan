@@ -145,9 +145,9 @@ class TransaksiController extends MasterController
             return false;
         }
 
-        if (($form_transaksi == TransactionType::KOTOR) && !(now()->diffInHours($date) >= env('TRANSACTION_HOURS_ALLOWED', 15))) {
-            return false;
-        }
+        // if (($form_transaksi == TransactionType::KOTOR) && !(now()->diffInHours($date) >= env('TRANSACTION_HOURS_ALLOWED', 15))) {
+        //     return false;
+        // }
 
         return true;
     }
